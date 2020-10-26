@@ -1,21 +1,24 @@
-# Nuxt.js Example
+# timetracking
 
-This directory is a brief example of a [Nuxt.js](https://nuxtjs.org) app that can be deployed with Vercel and zero configuration!
+> Jira Timetracking Tool
 
-## Deploy Your Own
+## Build Setup
 
-Deploy your own Nuxt.js project with Vercel.
+``` bash
+# install dependencies
+$ npm install
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/vercel/vercel/tree/master/examples/nuxtjs)
+# serve with hot reload at localhost:3000
+$ npm run dev
 
-_Live Example: https://nuxtjs.now-examples.now.sh_
+# build for production and launch server
+$ npm run build
+$ npm start
 
-### How We Created This Example
-
-To get started with Nuxt.js deployed with Vercel, you can use the [Create-Nuxt-App CLI](https://www.npmjs.com/package/create-nuxt-app) to initialize the project:
-
-```shell
-$ npx create-nuxt-app my-app
+# generate static project
+$ npm run generate
 ```
 
-> The only change made is to amend the output directory in `nuxt.config.js` to `"/public"`.
+For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
+
+On this server reference -> __`/DMC/tools/jira-tools/timetracking-old`__.

@@ -1,0 +1,15 @@
+@import '../../node_modules/bootstrap/scss/bootstrap';
+@import '../../node_modules/bootstrap-vue/src/index.scss';
+@import 'dmc/_all.scss';
+@import 'configurations/_variables.scss';
+@import 'configurations/_icons.scss';
+@import 'configurations/_colors.scss';
+@import 'components/the-layout';
+@import 'components/the-navigation';
+@import 'components/the-tasks';
+@import 'components/layout/content';
+@import 'components/account';
+@import 'components/selected-ticket.scss';
+@import 'components/autocompleted-search.scss';
+
+// @dmc todo folder dmc/old: remove if we don't need it

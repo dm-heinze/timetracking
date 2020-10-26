@@ -1,0 +1,12 @@
+// lanscape
+@media (min-width: 1000px) and (max-width: 1199px) {
+    .g-block {
+        width: $grid-size-tablet-landscape;
+    }
+}
+
+// portrait
+@media (min-width: 700px) and (max-width: 999px) {
+    @import "_tablet/core";
+    @import "_tablet/custom";
+}

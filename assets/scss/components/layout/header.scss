@@ -1,0 +1,15 @@
+.header-wrp {
+  display: flex;
+  justify-content: space-between;
+
+  .total-time {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:before {
+      font-size: $icon-big__font-size;
+      margin-right: 10px;
+    }
+  }
+}
