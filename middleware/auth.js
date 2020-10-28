@@ -13,15 +13,15 @@ export default function ({app, store, route, error, redirect}) {
 
         let hasSessionKey = false;
         if (!_.isEmpty(store.state.moduleUser.sessionObject) && !_.isEmpty(store.state.moduleUser.currentUser)) {
-          if (store.state.moduleUser.sessionObject.value !== '') hasSessionKey = true;
+            if (store.state.moduleUser.sessionObject.value !== '') hasSessionKey = true;
         }
 
         if(!hasSessionKey) {
-          resolve('current user is authorized');
+            resolve('current user is authorized');
 
-          if (route.path === loginRoute) return;
+            if (route.path === loginRoute) return;
 
-          return redirect(loginRoute);
+            return redirect(loginRoute);
         }
 
         resolve();

@@ -21,8 +21,8 @@
                     <input
                         id="password"
                         type="password"
-                           class="form-control"
-                           v-model="userObj.pass" />
+                        class="form-control"
+                        v-model="userObj.pass" />
                 </div>
             </div>
             <div class="row">
@@ -30,6 +30,8 @@
                     <button @click.prevent="setUser()" type="button" class="btn btn-primary col-sm-12 mt-3">Login</button>
                 </div>
             </div>
+
+            <div v-if="errorMessage" class="login-content__error-message">{{ errorMessage }}</div>
         </form>
         <!--
         Build form here
@@ -41,7 +43,7 @@
 </template>
 
 <script>
-    import { mapActions } from 'vuex'; // todo
+    import { mapActions } from 'vuex';
 
     export default {
         name: 'login',
@@ -50,14 +52,18 @@
                 userObj: {
                     name: null,
                     pass: null
-                }
+                },
+                errorMessage: ''
             }
         },
         methods: {
-            setUser: function () { // todo
-                this.$store.dispatch('moduleUser/createApiObject', { data: this.userObj })
+            ...mapActions({
+                createApiObject: 'moduleUser/createApiObject',
+            }),
+            setUser: function () {
+                this.createApiObject({ data: this.userObj })
                   .then(() => this.$router.push('/'))
-                  .catch((err) => console.log("err occurred in setUser: ", err));
+                  .catch((__errorMessage) => this.errorMessage = __errorMessage);
             }
         },
         mounted() {

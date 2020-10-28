@@ -10,8 +10,8 @@ const response = function (request, response) {
         const parsedDataObject =JSON.parse(body);
 
         let headers = {
-          'Content-Type': 'application/json',
-          cookie: `JSESSIONID=${parsedDataObject.sessionId}`,
+            'Content-Type': 'application/json',
+            cookie: `JSESSIONID=${parsedDataObject.sessionId}`,
         }
 
         const jqlSearchString = `assignee = ${parsedDataObject.currentUser} AND resolution = Unresolved order by updated DESC`;
@@ -22,14 +22,14 @@ const response = function (request, response) {
             data: { jql: jqlSearchString },
             headers: headers,
         })
-          .then((__response) => {
-              // if (__response.status === 200) // todo
-              response.end(JSON.stringify(__response.data));
-          })
-          .catch((err) =>{
-              response.end(JSON.stringify(err));
-          })
-      })
+            .then((__response) => {
+                // if (__response.status === 200) // todo
+                response.end(JSON.stringify(__response.data));
+            })
+            .catch((err) =>{
+                response.end(JSON.stringify(err));
+            })
+    })
 }
 
 

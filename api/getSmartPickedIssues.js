@@ -20,12 +20,12 @@ const response = function (request, response) {
             url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'issue/picker',
             headers: headers,
         })
-          .then((__response) => {
-              response.end(JSON.stringify(__response.data));
-          })
-          .catch((err) =>{
-              response.end(JSON.stringify(err));
-          })
+            .then((__response) => {
+                response.end(JSON.stringify(__response.data));
+            })
+            .catch((err) =>{
+                response.end(JSON.stringify(err));
+            })
     })
 }
 

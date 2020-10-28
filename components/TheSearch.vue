@@ -12,12 +12,12 @@
         </select>
         <div v-show="selectedProject !== ''">
             <select v-model="selectedTicket">
-              <option v-if="!relatedTickets.length" disabled value="">Loading Related Tickets...</option>
-              <option v-else disabled value="">Select a ticket</option>
-              <option
-                  v-for="relatedTicket in relatedTickets"
-                  :value="relatedTicket.key"
-              >{{ relatedTicket.key }}: {{ relatedTicket.summary }} </option>
+                <option v-if="!relatedTickets.length" disabled value="">Loading Related Tickets...</option>
+                <option v-else disabled value="">Select a ticket</option>
+                <option
+                    v-for="relatedTicket in relatedTickets"
+                    :value="relatedTicket.key"
+                >{{ relatedTicket.key }}: {{ relatedTicket.summary }} </option>
             </select>
             <div v-if="selectedTicket !== ''">
                 <button v-b-toggle.sidebar-search @click="addSelectionToSelectedTasks">Select & Close Sidebar</button>
@@ -35,6 +35,7 @@
 <script>
     import { mapMutations, mapState, mapActions } from 'vuex';
     import AutocompletedSearch from "./AutocompletedSearch";
+    import _ from 'lodash';
 
     export default {
         name: "TheSearch",
@@ -43,12 +44,12 @@
             SearchResults: () => import('./SearchResults'),
         },
         data() {
-             return {
-                 show: true,
-                 selectedProject: '',
-                 selectedTicket: '',
-                 selectedTaskObject: {}
-             }
+            return {
+                show: true,
+                selectedProject: '',
+                selectedTicket: '',
+                selectedTaskObject: {}
+            }
         },
         computed: {
             ...mapState({
@@ -78,27 +79,24 @@
                 flashMessage: 'moduleFlashMessage/flashMessage'
             }),
             addSelectionToSelectedTasks: function () {
-                 const __selectedTaskObject = this.relatedTickets.find((__relatedTicket) => __relatedTicket.key === this.selectedTicket);
+                const __selectedTaskObject = this.relatedTickets.find((__relatedTicket) => __relatedTicket.key === this.selectedTicket);
 
-                 const selectedTaskObject = { ...__selectedTaskObject,
-                     assignee: '',
-                     issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + this.selectedTicket,
-                     comment: '',
-                     // timeSpent: 0, // todo
-                     timeSpent: '', //
-                     startTime: '',
-                     endTime: '',
-                     assignedToTicket: true
-                 }
+                const selectedTaskObject = { ...__selectedTaskObject,
+                    assignee: '',
+                    issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + this.selectedTicket,
+                    comment: '',
+                    // timeSpent: 0, // todo
+                    timeSpent: '', //
+                    startTime: '',
+                    endTime: '',
+                    assignedToTicket: true,
+                    booked: false,
+                    uniqueId: _.now()
+                }
 
-                 const alreadyIncludedInSelectedTasks = this.selectedTasks.filter((__selectedTask) => __selectedTask.key === selectedTaskObject.key.toUpperCase()).length !== 0;
-                 if (!alreadyIncludedInSelectedTasks) {
-                      this.addSelectedTask(selectedTaskObject);
-                      this.saveSelectedTasksToStorage();
-                 }  else {
-                      this.flashMessage({ message: `You are already working on ${selectedTaskObject.key}`, status: 'primary' });
-                 }
-             }
+                this.addSelectedTask(selectedTaskObject);
+                this.saveSelectedTasksToStorage();
+            }
         }
     }
 </script>

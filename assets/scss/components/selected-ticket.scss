@@ -35,18 +35,18 @@
         transition: all 0.3s ease-in-out;
 
         &:hover {
-          color: $highlight-color;
+            color: $highlight-color;
 
-          &.disabled {
-            color: $disabled-color;
-            cursor: not-allowed;
-          }
+            &.disabled {
+                color: $disabled-color;
+                cursor: not-allowed;
+            }
         }
 
         .icon-play, .icon-pause {
-          &.disabled {
-            color: $disabled-color;
-          }
+            &.disabled {
+                color: $disabled-color;
+            }
         }
     }
 

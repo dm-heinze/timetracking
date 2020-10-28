@@ -7,7 +7,7 @@
                 <li>
                     <SelectedTask
                         v-for="selectedTask in selectedTasks"
-                        :key="selectedTask.key"
+                        :key="selectedTask.uniqueId"
                         :taskKey="selectedTask.key"
                         :taskDirectLink="selectedTask.assignedToTicket ? selectedTask.issueLink : ''"
                         :taskSummary="selectedTask.assignedToTicket ? selectedTask.summary : ''"
@@ -17,11 +17,12 @@
                         :endedAt="selectedTask.endTime"
                         :assigned-to-ticket="selectedTask.assignedToTicket"
                         :booked="selectedTask.booked"
+                        :uniqueId="selectedTask.uniqueId"
                     />
                 </li>
             </ul>
-      </div>
-      <div v-else>There are no selected issues</div>
+        </div>
+        <div v-else>There are no selected issues</div>
     </div>
 </template>
 

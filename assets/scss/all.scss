@@ -4,11 +4,10 @@
 @import 'configurations/_variables.scss';
 @import 'configurations/_icons.scss';
 @import 'configurations/_colors.scss';
+@import 'components/pages/login.scss';
 @import 'components/the-layout';
 @import 'components/the-navigation';
 @import 'components/the-tasks';
-@import 'components/layout/content';
-@import 'components/account';
 @import 'components/selected-ticket.scss';
 @import 'components/autocompleted-search.scss';
 

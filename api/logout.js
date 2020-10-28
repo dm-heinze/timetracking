@@ -1,26 +1,24 @@
 import axios from 'axios';
 
 const response = function (request, response) {
-      const incomingRequestUrl = request.url;
-      const sessionValue = incomingRequestUrl.replace('/?value=', '')
+    const incomingRequestUrl = request.url;
+    const sessionValue = incomingRequestUrl.replace('/?value=', '')
 
-      let headers = {
+    let headers = {
         'Content-Type': 'application/json',
-         cookie: `JSESSIONID=${sessionValue}` // todo
-      }
+        cookie: `JSESSIONID=${sessionValue}` // todo
+    }
 
-      axios({
+    axios({
         method: 'DELETE',
         url: process.env.BASE_DOMAIN + process.env.ENDPOINT_AUTH,
         headers: headers,
-      })
-        .then((__response) => {
-            response.end(JSON.stringify({ status: __response.status }));
-        })
-        .catch(() => response.end())
+    })
+        .then((__response) => response.end(JSON.stringify({ status: __response.status }))) // todo
+        .catch((err) => response.end(JSON.stringify(err.response.status)))
 }
 
 export default {
-  path: 'api/logout',
-  handler: response
+    path: 'api/logout',
+    handler: response
 }

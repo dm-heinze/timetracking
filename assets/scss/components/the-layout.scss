@@ -1,9 +1,7 @@
 @import 'layout/header';
-@import 'layout/content';
-@import 'layout/footer';
 
 .header-wrp,
 .content-wrp {
-  padding-top: $layout__padding;
-  padding-bottom: $layout__padding;
+    padding-top: $layout__padding;
+    padding-bottom: $layout__padding;
 }

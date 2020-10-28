@@ -1,80 +1,88 @@
 .autocompleted-search__container {
-  position: relative;
+    position: relative;
 
-  input {
-    background: #ffffff;
-    border: none;
-    outline: none;
-    padding: 10px;
-    width: 100%;
-    transition: all 0.2s ease-in-out;
+    input {
+        background: #ffffff;
+        border: none;
+        outline: none;
+        padding: 10px;
+        width: 100%;
+        transition: all 0.2s ease-in-out;
 
-    &::placeholder {
-      color: $disabled-color;
+        &::placeholder {
+            color: $disabled-color;
+        }
+
+        &:focus {
+            border: 1px solid $primary; /* variable from vue bootstrap */
+        }
+
+        &:disabled {
+            background-color: $disabled-color;
+
+            &::placeholder {
+                color: #ffffff;
+            }
+        }
     }
 
-    &:focus {
-      border: 1px solid $primary; /* variable from vue bootstrap */
+    button {
+        position: absolute;
+        right: 7px;
+
+        &:before{
+            font-size: $icon-small__font-size !important;
+            padding-top: 10px;
+        }
+
+        &.icon-close {
+            color: $primary !important; /* variable from vue bootstrap */
+
+            &:hover {
+                cursor: pointer;
+                color: $danger !important;  /* variable from vue bootstrap */
+            }
+        }
+
+        &.icon-search {
+            color: $disabled-color;
+
+            &:hover {
+                color: $disabled-color !important;
+                cursor: default;
+            }
+        }
+
+        span { /* referencing b-spinner == vue bootstrap component */
+            position: absolute;
+            right: 7px;
+            top: 14px;
+        }
     }
-  }
-
-  button {
-    position: absolute;
-    right: 7px;
-
-    &:before{
-      font-size: $icon-small__font-size !important;
-      padding-top: 10px;
-    }
-
-    &.icon-close {
-      color: $primary !important; /* variable from vue bootstrap */
-
-      &:hover {
-        cursor: pointer;
-        color: $danger !important;  /* variable from vue bootstrap */
-      }
-    }
-
-    &.icon-search {
-      color: $disabled-color;
-
-      &:hover {
-        color: $disabled-color !important;
-        cursor: default;
-      }
-    }
-
-    span { /* referencing b-spinner == vue bootstrap component */
-      position: absolute;
-      right: 7px;
-      top: 14px;
-    }
-  }
 }
 
 .autocompleted-search__results {
-  background-color: white;
-  box-shadow: 0 4px 10px 0 rgba(41, 40, 47, .1);
+    background-color: white;
+    box-shadow: 0 4px 10px 0 rgba(41, 40, 47, .1);
 
-  ul {
-    list-style: none;
-    padding-left: 0;
+    ul {
+        list-style: none;
+        padding-left: 0;
 
-    li {
-      padding: 7px;
-      transition: all 0.35s ease-in-out;
+        li {
+            padding: 7px;
+            transition: all 0.35s ease-in-out;
 
-      &:hover {
-        cursor: pointer;
-        background-color: $primary; /* variable from vue bootstrap */
-        color: white;
-      }
+            &:hover {
+                cursor: pointer;
+                background-color: $primary; /* variable from vue bootstrap */
+                color: white;
+            }
 
-      span {
-        padding-left: 7px;
-        padding-right: 7px;
-      }
+            span {
+                padding-left: 7px;
+                padding-right: 7px;
+            }
+        }
     }
-  }
 }

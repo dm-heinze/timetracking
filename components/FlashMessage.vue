@@ -10,14 +10,14 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapMutations } from 'vuex';
 
     export default {
         name: "FlashMessage",
         data() {
-          return {
-              message: null
-          }
+            return {
+                message: null
+            }
         },
         computed: {
             ...mapState({
@@ -25,8 +25,11 @@
             })
         },
         methods: {
+            ...mapMutations({
+                resetMessage: 'moduleFlashMessage/resetMessage',
+            }),
             closeFlashMessage: function() {
-                this.$store.commit('moduleFlashMessage/resetMessage');
+                this.resetMessage();
             }
         }
     }
