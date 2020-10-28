@@ -8,6 +8,20 @@
         <b-sidebar id="sidebar-settings" title="Settings" shadow backdrop :width="'500px'">
             <div class="px-4">
                 <button @click.prevent="removeCurrentSession">LOGOUT</button>
+                <b-form-input v-model="searchTerm" @input="requestSearch" placeholder="Search for Tickets to Bookmark"></b-form-input>
+                <div v-if="searchLoading">Loading Search Results...</div>
+                <div v-if="searchResults.length !== 0">
+                    <b-list-group>
+                        <b-list-group-item
+                            v-for="searchResult in searchResults"
+                            :key="searchResult.key"
+                        >
+                            {{ searchResult.key }}: {{ searchResult.summary }}
+                            <b-icon class="h4 mb-2 tickets__icon" icon="bookmark-check-fill" variant="success" @click="toggleBookmarked(searchResult.key)" v-if="bookmarked.find((marked) => marked.key === searchResult.key)"></b-icon>
+                            <b-icon class="h4 mb-2 tickets__icon" icon="bookmark" variant="primary" @click="toggleBookmarked(searchResult.key)" v-else></b-icon>
+                        </b-list-group-item>
+                    </b-list-group>
+                </div>
             </div>
         </b-sidebar>
         <nuxt-link :to="'/'" class="icon-calendar">Calendar</nuxt-link>
@@ -57,11 +71,15 @@
 <script>
     import { mapActions, mapMutations, mapState } from 'vuex';
     import _ from 'lodash';
+    import {BIcon, BIconBookmark, BIconBookmarkCheckFill } from 'bootstrap-vue';
 
     export default {
         name: "TheNavigation",
         components: {
             TheSearch: () => import('./TheSearch'),
+            BIcon,
+            BIconBookmark,
+            BIconBookmarkCheckFill
         },
         data() {
             return {
@@ -70,7 +88,9 @@
                 startTime: '',
                 endTime: '',
                 initialLoggedBreak: '',
-                customNameCustomTask: ''
+                customNameCustomTask: '',
+                searchTerm: '',
+                searchLoading: false
             };
         },
         computed: {
@@ -80,7 +100,9 @@
                 onABreak: state => state.moduleUser.onABreak,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 allExistingProjects: state => state.moduleUser.allExistingProjects,
-                activeTicket: state => state.moduleUser.activeTicket
+                activeTicket: state => state.moduleUser.activeTicket,
+                searchResults: state => state.moduleUser.searchResults,
+                bookmarked: state => state.moduleUser.bookmarked
             }),
             everythingBookedAlready () {
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.booked).length === 0;
@@ -113,7 +135,9 @@
                 requestSessionRemoval: 'moduleUser/requestSessionRemoval',
                 saveBreaksToStorage: 'moduleUser/saveBreaksToStorage',
                 requestAllProjects: 'moduleUser/requestAllProjects',
-                requestPrefillAction: 'moduleUser/requestPrefill'
+                requestPrefillAction: 'moduleUser/requestPrefill',
+                saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
+                getIssue: 'moduleUser/getIssue'
             }),
             ...mapMutations({
                 addSelectedTask: 'moduleUser/addSelectedTask',
@@ -122,7 +146,8 @@
                 updateTotalBreakTime: 'moduleUser/updateTotalBreakTime',
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
                 setLastTicket: 'moduleUser/setLastTicket',
-                removeAllSelectedTasks: 'moduleUser/removeAllSelectedTasks'
+                removeAllSelectedTasks: 'moduleUser/removeAllSelectedTasks',
+                updateBookmarks: 'moduleUser/updateBookmarks'
             }),
             removeCurrentSession: function () {
                 this.requestSessionRemoval()
@@ -235,6 +260,17 @@
                 // synchronize localStorage
                 this.saveBreaksToStorage();
                 this.saveSelectedTasksToStorage();
+            },
+            requestSearch: _.debounce(function () {
+                if (!_.isEmpty(this.searchTerm)) {
+                    this.searchLoading = true;
+                    this.getIssue({ searchTerm: this.searchTerm }).then(() => this.searchLoading = false);
+                }
+            }, 1100),
+            toggleBookmarked: function (searchResultToBeToggled) {
+                this.updateBookmarks({ bookmark: searchResultToBeToggled });
+
+                this.saveBookmarksToStorage();
             }
         }
     }

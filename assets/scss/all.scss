@@ -4,11 +4,13 @@
 @import 'configurations/_variables.scss';
 @import 'configurations/_icons.scss';
 @import 'configurations/_colors.scss';
+@import 'configurations/_mixins.scss';
 @import 'components/pages/login.scss';
 @import 'components/the-layout';
 @import 'components/the-navigation';
 @import 'components/the-tasks';
 @import 'components/selected-ticket.scss';
 @import 'components/autocompleted-search.scss';
+@import 'components/search-results.scss';
 
 // @dmc todo folder dmc/old: remove if we don't need it

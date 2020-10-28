@@ -22,10 +22,21 @@ export const state = () => ({
     accumulatedBreakTime: '00:00:00',
     selectedTasks: [],
     prefilledSearchSuggestions: [],
-    lastTicket: ''
+    lastTicket: '',
+    bookmarked: []
 });
 
 export const mutations = {
+    updateBookmarks: (state, value) => {
+        if (state.bookmarked.find((__bookmarked) => __bookmarked.key === value.bookmark)) {
+            state.bookmarked = state.bookmarked.filter((__bookmarked) => __bookmarked.key !== value.bookmark)
+        } else {
+            state.bookmarked.push({ key: value.bookmark });
+        }
+    },
+    setBookmarks: (state, value) => {
+        state.bookmarked = value;
+    },
     setSelectedTasks: (state, value) => {
         state.selectedTasks = value;
     },
@@ -232,6 +243,13 @@ export const getters = {
 };
 
 export const actions = {
+    saveBookmarksToStorage: function ({ state }) {
+        return new Promise((resolve, reject) => {
+            this.$localForage.setItem('BOOKMARKS', state.bookmarked)
+                .then(() => resolve())
+                .catch(() => reject())
+        })
+    },
     saveSelectedTasksToStorage: function ({ state }) {
         return new Promise((resolve, reject) => {
             this.$localForage.setItem('SELECTEDTASKS', state.selectedTasks)
@@ -258,6 +276,19 @@ export const actions = {
             this.$localForage.getItem('BREAKS').then((__result) => {
                 if (!_.isEmpty(__result)) {
                     commit('updateTotalBreakTime', { totalBreakTime: __result });
+
+                    resolve();
+                } else {
+                    resolve();
+                }
+            })
+        })
+    },
+    retrieveBookmarksFromStorage: function({ commit }) {
+        return new Promise((resolve) => {
+            this.$localForage.getItem('BOOKMARKS').then((__result) => {
+                if (!_.isEmpty(__result)) {
+                    commit('setBookmarks', __result );
 
                     resolve();
                 } else {

@@ -1,42 +1,47 @@
 .nav {
-  display: flex;
-  justify-content: space-between;
-  flex-grow: 1;
-  padding-right: $indent__xl;
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding-right: $indent__xl;
 
-  button {
-    border: none;
-    background: transparent;
-  }
-
-  &.big-icons {
-    [class^="icon-"], [class*=" icon-"] {
-      display: inline-block;
-      text-align: center;
-
-      &:before {
-        display: block;
-        margin-bottom: $indent__xs;
-      }
-
-      &:hover {
-        text-decoration: none;
-        color: $highlight-color;
-
-        &.disabled {
-          cursor: not-allowed;
-
-          &:hover {
-            color: $disabled-color;
-          }
-        }
-      }
-      &.breakActive {
-        color: #4cffbf;
-      }
-      &.navigation__icon {
-        cursor: pointer;
-      }
+    button {
+        border: none;
+        background: transparent;
     }
-  }
+
+    &.big-icons {
+        [class^="icon-"], [class*=" icon-"] {
+            display: inline-block;
+            text-align: center;
+
+            &:before {
+                display: block;
+                margin-bottom: $indent__xs;
+            }
+
+            &:hover {
+                text-decoration: none;
+                color: $highlight-color;
+
+                &.disabled {
+                    cursor: not-allowed;
+
+                    &:hover {
+                        color: $disabled-color;
+                    }
+                }
+            }
+            &.breakActive {
+                color: #4cffbf;
+            }
+            &.navigation__icon {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .tickets__icon {
+        @include button-hover-styles;
+    }
+
 }

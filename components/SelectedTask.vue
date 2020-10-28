@@ -240,15 +240,20 @@
             }, 1000),
             saveEditedWorklogTimeSpent: _.debounce(function (event) {
                 const editedTimeSpent = event.target.value;
-                const editedTimeSpentTimeStringArray = editedTimeSpent.split(":");
-                const startTimeTimeStringArray = this.parsedStartTime.split(":");
+
+                let editedTimeSpentTimeStringArray = editedTimeSpent.split(":");
+                let startTimeTimeStringArray = this.parsedStartTime.split(":");
+
+                const helperDate = new Date();
+
+                editedTimeSpentTimeStringArray[2] = Number(editedTimeSpentTimeStringArray[2]) ? Number(editedTimeSpentTimeStringArray[2]) : Number('00');
+                startTimeTimeStringArray[2] = startTimeTimeStringArray[2] ? startTimeTimeStringArray[2] : Number('00');
+
+                const dateFromParsedStartTime = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), Number(startTimeTimeStringArray[0]), Number(startTimeTimeStringArray[1]), Number(startTimeTimeStringArray[2]), 0);
 
                 const summedUpTimeSpentAndStartTime = _.zipWith(editedTimeSpentTimeStringArray, startTimeTimeStringArray, (a, b) => Number(a) + Number(b));
 
-
-                const helperDate = new Date();
-                const dateFromSummedUpArrayAndHelper = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), summedUpTimeSpentAndStartTime[0], summedUpTimeSpentAndStartTime[1], summedUpTimeSpentAndStartTime[2] ? summedUpTimeSpentAndStartTime[2] : '00', 0);
-                const dateFromParsedStartTime = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), Number(startTimeTimeStringArray[0]), Number(startTimeTimeStringArray[1]), Number(startTimeTimeStringArray[2]) ? Number(startTimeTimeStringArray[2]) : '00', 0);
+                const dateFromSummedUpArrayAndHelper = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), summedUpTimeSpentAndStartTime[0], summedUpTimeSpentAndStartTime[1], summedUpTimeSpentAndStartTime[2], 0);
 
                 // update state & vuex store & localStorage
                 // endTime should not be 'updated'/set when there was no startTime

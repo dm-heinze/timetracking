@@ -1,0 +1,7 @@
+.search-results {
+    .tickets__icon {
+        &:hover {
+            @include button-hover-styles;
+        }
+    }
+}
