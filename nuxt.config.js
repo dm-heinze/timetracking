@@ -1,9 +1,15 @@
 import pkg from './package'
-import webpack from 'webpack'
 
 export default {
   ssr: true,
 
+  // Env. Variables
+  env: {
+    BASE_DOMAIN: process.env.BASE_DOMAIN || 'https://<YOUR-JIRA-DOMAIN>/',
+    ENDPOINT_BROWSE: process.env.ENDPOINT_BROWSE || 'browse/',
+    ENDPOINT_REST: process.env.ENDPOINT_REST || 'rest/api/2/',
+    ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session'
+  },
   /*
    ** Headers of the page
    */
@@ -69,11 +75,6 @@ export default {
    ** Build configuration
    */
   build: {
-    plugins: [
-      new webpack.ProvidePlugin({
-        '_': 'lodash'
-      }),
-    ],
     /*
      ** You can extend webpack config here
      */

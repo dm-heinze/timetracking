@@ -4,22 +4,8 @@
       "src": "nuxt.config.js",
       "use": "@nuxtjs/vercel-builder",
       "config": {
-        "serverFiles": ["api/**"]
+        "serverFiles": ["api/**","utility/**"]
       }
     }
-  ],
-  "env": {
-    "BASE_DOMAIN": "https://<YOUR-JIRA-DOMAIN>/",
-    "ENDPOINT_BROWSE": "browse/",
-    "ENDPOINT_REST": "rest/api/2/",
-    "ENDPOINT_AUTH": "rest/auth/1/session"
-  },
-  "build": {
-    "env": {
-      "BASE_DOMAIN": "https://<YOUR-JIRA-DOMAIN>/",
-      "ENDPOINT_BROWSE": "browse/",
-      "ENDPOINT_REST": "rest/api/2/",
-      "ENDPOINT_AUTH": "rest/auth/1/session"
-    }
-  }
+  ]
 }
