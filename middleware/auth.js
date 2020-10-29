@@ -17,7 +17,7 @@ export default function ({app, store, route, error, redirect}) {
         }
 
         if(!hasSessionKey) {
-            resolve('current user is authorized');
+            resolve('current user not authorized');
 
             if (route.path === loginRoute) return;
 

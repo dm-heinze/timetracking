@@ -62,7 +62,6 @@
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
-                selectedIssues: state => state.moduleUser.selectedIssues,
                 selectedTasks: state => state.moduleUser.selectedTasks,
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
                 currentUser: state => state.moduleUser.currentUser.name,
@@ -77,14 +76,11 @@
         },
         methods: {
             ...mapMutations({
-                addSelectedIssue: 'moduleUser/addSelectedIssue',
                 addSelectedTask: 'moduleUser/addSelectedTask',
                 updateBookmarks: 'moduleUser/updateBookmarks'
             }),
             ...mapActions({
-                saveSelectedTicketsToStorage: 'moduleUser/saveSelectedTicketsToStorage',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
-                flashMessage: 'moduleFlashMessage/flashMessage',
                 saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage'
             }),
             addToSelectedIssues: function (selectedTicket,  fromSearchResults = true) { // todo

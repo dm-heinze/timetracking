@@ -134,7 +134,8 @@
                 markedAsActive: false,
                 editingName: false,
                 localEditedName: '',
-                initialTimeSpent: 0
+                initialTimeSpent: 0,
+                updatedComment: ''
             };
         },
         computed: {
@@ -304,11 +305,11 @@
 
                 this.saveSelectedTasksToStorage();
             },
-            saveCommentToStore: _.debounce(function (event) {
+            saveCommentToStore: function (event) {
+                this.updatedComment = event.target.value;
                 this.saveTaskComment({ uniqueId: this.uniqueId, comment: event.target.value });
-
                 this.saveSelectedTasksToStorage();
-            }, 1000),
+            },
             currentTimeInSeconds: function () {
                 this.timeRightNow = new Date();
 
@@ -319,6 +320,8 @@
                 if (this.timeSpent !== 0 || this.timeSpent !== '') __timeSpent = this.initialTimeSpent + calculatedDifference; // todo?
 
                 this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: __timeSpent });
+
+                this.saveTaskComment({ uniqueId: this.uniqueId, comment: this.updatedComment });
 
                 this.saveSelectedTasksToStorage();
             },
@@ -391,6 +394,9 @@
                     this.requestRelatedTickets();
                 }
             }
+        },
+        created () {
+            this.updatedComment = this.taskWorklogComment;
         }
     }
 </script>

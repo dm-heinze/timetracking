@@ -75,8 +75,7 @@
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
-                requestRelatedTickets: 'moduleUser/requestRelatedTickets',
-                flashMessage: 'moduleFlashMessage/flashMessage'
+                requestRelatedTickets: 'moduleUser/requestRelatedTickets'
             }),
             addSelectionToSelectedTasks: function () {
                 const __selectedTaskObject = this.relatedTickets.find((__relatedTicket) => __relatedTicket.key === this.selectedTicket);

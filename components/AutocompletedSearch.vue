@@ -58,7 +58,6 @@
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
-                flashMessage: 'moduleFlashMessage/flashMessage'
             }),
             resetSearch: function () { // todo
                 this.searchTerm = '';

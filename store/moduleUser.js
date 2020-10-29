@@ -10,8 +10,6 @@ export const state = () => ({
     sessionObject: {}, // currently has 2 fields: name & value,
     currentUser: {},
     searchResults: [],
-    selectedIssues: [],
-    customTasks: [],
     isTimerActive: false,
     allExistingProjects: [],
     selectedProject: '',
@@ -55,9 +53,6 @@ export const mutations = {
     setUserPass: (state, value) => {
         state.user.pass = value;
     },
-    setJiraApiObj: (state, value) => {
-        state.jiraApiObj = value;
-    },
     setSessionObject: (state, value) => {
         state.sessionObject = value;
     },
@@ -78,66 +73,8 @@ export const mutations = {
     setSearchResult: (state, value) => {
         state.searchResults = value;
     },
-    addSelectedIssue: (state, value) => {
-        state.selectedIssues.push(value);
-    },
-    removeSelectedTicket: (state, value) => {
-        state.selectedIssues = state.selectedIssues.filter((__selectedIssue) => __selectedIssue.key !== value);
-    },
-    removeAllSelectedTickets: (state) => {
-        state.selectedIssues = [];
-    },
-    addCustomTask: (state) => {
-        const newCustomTask = { assignedTo: '', key: `New custom task ${state.customTasks.length + 1}`, issueLink: '', summary: '', comment: '', timeSpent: '', booked: false };
-        state.customTasks.push(newCustomTask);
-    },
-    removeCustomTask: (state, value) => {
-        state.customTasks = state.customTasks.filter((__customTask) => __customTask.key !== value);
-    },
-    saveComment: (state, value) => {
-        state.selectedIssues = state.selectedIssues.map((__selectedIssue) => {
-            if (__selectedIssue.key === value.ticket) __selectedIssue.comment = value.comment;
-            return __selectedIssue;
-        })
-    },
     setIsTimerActive: (state, value) => {
         state.isTimerActive = !(state.isTimerActive);
-    },
-    saveTimeSpent: (state, value) => {
-        state.selectedIssues = state.selectedIssues.map((__selectedIssue) => {
-            if (__selectedIssue.key === value.ticket) __selectedIssue.timeSpent = value.timeSpent;
-            return __selectedIssue;
-        })
-    },
-    saveStartTime: (state, value) => {
-        state.selectedIssues = state.selectedIssues.map((__selectedIssue) => {
-            if (__selectedIssue.key === value.ticket) __selectedIssue.startTime = value.startTime;
-            return __selectedIssue;
-        })
-    },
-    saveEndTime: (state, value) => {
-        state.selectedIssues = state.selectedIssues.map((__selectedIssue) => {
-            if (__selectedIssue.key === value.ticket) __selectedIssue.endTime = value.endTime;
-            return __selectedIssue;
-        })
-    },
-    saveStartTimeCustomTask: (state, value) => {
-        state.customTasks = state.customTasks.map((__customTask) => {
-            if (__customTask.key === value.customTaskKey) __customTask.startTime = value.startTime;
-            return __customTask;
-        })
-    },
-    saveEndTimeCustomTask: (state, value) => {
-        state.customTasks = state.customTasks.map((__customTask) => {
-            if (__customTask.key === value.customTaskKey) __customTask.endTime = value.endTime;
-            return __customTask;
-        })
-    },
-    saveTimeSpentCustomTask: (state, value) => {
-        state.customTasks = state.customTasks.map((__customTask) => {
-            if (__customTask.key === value.customTaskKey) __customTask.timeSpent = value.timeSpent;
-            return __customTask;
-        })
     },
     setExistingProjects: (state, value) => {
         state.allExistingProjects = value;
@@ -154,7 +91,6 @@ export const mutations = {
     setActiveTicket: (state, value) => {
         state.activeTicket = value;
     },
-
     toggleBreak: (state) => {
         state.onABreak = !state.onABreak;
     },
@@ -169,8 +105,6 @@ export const mutations = {
     updateOrderSearchSuggestions: (state) => {
         state.prefilledSearchSuggestions = _.reverse(state.prefilledSearchSuggestions);
     },
-
-    // unified versions
     saveTaskStartTime: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
             if (__selectedTask.uniqueId === value.uniqueId) __selectedTask.startTime = value.startTime;
@@ -220,8 +154,6 @@ export const mutations = {
             return __selectedTask;
         })
     },
-    // end unified versions
-
     assignNameToCustomTask: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
             if (__selectedTask.key === value.currentTaskKey) {
@@ -230,15 +162,6 @@ export const mutations = {
             }
             return __selectedTask;
         })
-    }
-};
-
-export const getters = {
-    getUser: state => {
-        return state.user;
-    },
-    getJiraApiObj: state => {
-        return state.jiraApiObj;
     }
 };
 
@@ -253,13 +176,6 @@ export const actions = {
     saveSelectedTasksToStorage: function ({ state }) {
         return new Promise((resolve, reject) => {
             this.$localForage.setItem('SELECTEDTASKS', state.selectedTasks)
-                .then(() => resolve())
-                .catch(() => reject())
-        })
-    },
-    saveSelectedCustomTasksToStorage: function ({ state }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.setItem('CUSTOMTASKS', state.customTasks)
                 .then(() => resolve())
                 .catch(() => reject())
         })
@@ -324,6 +240,7 @@ export const actions = {
                         }))
                             .then(() => {
                                 state.selectedTasks.forEach((__bookedTask) => commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId }));
+
                                 dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                             })
                             .catch(() => reject()); // todo
@@ -335,42 +252,6 @@ export const actions = {
             } else {
                 reject("no selected tasks"); // todo
             }
-        })
-    },
-
-    saveSelectedTicketsToStorage: function ({ state }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.setItem('SELECTEDTICKETS', state.selectedIssues)
-                .then(() => resolve())
-                .catch(() => reject())
-        })
-    },
-    retrieveSelectedTicketsFromStorage: function({ commit }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.getItem('SELECTEDTICKETS').then((__result) => {
-                if (!_.isEmpty(__result)) {
-                    for (let __retrievedTicket of __result) {
-                        let currentTicket = {
-                            summary: __retrievedTicket.summary,
-                            key: __retrievedTicket.key,
-                            issueLink: __retrievedTicket.issueLink,
-                            comment: __retrievedTicket.comment,
-                            timeSpent: __retrievedTicket.timeSpent,
-                            startTime:  __retrievedTicket.startTime,
-                            endTime: __retrievedTicket.endTime,
-                            // assignee: __retrievedTicket.assignee // todo
-                            booked: __retrievedTicket.booked,
-                            uniqueId: __retrievedTicket.uniqueId
-                        }
-
-                        commit('addSelectedIssue', currentTicket);
-                    }
-
-                    resolve();
-                } else {
-                    resolve();
-                }
-            })
         })
     },
     saveCurrentUserToStorage: function ({ state }) {
@@ -454,7 +335,6 @@ export const actions = {
                         commit('setSearchResult', []);
                         commit('setUserName', {});
                         commit('setUserPass', {});
-                        commit('removeAllSelectedTickets');
 
                         dispatch('removeFromStorage', 'JSESSIONID')
                             .then(() => {
@@ -615,7 +495,6 @@ export const actions = {
                 .catch(() => console.log("err occurred"))
         })
     },
-
     retrieveSelectedTasksFromStorage: function({ commit }) {
         return new Promise((resolve, reject) => {
             this.$localForage.getItem('SELECTEDTASKS').then((__result) => {
@@ -627,18 +506,6 @@ export const actions = {
                     resolve();
                 }
             })
-        })
-    },
-    getPickedIssues: function ({commit, state, dispatch}, payload) {
-        return new Promise((resolve, reject) => {
-
-            axios.post('/api/getAutoCompletion', { sessionId: state.sessionObject.value, searchTerm: payload.searchTerm })
-                .then((__res) => {
-                    console.log("res: ", __res);
-
-                    resolve();
-                })
-                .catch(() => console.log("err occurred"))
         })
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
@@ -696,7 +563,6 @@ export const actions = {
                             dispatch('requestAllProjects').then(() => resolve()).catch(() => console.log("err happened")); // todo
                         })
                         .catch((err) => console.log("err occurred: ", err))
-
 
                     resolve()
                 })
