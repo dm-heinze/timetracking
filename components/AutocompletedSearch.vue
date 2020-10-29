@@ -52,7 +52,7 @@
         },
         methods: {
             ...mapMutations({
-                setSearchResult: 'moduleUser/setSearchResult',
+                setSearchResult: 'moduleUser/setSearchResult', // todo
                 addSelectedTask: 'moduleUser/addSelectedTask'
             }),
             ...mapActions({
@@ -60,7 +60,7 @@
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
                 flashMessage: 'moduleFlashMessage/flashMessage'
             }),
-            resetSearch: function () {
+            resetSearch: function () { // todo
                 this.searchTerm = '';
             },
             requestSearch: _.debounce(function () {

@@ -41,7 +41,9 @@
     }
 
     .tickets__icon {
-        @include button-hover-styles;
+        &:hover {
+            @include button-hover-styles;
+        }
     }
 
 }

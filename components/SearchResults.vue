@@ -8,7 +8,7 @@
             >
                 {{ assignedTicket.key }}: {{ assignedTicket.summary }}
                 <b-icon class="h4 mb-2 tickets__icon" icon="bookmark-check-fill" variant="success" @click="toggleBookmarked(assignedTicket.key)" v-if="bookmarked.find((marked) => marked.key === assignedTicket.key)"></b-icon>
-                <b-icon class="h4 mb-2 tickets__icon" icon="bookmark" variant="primary" @click="toggleBookmarked(assignedTicket.key)" v-else></b-icon>
+                <b-icon class="h4 mb-2 tickets__icon" icon="bookmark" variant="primary" @click="toggleBookmarked(assignedTicket.key, assignedTicket.summary)" v-else></b-icon>
                 <b-icon class="h4 mb-2 tickets__icon" icon="plus-square" variant="primary"  @click="addToSelectedIssues(assignedTicket)" v-b-toggle.sidebar-search></b-icon>
             </b-list-group-item>
         </b-list-group>
@@ -23,7 +23,8 @@
                     @click="addToSelectedIssues(searchResult)"
                     v-b-toggle.sidebar-search
                 >
-                    {{ searchResult.key }}: {{ searchResult.summary }} <b-icon icon="bookmark" variant="warning" @click="toggleBookmarked(searchResult.key)" v-if="bookmarked.find((marked) => marked.key === searchResult.key)"></b-icon>
+                    {{ searchResult.key }}: {{ searchResult.summary }}
+                    <b-icon icon="bookmark" variant="primary" @click="toggleBookmarked(searchResult.key, searchResult.summary)" v-if="bookmarked.find((marked) => marked.key === searchResult.key)"></b-icon>
                 </b-list-group-item>
             </b-list-group>
         </div>
@@ -39,7 +40,8 @@
                     :key="bookmarkedTicket.key"
                 >
                     {{ bookmarkedTicket.key }}
-                    <b-icon class="h4 mb-2 tickets__icon" icon="bookmark-check-fill" variant="primary" @click="toggleBookmarked(bookmarkedTicket.key)"></b-icon>
+                    <b-icon class="h4 mb-2 tickets__icon" icon="bookmark-check-fill" variant="success" @click="toggleBookmarked(bookmarkedTicket.key)"></b-icon>
+                    <b-icon class="h4 mb-2 tickets__icon" icon="plus-square" variant="primary"  @click="addToSelectedIssues(bookmarkedTicket, false)" v-b-toggle.sidebar-search></b-icon>
                 </b-list-group-item>
             </b-list-group>
         </div>
@@ -85,15 +87,33 @@
                 flashMessage: 'moduleFlashMessage/flashMessage',
                 saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage'
             }),
-            addToSelectedIssues: function (selectedSearchResult) {
-                let __selection = _.cloneDeep(selectedSearchResult);
-                __selection.uniqueId = _.now();
+            addToSelectedIssues: function (selectedTicket,  fromSearchResults = true) { // todo
+                let __selection;
+
+                if (fromSearchResults) {
+                    __selection = _.cloneDeep(selectedTicket);
+                    __selection.uniqueId = _.now();
+                } else {
+                    __selection = {
+                        assignedToTicket: true,
+                        uniqueId: _.now(),
+                        key: selectedTicket.key,
+                        issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + selectedTicket.key,
+                        summary: selectedTicket.summary,
+                        comment: '',
+                        timeSpent: 0,
+                        startTime: '',
+                        endTime: '',
+                        booked: false
+                    };
+                }
+
                 this.addSelectedTask(__selection);
 
                 this.saveSelectedTasksToStorage();
             },
-            toggleBookmarked: function (searchResultToBeToggled) {
-                this.updateBookmarks({ bookmark: searchResultToBeToggled });
+            toggleBookmarked: function (searchResultToBeToggled, summary = '') { // todo
+                this.updateBookmarks({ bookmark: searchResultToBeToggled, summary });
 
                 this.saveBookmarksToStorage();
             }

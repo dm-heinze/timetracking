@@ -31,7 +31,7 @@ export const mutations = {
         if (state.bookmarked.find((__bookmarked) => __bookmarked.key === value.bookmark)) {
             state.bookmarked = state.bookmarked.filter((__bookmarked) => __bookmarked.key !== value.bookmark)
         } else {
-            state.bookmarked.push({ key: value.bookmark });
+            state.bookmarked.push({ key: value.bookmark, summary: value.summary });
         }
     },
     setBookmarks: (state, value) => {
@@ -323,11 +323,8 @@ export const actions = {
                             if (!__selectedTask.booked) await axios.post('/api/addWorklog', { sessionId: state.sessionObject.value, comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key })
                         }))
                             .then(() => {
-                                state.selectedTasks.forEach((__bookedTask) => {
-                                    commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.key }); // todo
-
-                                    dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
-                                });
+                                state.selectedTasks.forEach((__bookedTask) => commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId }));
+                                dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                             })
                             .catch(() => reject()); // todo
                     } catch (e) {
