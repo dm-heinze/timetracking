@@ -8,7 +8,8 @@ export default {
         BASE_DOMAIN: process.env.BASE_DOMAIN || 'https://<YOUR-JIRA-DOMAIN>/',
         ENDPOINT_BROWSE: process.env.ENDPOINT_BROWSE || 'browse/',
         ENDPOINT_REST: process.env.ENDPOINT_REST || 'rest/api/2/',
-        ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session'
+        ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session',
+        BRAND_NAME: process.env.BRAND_NAME || '<YOUR-BRAND-NAME>'
     },
     /*
      ** Headers of the page
@@ -57,20 +58,32 @@ export default {
         '@nuxtjs/axios',
         // Doc: https://bootstrap-vue.js.org/docs/
         'bootstrap-vue/nuxt',
-        'localforage-nuxt'
+        'localforage-nuxt',
+        'nuxt-mq'
     ],
     buildModules: [
         ['@nuxtjs/dotenv', {
             only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH']
         }]
     ],
+    bootstrapVue: {
+        bootstrapCSS: false,
+        bootstrapVueCSS: false
+    },
     /*
      ** Axios module configuration
      */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
     },
-
+    'mq': {
+        defaultBreakpoint: 'md',
+        breakpoints: {
+            sm: 768,
+            md: 1024,
+            lg: Infinity
+        }
+    },
     /*
      ** Build configuration
      */

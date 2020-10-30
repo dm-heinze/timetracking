@@ -1,9 +1,9 @@
-@import '../../node_modules/bootstrap/scss/bootstrap';
-@import '../../node_modules/bootstrap-vue/src/index.scss';
+@import 'configurations/custom.scss';
+
 @import 'dmc/_all.scss';
 @import 'configurations/_variables.scss';
 @import 'configurations/_icons.scss';
-@import 'configurations/_colors.scss';
+@import 'configurations/colors--old.scss';
 @import 'configurations/_mixins.scss';
 @import 'components/pages/login.scss';
 @import 'components/the-layout';

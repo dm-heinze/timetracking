@@ -1,3 +1,35 @@
-.login-content__error-message {
-    color: $danger; /* variable from vue bootstrap */
+.login-content {
+    .login-content__titles {
+        padding-top: $indent__xl;
+
+        h3 {
+            color: $primary;
+            font-weight: bold;
+        }
+
+        h5 {
+            color: $dark-grey;
+        }
+    }
+
+    .login-content__problem {
+        a {
+            text-decoration: underline;
+
+            &:hover {
+                color: $secondary;
+                @include box-shadow;
+            }
+        }
+
+        .login-content__error-message {
+            color: $danger;
+        }
+    }
+
+    .login-content__sign-in-btn {
+        &:hover {
+            @include box-shadow;
+        }
+    }
 }
