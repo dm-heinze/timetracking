@@ -7,7 +7,7 @@
                         <h3>Sign in to Time Tracker</h3>
                         <h5>Welcome back</h5>
                     </div>
-                    <b-row align-h="center" v-if="$mq === 'sm'"><img src="~/assets/images/illustration.svg" height="150px"></b-row>
+                    <b-row align-h="center" v-if="$mq === 'sm'"><img src="~/assets/images/illustration.svg" alt="illustration" height="150px"></b-row>
                     <form id="login" class="col-12 mt-4">
                         <div class="row">
                             <b-form-input
@@ -39,7 +39,7 @@
                         <h3>Time Tracker</h3>
                         <h5>by {{ brandName }}</h5>
                     </div>
-                    <img src="~/assets/images/illustration.svg" height="276px" v-if="$mq === 'md' || $mq === 'lg'" class="mt-4">
+                    <img src="~/assets/images/illustration.svg" alt="illustration" height="276px" v-if="$mq === 'md' || $mq === 'lg'" class="mt-4">
                 </b-col>
             </b-row>
         </b-container>
