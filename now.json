@@ -4,7 +4,7 @@
       "src": "nuxt.config.js",
       "use": "@nuxtjs/vercel-builder",
       "config": {
-        "serverFiles": ["api/**","utility/**"]
+        "serverFiles": ["api/**","utility/**", "assets/images/**"]
       }
     }
   ]

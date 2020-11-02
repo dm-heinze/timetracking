@@ -20,5 +20,3 @@ $ npm run generate
 ```
 
 For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
-
-On this server reference -> __`/DMC/tools/jira-tools/timetracking-old`__.

@@ -1,4 +1,19 @@
 .login-content {
+
+    .login-content__container--left {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+
+    .login-content__container--right {
+        background: $muted-white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 50px;
+        margin-left: -15px !important;
+    }
+
     .login-content__titles {
         padding-top: $indent__xl;
 
@@ -9,6 +24,7 @@
 
         h5 {
             color: $dark-grey;
+            font-weight: normal;
         }
     }
 
@@ -28,6 +44,8 @@
     }
 
     .login-content__sign-in-btn {
+        font-weight: bold;
+
         &:hover {
             @include box-shadow;
         }
