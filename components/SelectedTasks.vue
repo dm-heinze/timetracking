@@ -1,8 +1,6 @@
 <template>
     <div class="selected-tickets__container">
-        <h4>Selected Tasks</h4>
         <div v-if="selectedTasks.length !== 0">
-            <div v-if="totalTime">worked so far: {{ totalTime }}</div>
             <ul>
                 <li>
                     <SelectedTask
@@ -37,23 +35,7 @@
         computed: {
             ...mapState({
                 selectedTasks: state => state.moduleUser.selectedTasks
-            }),
-            totalTime() {
-                let sumOfWorkedTime = 0;
-                if (this.selectedTasks.length !== 0) {
-                    const allSelectedTasksTimes = this.selectedTasks.map((__selectedTask) => {
-                        if (__selectedTask.timeSpent !== '0') return __selectedTask.timeSpent;
-                    })
-
-                    for (let timeSpentOnIndividualSelectedTask of allSelectedTasksTimes) {
-                        sumOfWorkedTime += timeSpentOnIndividualSelectedTask
-                    }
-                }
-
-                const dateFromTotalWorkTime = new Date(0, 0, 0, 0, 0,0, sumOfWorkedTime);  // todo
-
-                return dateFromTotalWorkTime.toTimeString().slice(0, 8);
-            }
+            })
         }
     }
 </script>

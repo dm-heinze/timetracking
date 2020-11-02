@@ -1,9 +1,5 @@
 <template>
     <div class="nav big-icons">
-        <div v-b-toggle.sidebar-search @click.prevent="requestPrefill" class="icon-search navigation__icon">Search</div>
-        <b-sidebar id="sidebar-search" title="Ticket Search" shadow backdrop :width="'500px'">
-            <the-search class="px-4" />
-        </b-sidebar>
         <div v-b-toggle.sidebar-settings class="icon-settings navigation__icon">Settings</div>
         <b-sidebar id="sidebar-settings" title="Settings" shadow backdrop :width="'500px'" @hidden="resetSearch">
             <div class="px-4">
@@ -48,32 +44,9 @@
             </div>
         </b-sidebar>
         <nuxt-link :to="'/'" class="icon-calendar">Calendar</nuxt-link>
-        <button
-            class="icon-add-task navigation__icon"
-            v-b-modal="'add-custom-task'"
-        >Custom task</button>
-        <b-modal :id="'add-custom-task'" centered title="Add Custom Task">
-            <div>Do you want to add a custom name? Otherwise a random name will be set. You can edit the name later regardless.</div>
-            <input type="text" v-model="customNameCustomTask" placeholder="Add Custom Name">
-            <template v-slot:modal-footer="{ ok }">
-                <button @click.prevent="startNewCustomTask()" class="icon-send">Add Custom Task</button>
-            </template>
-        </b-modal>
-
 
         <div class="icon-coffee navigation__icon" :class="{'breakActive': onABreak}" @click.prevent="toggleBreak">Break</div>
-        <button
-            class="icon-send navigation__icon"
-            v-b-modal="'confirm-push-time'"
-            :disabled="selectedTasks.length===0 || everythingBookedAlready || !noMissingComments"
-            :class="{ 'disabled': selectedTasks.length===0 || everythingBookedAlready || !noMissingComments }"
-        >Push Time</button>
-        <b-modal :id="'confirm-push-time'" centered title="Push Time?">
-            <div>Are you sure you want to book tracked time?</div>
-            <template v-slot:modal-footer="{ ok }">
-                <button @click.prevent="saveWorklogs()" class="icon-send">Push Time</button>
-            </template>
-        </b-modal>
+
         <div>{{ accumulatedBreakTime }}</div>
 
         <button class="icon-trash navigation__icon"
@@ -112,7 +85,6 @@
                 startTime: '',
                 endTime: '',
                 initialLoggedBreak: '',
-                customNameCustomTask: '',
                 searchTerm: '',
                 searchLoading: false
             };
@@ -127,13 +99,7 @@
                 activeTicket: state => state.moduleUser.activeTicket,
                 searchResults: state => state.moduleUser.searchResults,
                 bookmarked: state => state.moduleUser.bookmarked
-            }),
-            everythingBookedAlready () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.booked).length === 0;
-            },
-            noMissingComments () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.comment).length === 0;
-            }
+            })
         },
         watch: {
             onABreak: function(newValue) {
@@ -154,12 +120,10 @@
         },
         methods: {
             ...mapActions({
-                requestSavingWorklogs: 'moduleUser/requestSavingWorklogs',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
                 requestSessionRemoval: 'moduleUser/requestSessionRemoval',
                 saveBreaksToStorage: 'moduleUser/saveBreaksToStorage',
                 requestAllProjects: 'moduleUser/requestAllProjects',
-                requestPrefillAction: 'moduleUser/requestPrefill',
                 saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
                 getIssue: 'moduleUser/getIssue'
             }),
@@ -178,56 +142,6 @@
                 this.requestSessionRemoval()
                     .then(() => this.$router.push('/customer/login'))
                     .catch(() => console.log("err occurred"));
-            },
-            saveWorklogs: function () {
-                this.$bvModal.hide('confirm-push-time'); // any cancel event needed?
-                this.requestSavingWorklogs()
-                    .then(() => {
-                        this.$bvModal.msgBoxOk('Worklogs were successfully booked', {
-                            centered: true,
-                            okVariant: 'success'
-                        })
-                    })
-                    .catch((__res) => {
-                        if (__res === 'hasUnassignedCustomTasks') {
-                            this.$bvModal.msgBoxOk('There are unassigned custom tasks. Either assign them to tickets or remove before booking.', {
-                                centered: true,
-                                okVariant: 'danger'
-                            })
-                        } else if ('hasNonTrackedTasks') {
-                            this.$bvModal.msgBoxOk('There are tasks with no tracked time. Please remove or edit before booking.', {
-                                centered: true,
-                                okVariant: 'danger'
-                            })
-                        } else {
-                            this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
-                                centered: true,
-                                okVariant: 'danger'
-                            })
-                        }
-                    });
-            },
-            startNewCustomTask: function () {
-                const newCustomTask = {
-                    assignedToTicket: false,
-                    uniqueId: _.now(),
-                    key: this.customNameCustomTask ? this.customNameCustomTask : `New custom task ${_.now()}`, // todo
-                    issueLink: '',
-                    summary: '',
-                    comment: '',
-                    timeSpent: 0,
-                    startTime: '',
-                    endTime: '',
-                    booked: false // todo
-                };
-
-                this.addSelectedTask(newCustomTask);
-
-                this.$bvModal.hide('add-custom-task'); // any cancel event needed?
-
-                this.saveSelectedTasksToStorage();
-
-                if (this.allExistingProjects.length === 0) this.requestAllProjects();
             },
             toggleBreak: function () {
                 // todo
@@ -271,9 +185,6 @@
 
                 // save to localStorage
                 this.saveBreaksToStorage();
-            },
-            requestPrefill: function () {
-                this.requestPrefillAction()
             },
             revertAllTrackers: function () {
                 this.updateTotalBreakTime({ totalBreakTime: '00:00:00'});

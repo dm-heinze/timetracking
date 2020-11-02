@@ -1,0 +1,39 @@
+.overview {
+
+    h3, h5 {
+        color: $primary;
+        font-weight: bold;
+    }
+
+    .container--left, .container--right {
+        padding-left: 50px;
+        padding-right: 50px;
+        padding-top: 40px;
+    }
+
+    .container--right {
+        background: $muted-white;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-top: 50px;
+        padding-right: 60px;
+
+        &__main-actions {
+            width: 100%;
+            padding-bottom: 40px;
+
+            & button {
+                font-weight: bold;
+                padding: 12px 31px 12px 29px;
+                @include box-shadow;
+
+                & span {
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+}
+
+

@@ -3,10 +3,6 @@
 
     input {
         background: #ffffff;
-        border: none;
-        outline: none;
-        padding: 10px;
-        width: 100%;
         transition: all 0.2s ease-in-out;
 
         &::placeholder {
@@ -14,49 +10,53 @@
         }
 
         &:focus {
-            border: 1px solid $primary; /* variable from vue bootstrap */
+            border: 1px solid $primary;
         }
 
         &:disabled {
-            background-color: $disabled-color;
+            border-color: $muted-grey;
+            background-color: $muted-white;
 
             &::placeholder {
-                color: #ffffff;
+                color: $muted-grey;
             }
         }
     }
 
     button {
         position: absolute;
-        right: 7px;
+        top: 12px;
+        right: 21px;
+        background-color: transparent;
+        color: $muted-grey;
+        border: none;
+        outline: none;
+
+        &:hover {
+            background-color: white;
+            color: $muted-grey;
+        }
+
+        .button--close {
+            &:hover {
+                color: $primary;
+            }
+        }
+
+        svg {
+            height: 19px;
+            width: 19px;
+        }
 
         &:before{
             font-size: $icon-small__font-size !important;
             padding-top: 10px;
         }
 
-        &.icon-close {
-            color: $primary !important; /* variable from vue bootstrap */
-
-            &:hover {
-                cursor: pointer;
-                color: $danger !important;  /* variable from vue bootstrap */
-            }
-        }
-
-        &.icon-search {
-            color: $disabled-color;
-
-            &:hover {
-                color: $disabled-color !important;
-                cursor: default;
-            }
-        }
-
         span { /* referencing b-spinner == vue bootstrap component */
             position: absolute;
             right: 7px;
-            top: 14px;
+            top: 7px;
         }
     }
 }
@@ -75,7 +75,7 @@
 
             &:hover {
                 cursor: pointer;
-                background-color: $primary; /* variable from vue bootstrap */
+                background-color: $primary;
                 color: white;
             }
 

@@ -1,8 +1,18 @@
 <template>
     <div>
         <div class="autocompleted-search__container">
-            <input v-model="searchTerm" @input="requestSearch" placeholder="Search..." :disabled="$nuxt.isOffline" :class="{ 'disabled': $nuxt.isOffline }">
-            <button :class="{ 'icon-close': !searchLoading && searchTerm !== '', 'icon-search': !searchLoading || searchTerm === '' }" :disabled="searchTerm === '' && searchLoading" @click="resetSearch()">
+            <b-form-input
+                v-model="searchTerm"
+                @input="requestSearch"
+                type="text"
+                placeholder="Search..."
+                :disabled="$nuxt.isOffline"
+                class="form-control rounded-pill pt-4 pl-4 pb-4"
+                :class="{ 'disabled': $nuxt.isOffline }"
+            />
+            <button :disabled="searchTerm === '' && searchLoading" @click="resetSearch()">
+                <search-icon v-if="!searchLoading && searchTerm === ''" />
+                <x-icon v-if="!searchLoading && searchTerm !== ''" class="button--close" />
                 <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
             </button>
         </div>
@@ -22,9 +32,11 @@
 <script>
     import { mapMutations, mapState, mapActions } from 'vuex';
     import _ from "lodash";
+    import { SearchIcon, XIcon } from 'vue-feather-icons';
 
     export default {
         name: "AutocompletedSearch",
+        components: { SearchIcon, XIcon },
         data() {
             return {
                 searchTerm: '',

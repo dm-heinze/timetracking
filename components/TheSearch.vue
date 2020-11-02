@@ -20,11 +20,11 @@
                 >{{ relatedTicket.key }}: {{ relatedTicket.summary }} </option>
             </select>
             <div v-if="selectedTicket !== ''">
-                <button v-b-toggle.sidebar-search @click="addSelectionToSelectedTasks">Select & Close Sidebar</button>
+                <button v-b-toggle.sidebar-search @click="addSelectionToSelectedTasks">Select</button>
             </div>
         </div>
 
-        <div class="result-wrp col-md-12">
+        <div class="result-wrp">
             <div class="result-item">
                 <search-results/>
             </div>
