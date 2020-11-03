@@ -1,7 +1,6 @@
 @mixin button-hover-styles {
     cursor: pointer;
     box-shadow: 0 4px 10px 0 rgba(41, 40, 47, .1);
-    transform: scale(1.01);
 }
 
 @mixin box-shadow {

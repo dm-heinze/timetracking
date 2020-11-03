@@ -30,11 +30,26 @@
                             <b-button pill variant="primary" type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-3" v-b-modal="'add-custom-task'">
                                 <plus-circle-icon />
                                 <span class="pl-1">Add Custom task</span>
-                                <b-modal :id="'add-custom-task'" centered title="Add Custom Task">
-                                    <div>Do you want to add a custom name? Otherwise a random name will be set. You can edit the name later regardless.</div>
-                                    <input type="text" v-model="customNameCustomTask" placeholder="Add Custom Name">
-                                    <template v-slot:modal-footer="{ ok }">
-                                        <button @click.prevent="startNewCustomTask()" class="icon-send">Add Custom Task</button>
+                                <b-modal :id="'add-custom-task'" centered>
+                                    <template v-slot:modal-header="{ close }">
+                                        <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
+                                            <h3 class="primary">Add Custom Task</h3>
+                                            <span>
+                                                <x-icon @click="resetAndCloseModal()" />
+                                            </span>
+                                        </div>
+                                    </template>
+                                    <template v-slot:default>
+                                        <div class="modal__main-container">
+                                            <div class="modal__main-container__main-text">Do you want to add a custom name? Otherwise a random name will be set. You can edit the name later regardless.</div>
+                                            <b-form-input class="form-control rounded-pill pt-4 pl-4 pb-4" type="text" v-model="customNameCustomTask" placeholder="Add Custom Name"></b-form-input>
+                                        </div>
+                                    </template>
+                                    <template v-slot:modal-footer="{ ok, cancel }">
+                                        <div class="d-flex justify-content-between w-100 modal__actions">
+                                            <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="resetAndCloseModal()">Cancel</b-button>
+                                            <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="startNewCustomTask()">Save</b-button>
+                                        </div>
                                     </template>
                                 </b-modal>
                             </b-button>
@@ -74,14 +89,14 @@
 
 <script>
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon } from 'vue-feather-icons';
+    import { PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon } from 'vue-feather-icons';
     import SelectedTasks from "../components/SelectedTasks";
     import TheSearch from "../components/TheSearch";
     import _ from "lodash";
 
     export default {
         name: 'Index',
-        components: { TheSearch, SelectedTasks, PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, Settings: () => import('../components/Settings') },
+        components: { TheSearch, SelectedTasks, PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon, Settings: () => import('../components/Settings') },
         data () {
             return {
                 customNameCustomTask: '',
@@ -180,7 +195,9 @@
 
                 this.addSelectedTask(newCustomTask);
 
-                this.$bvModal.hide('add-custom-task'); // any cancel event needed?
+                this.customNameCustomTask = '';
+
+                this.resetAndCloseModal();
 
                 this.saveSelectedTasksToStorage();
 
@@ -257,6 +274,11 @@
                 // save to localStorage
                 this.saveBreaksToStorage();
             },
+            // modal
+            resetAndCloseModal: function () {
+                this.$bvModal.hide('add-custom-task');
+                this.customNameCustomTask = '';
+            }
         },
         middleware ({ store }) {
             return new Promise((resolve) => {

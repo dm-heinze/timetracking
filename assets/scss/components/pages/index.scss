@@ -57,4 +57,61 @@
     }
 }
 
+#add-custom-task {
+    background-color: rgba(7,1,21,0.7);
+
+    h3 {
+        font-size: 16px;
+        font-weight: bold;
+        color: $primary;
+        margin-bottom: inherit !important;
+    }
+
+    span {
+        color: $primary;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    input {
+
+        &::placeholder {
+            color: $muted-grey;
+        }
+    }
+
+    .modal__top-bar {
+        padding: 20px 30px;
+    }
+
+    .modal__main-container {
+        padding: 20px 30px;
+
+        &__main-text {
+            font-size: 14px;
+            color: $primary;
+            padding-bottom: 20px;
+        }
+    }
+
+    .modal__actions {
+        padding: 8px 30px 20px;
+
+        .modal__cancel-btn, .modal__save-btn {
+            padding: 12px 30px;
+        }
+
+        .modal__cancel-btn {
+            @include inverted-primary-button;
+            @include box-shadow;
+
+            &:hover {
+                @include button-hover-styles;
+            }
+        }
+    }
+}
+
 
