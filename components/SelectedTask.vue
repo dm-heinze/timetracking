@@ -55,13 +55,27 @@
 
 
                 <button v-b-modal="`confirm-deletion-modal-${uniqueId}`" class="icon-trash"></button>
-                <b-modal :id="`confirm-deletion-modal-${uniqueId}`" centered title="Delete Task?">
-                    <div>Delete tracker for {{ taskKey }}: {{ taskSummary }}?</div>
-                    <template v-slot:modal-footer="{ ok }">
-                        <button @click.prevent="removeTicketFromSelectedTickets(uniqueId)" class="icon-trash">Delete</button>
+                <b-modal :id="`confirm-deletion-modal-${uniqueId}`" centered>
+                    <template v-slot:modal-header="{ close }">
+                        <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
+                            <h3 class="primary">Delete Task?</h3>
+                            <span>
+                                <x-icon @click="close()" />
+                            </span>
+                        </div>
+                    </template>
+                    <template v-slot:default>
+                        <div class="modal__main-container">
+                            <div class="modal__main-container__main-text">Delete tracker for {{ optionalTaskKey }} {{ taskSummary }}?</div>
+                        </div>
+                    </template>
+                    <template v-slot:modal-footer="{ ok, cancel }">
+                        <div class="d-flex justify-content-between w-100 modal__actions">
+                            <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
+                            <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="removeTicketFromSelectedTickets(uniqueId)">Delete</b-button>
+                        </div>
                     </template>
                 </b-modal>
-
             </div>
         </div>
         <button v-b-toggle="`selected-task-${uniqueId}`" class="time-collapse"></button>
@@ -81,10 +95,12 @@
 
 <script>
     import { mapState, mapMutations, mapActions } from 'vuex';
+    import { XIcon } from 'vue-feather-icons';
     import _ from "lodash";
 
     export default {
         name: "SelectedTask",
+        components: { XIcon },
         props: {
             taskKey: {
                 required: true
@@ -166,6 +182,10 @@
                 const dateFromTimeSpentValueTimeTimeString =  dateFromTimeSpentValue.toTimeString();
 
                 return dateFromTimeSpentValueTimeTimeString.slice(0, 8);
+            },
+            optionalTaskKey () {
+                if (this.assignedToTicket) return `${this.taskKey}: `;
+                else return this.taskKey;
             }
         },
         methods: {

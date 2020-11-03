@@ -71,10 +71,25 @@
                             >
                                 <send-icon />
                                 <span class="pl-1">Push all your tasks</span>
-                                <b-modal :id="'confirm-push-time'" centered title="Push Time?">
-                                    <div>Are you sure you want to book tracked time?</div>
-                                    <template v-slot:modal-footer="{ ok }">
-                                        <button @click.prevent="saveWorklogs()" class="icon-send">Push Time</button>
+                                <b-modal :id="'confirm-push-time'" centered>
+                                    <template v-slot:modal-header="{ close }">
+                                        <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
+                                            <h3 class="primary">Push Time?</h3>
+                                            <span>
+                                                <x-icon @click="close()" />
+                                            </span>
+                                        </div>
+                                    </template>
+                                    <template v-slot:default>
+                                        <div class="modal__main-container">
+                                            <div class="modal__main-container__main-text">Are you sure you want to book tracked time?</div>
+                                        </div>
+                                    </template>
+                                    <template v-slot:modal-footer="{ ok, cancel }">
+                                        <div class="d-flex justify-content-between w-100 modal__actions">
+                                            <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
+                                            <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="saveWorklogs()">Push Time</b-button>
+                                        </div>
                                     </template>
                                 </b-modal>
                             </b-button>
