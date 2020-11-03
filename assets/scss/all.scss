@@ -1,10 +1,10 @@
+@import 'configurations/__mixins.scss';
 @import 'configurations/custom.scss';
 
 @import 'dmc/_all.scss';
 @import 'configurations/_variables.scss';
 @import 'configurations/_icons.scss';
 @import 'configurations/colors--old.scss';
-@import 'configurations/_mixins.scss';
 @import 'components/pages/login.scss';
 @import 'components/pages/index.scss';
 @import 'components/the-layout';

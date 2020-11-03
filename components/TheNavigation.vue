@@ -45,10 +45,6 @@
         </b-sidebar>
         <nuxt-link :to="'/'" class="icon-calendar">Calendar</nuxt-link>
 
-        <div class="icon-coffee navigation__icon" :class="{'breakActive': onABreak}" @click.prevent="toggleBreak">Break</div>
-
-        <div>{{ accumulatedBreakTime }}</div>
-
         <button class="icon-trash navigation__icon"
                 v-b-modal="'confirm-revert-trackers'"
                 :disabled="selectedTasks.length===0 && accumulatedBreakTime == '00:00:00'"
@@ -80,60 +76,28 @@
         },
         data() {
             return {
-                timeRightNow: 0,
-                runningTimer: '',
-                startTime: '',
-                endTime: '',
-                initialLoggedBreak: '',
                 searchTerm: '',
                 searchLoading: false
             };
         },
         computed: {
             ...mapState({
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
                 selectedTasks: state => state.moduleUser.selectedTasks,
-                onABreak: state => state.moduleUser.onABreak,
-                isTimerActive: state => state.moduleUser.isTimerActive,
                 allExistingProjects: state => state.moduleUser.allExistingProjects,
-                activeTicket: state => state.moduleUser.activeTicket,
                 searchResults: state => state.moduleUser.searchResults,
                 bookmarked: state => state.moduleUser.bookmarked
             })
-        },
-        watch: {
-            onABreak: function(newValue) {
-                if (newValue) {
-                    this.initialLoggedBreak = this.accumulatedBreakTime;
-
-                    this.runningTimer = setInterval(() => this.currentTimeInSeconds(), 1000);
-                } else {
-                    // stop interval when onABreak is set to false
-                    this.endTime = new Date();
-
-                    clearInterval(this.runningTimer);
-
-                    // save to localStorage
-                    this.saveBreaksToStorage();
-                }
-            }
         },
         methods: {
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
                 requestSessionRemoval: 'moduleUser/requestSessionRemoval',
-                saveBreaksToStorage: 'moduleUser/saveBreaksToStorage',
                 requestAllProjects: 'moduleUser/requestAllProjects',
                 saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
                 getIssue: 'moduleUser/getIssue'
             }),
             ...mapMutations({
                 addSelectedTask: 'moduleUser/addSelectedTask',
-                addBreak: 'moduleUser/addBreak',
-                toggleBreakMutation: 'moduleUser/toggleBreak',
-                updateTotalBreakTime: 'moduleUser/updateTotalBreakTime',
-                setIsTimerActive: 'moduleUser/setIsTimerActive',
-                setLastTicket: 'moduleUser/setLastTicket',
                 removeAllSelectedTasks: 'moduleUser/removeAllSelectedTasks',
                 updateBookmarks: 'moduleUser/updateBookmarks',
                 setSearchResult: 'moduleUser/setSearchResult'
@@ -142,49 +106,6 @@
                 this.requestSessionRemoval()
                     .then(() => this.$router.push('/customer/login'))
                     .catch(() => console.log("err occurred"));
-            },
-            toggleBreak: function () {
-                // todo
-                // start a break immediately
-                // -> step 1) set onABreak to true
-
-                this.toggleBreakMutation();
-
-                if (this.isTimerActive) {
-                    this.setLastTicket(this.activeTicket);
-
-                    // this stops any active timer bc of watcher on isTimerActive in SelectedTask
-                    this.setIsTimerActive();
-                }
-
-                // this.toggleBreakMutation();
-                this.startTime = new Date();
-            },
-            currentTimeInSeconds: function () {
-                const __dateRightNow = new Date();
-
-                this.timeRightNow = __dateRightNow;
-
-                const calculatedDifference = this.timeRightNow.getTime() - this.startTime.getTime();
-
-                let breakTimeAsDate = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, calculatedDifference);
-
-
-                if (this.accumulatedBreakTime != '00:00:00') {
-                    const initialBreakInArrayFormat = this.initialLoggedBreak.split(":");
-
-                    const currentBreakTimeInArrayFormat = breakTimeAsDate.toTimeString().slice(0, 8).split(":");
-
-                    const summedUpInitialAndNewBreak = _.zipWith(initialBreakInArrayFormat, currentBreakTimeInArrayFormat, (a, b) => Number(a) + Number(b));
-
-                    breakTimeAsDate = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), summedUpInitialAndNewBreak[0], summedUpInitialAndNewBreak[1], summedUpInitialAndNewBreak[2], 0);
-                }
-
-                // update vuex store with totalBreakTime
-                this.updateTotalBreakTime({ totalBreakTime:  breakTimeAsDate.toTimeString().slice(0, 8) });
-
-                // save to localStorage
-                this.saveBreaksToStorage();
             },
             revertAllTrackers: function () {
                 this.updateTotalBreakTime({ totalBreakTime: '00:00:00'});

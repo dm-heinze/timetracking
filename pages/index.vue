@@ -1,12 +1,26 @@
 <template>
     <div class="overview">
         <div class="w-100">
-            <b-row>
-                <b-col cols="12" lg="4" class="container--left">
+            <b-collapse is-nav id="breakTracker">
+                <b-navbar-nav class="d-flex flex-row justify-content-center align-items-center stickyBreakTracker">
+                    <coffee-icon class="mr-2" />
+                    You are currently on a break for
+                    <span class="font-weight-bold mr-3 ml-1" :style="{ width: '80px' }">{{ accumulatedBreakTime }}</span>
+                    <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-1">
+                        <pause-circle-icon />
+                        <span class="pl-1">Stop break</span>
+                    </b-button>
+                </b-navbar-nav>
+            </b-collapse>
+            <b-row align-v="stretch">
+                <b-col cols="12" lg="4" class="container--left vh-100">
                     <div class="login-content__titles" :style="marginBottomTitle">
                         <h3>Ticket search</h3>
                         <the-search />
-                        <h5 v-b-toggle.sidebar-settings>Settings</h5>
+                        <div class="d-flex flex-row" v-b-toggle.sidebar-settings :style="{ 'outline': 'none' }">
+                            <settings-icon/>
+                            <h5 class="pl-1">Settings</h5>
+                        </div>
                         <settings />
                     </div>
                 </b-col>
@@ -24,7 +38,7 @@
                                     </template>
                                 </b-modal>
                             </b-button>
-                            <b-button pill @click.prevent="" type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-1">
+                            <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-1">
                                 <coffee-icon />
                                 <span class="pl-1">Take a break</span>
                             </b-button>
@@ -60,23 +74,34 @@
 
 <script>
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { PlusCircleIcon, CoffeeIcon, SendIcon } from 'vue-feather-icons';
+    import { PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon } from 'vue-feather-icons';
     import SelectedTasks from "../components/SelectedTasks";
     import TheSearch from "../components/TheSearch";
     import _ from "lodash";
 
     export default {
         name: 'Index',
-        components: { TheSearch, SelectedTasks, PlusCircleIcon, CoffeeIcon, SendIcon, Settings: () => import('../components/Settings') },
+        components: { TheSearch, SelectedTasks, PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, Settings: () => import('../components/Settings') },
         data () {
             return {
                 customNameCustomTask: '',
+                // break
+                timeRightNow: 0,
+                runningTimer: '',
+                startTime: '',
+                endTime: '',
+                initialLoggedBreak: ''
             }
         },
         computed: {
             ...mapState({
                 selectedTasks: state => state.moduleUser.selectedTasks,
-                allExistingProjects: state => state.moduleUser.allExistingProjects
+                allExistingProjects: state => state.moduleUser.allExistingProjects,
+                // break
+                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
+                onABreak: state => state.moduleUser.onABreak,
+                isTimerActive: state => state.moduleUser.isTimerActive,
+                activeTicket: state => state.moduleUser.activeTicket,
             }),
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
@@ -106,14 +131,38 @@
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.comment).length === 0;
             }
         },
+        watch: {
+            onABreak: function(newValue) {
+                if (newValue) {
+                    this.initialLoggedBreak = this.accumulatedBreakTime;
+
+                    this.runningTimer = setInterval(() => this.currentTimeInSeconds(), 1000);
+                } else {
+                    // stop interval when onABreak is set to false
+                    this.endTime = new Date();
+
+                    clearInterval(this.runningTimer);
+
+                    // save to localStorage
+                    this.saveBreaksToStorage();
+                }
+            }
+        },
         methods: {
             ...mapActions({
                 requestAllProjects: 'moduleUser/requestAllProjects',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
-                requestSavingWorklogs: 'moduleUser/requestSavingWorklogs'
+                requestSavingWorklogs: 'moduleUser/requestSavingWorklogs',
+                saveBreaksToStorage: 'moduleUser/saveBreaksToStorage',
             }),
             ...mapMutations({
-                    addSelectedTask: 'moduleUser/addSelectedTask'
+                addSelectedTask: 'moduleUser/addSelectedTask',
+                // break
+                toggleBreakMutation: 'moduleUser/toggleBreak',
+                updateTotalBreakTime: 'moduleUser/updateTotalBreakTime',
+                setIsTimerActive: 'moduleUser/setIsTimerActive',
+                setLastTicket: 'moduleUser/setLastTicket',
+                addBreak: 'moduleUser/addBreak',
             }),
             startNewCustomTask: function () {
                 const newCustomTask = {
@@ -164,7 +213,50 @@
                             })
                         }
                     });
-            }
+            },
+            // break
+            toggleBreak: function () {
+                // todo
+                // start a break immediately
+                // -> step 1) set onABreak to true
+
+                this.toggleBreakMutation();
+
+                if (this.isTimerActive) {
+                    this.setLastTicket(this.activeTicket);
+
+                    // this stops any active timer bc of watcher on isTimerActive in SelectedTask
+                    this.setIsTimerActive();
+                }
+
+                this.startTime = new Date();
+            },
+            currentTimeInSeconds: function () {
+                const __dateRightNow = new Date();
+
+                this.timeRightNow = __dateRightNow;
+
+                const calculatedDifference = this.timeRightNow.getTime() - this.startTime.getTime();
+
+                let breakTimeAsDate = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, calculatedDifference);
+
+
+                if (this.accumulatedBreakTime != '00:00:00') {
+                    const initialBreakInArrayFormat = this.initialLoggedBreak.split(":");
+
+                    const currentBreakTimeInArrayFormat = breakTimeAsDate.toTimeString().slice(0, 8).split(":");
+
+                    const summedUpInitialAndNewBreak = _.zipWith(initialBreakInArrayFormat, currentBreakTimeInArrayFormat, (a, b) => Number(a) + Number(b));
+
+                    breakTimeAsDate = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), summedUpInitialAndNewBreak[0], summedUpInitialAndNewBreak[1], summedUpInitialAndNewBreak[2], 0);
+                }
+
+                // update vuex store with totalBreakTime
+                this.updateTotalBreakTime({ totalBreakTime:  breakTimeAsDate.toTimeString().slice(0, 8) });
+
+                // save to localStorage
+                this.saveBreaksToStorage();
+            },
         },
         middleware ({ store }) {
             return new Promise((resolve) => {

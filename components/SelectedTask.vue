@@ -353,7 +353,10 @@
 
             updateIsTimerActiveState: function (keyOfTicket) {
                 // stop break timer if active
-                if (this.onABreak) this.toggleBreakMutation();
+                if (this.onABreak) {
+                    this.toggleBreakMutation();
+                    this.$root.$emit('bv::toggle::collapse', 'breakTracker');
+                }
 
                 if (!this.isTimerActive) {
                     this.setActiveTicket(keyOfTicket);

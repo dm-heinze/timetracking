@@ -7,3 +7,9 @@
 @mixin box-shadow {
     box-shadow: 0 4px 9px 0 rgba(23,43,77,0.03);
 }
+
+@mixin inverted-primary-button {
+    background-color: white;
+    color: $primary;
+    border: 1px solid white;
+}

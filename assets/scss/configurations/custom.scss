@@ -2,6 +2,7 @@ $enable-rounded: true;
 
 @import './__colors.scss';
 @import './__layout.scss';
+@import './__buttons.scss';
 
 @import '../../../node_modules/bootstrap/scss/bootstrap';
 @import '../../../node_modules/bootstrap-vue/src/index.scss';

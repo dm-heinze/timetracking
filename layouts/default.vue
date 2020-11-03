@@ -1,13 +1,14 @@
 <template>
-    <div class="row" :style="{ overflow: 'hidden' }">
-        <div class="col-12">
-            <nuxt />
+    <b-container fluid>
+        <div class="row">
+            <div class="col-12">
+                <nuxt />
+            </div>
         </div>
-    </div>
+    </b-container>
 </template>
 
 <script>
-    import { mapState } from 'vuex';
     import _ from "lodash";
 
     export default {
@@ -15,14 +16,6 @@
             _() {
                 return _;
             },
-            ...mapState({
-                currentUser: state => state.moduleUser.currentUser,
-            })
-        },
-        data() {
-            return {
-                name: 'default.vue'
-            }
         }
     }
 </script>

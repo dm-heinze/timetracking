@@ -1,0 +1,19 @@
+button {
+    &.btn-secondary {
+        @include inverted-primary-button;
+
+        &:active {
+            @include inverted-primary-button;
+
+            &:hover {
+                @include inverted-primary-button;
+            }
+        }
+
+        &:hover {
+            color: white;
+            background-color: $primary;
+            border: 1px solid $primary;
+        }
+    }
+}
