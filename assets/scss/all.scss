@@ -1,8 +1,10 @@
+@import 'configurations/__variables.scss';
 @import 'configurations/__mixins.scss';
 @import 'configurations/custom.scss';
 
 @import 'dmc/_all.scss';
-@import 'configurations/_variables.scss';
+@import 'configurations/variables-old';
+@import 'configurations/__select';
 @import 'configurations/_icons.scss';
 @import 'configurations/colors--old.scss';
 @import 'components/pages/login.scss';

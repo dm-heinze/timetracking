@@ -9,52 +9,83 @@
             <div v-else-if="editingName">
                 <input type="text" :value="taskKey" @input="saveEditedCustomTaskName">
             </div>
-            <div v-if="!booked">
-                <button v-if="!assignedToTicket" :class="{ 'icon-pencil': !editingName, 'icon-check': editingName }" @click.prevent="toggleNameEditing()">Edit Name</button>
-                <button v-if="!assignedToTicket && editingName" class="icon-close" @click.prevent="toggleNameEditing(true)">Cancel</button>
-                <button :class="{ 'icon-pencil': !showSelection, 'icon-check': showSelection, 'disabled': showSelection && (selectedTicket === '')}" class="navigation__icon" @click.prevent="toggleTicketAssignment()" :disabled="showSelection && (selectedTicket === '')">Assign Ticket</button>
-                <div v-if="showSelection">
-                    <button class="icon-close" @click.prevent="toggleTicketAssignment(true)">Cancel</button>
-                    <select v-model="selectedProject">
-                        <option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</option>
-                        <option v-else disabled value="">Select a project</option>
-                        <option
-                            v-for="existingProject in allExistingProjects"
-                            :value="existingProject.id"
-                        >{{ existingProject.name }}</option>
-                    </select>
+            <div v-if="!booked" class="selected-ticket__heading__assignments">
+                <b-button v-if="!assignedToTicket" pill :variant="editingName ? 'success' : 'primary'" type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-3" @click.prevent="toggleNameEditing()">
+                    <edit2-icon v-if="!editingName" />
+                    <save-icon v-else />
+                    <span class="pl-1">{{ editingName ? 'Save' : 'Edit' }} Name</span>
+                </b-button>
 
-                    <select v-model="selectedTicket" v-if="selectedProject !== ''">
-                        <option v-if="!relatedTickets.length" disabled value="">Loading Related Tickets...</option>
-                        <option v-else disabled value="">Select a ticket</option>
-                        <option
-                            v-for="relatedTicket in relatedTickets"
-                            :value="relatedTicket.key"
-                        >{{ relatedTicket.key }}: {{ relatedTicket.summary }}</option>
-                    </select>
-                </div>
+                <button v-if="!assignedToTicket && editingName" class="icon-close" @click.prevent="toggleNameEditing(true)">Cancel</button>
+
+                <b-button pill variant="primary" type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-3" @click.prevent="toggleTicketAssignment()">
+                    <plus-circle-icon />
+                    <span class="pl-1">Assign Ticket</span>
+                </b-button>
+                <b-modal :id="`ticket-assignment-${uniqueId}`" centered>
+                    <template v-slot:modal-header="{ close }">
+                        <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
+                            <h3 class="primary">Assign Ticket</h3>
+                            <span>
+                                <x-icon @click="toggleTicketAssignment(true)" />
+                            </span>
+                        </div>
+                    </template>
+                    <template v-slot:default>
+                        <div class="modal__main-container">
+                            <select v-model="selectedProject" class="custom-select selected-ticket__heading__assignments__project-selection mb-3">
+                                <option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</option>
+                                <option v-else disabled value="">Select a project</option>
+                                <option
+                                    v-for="existingProject in allExistingProjects"
+                                    :value="existingProject.id"
+                                >{{ existingProject.name }}</option>
+                            </select>
+                            <button :disabled="!allExistingProjects.length" class="selected-ticket__heading__assignments__projects-btn">
+                                <chevron-down-icon />
+                            </button>
+
+                            <select v-model="selectedTicket" :disabled="selectedProject === ''" class="custom-select">
+                                <option v-if="!relatedTickets.length && selectedProject !== ''" disabled value="">Loading Related Tickets...</option>
+                                <option v-else disabled value="">Select a ticket</option>
+                                <option
+                                    v-for="relatedTicket in relatedTickets"
+                                    :value="relatedTicket.key"
+                                >{{ relatedTicket.key }}: {{ relatedTicket.summary }}</option>
+                            </select>
+                        </div>
+                    </template>
+                    <template v-slot:modal-footer="{ ok, cancel }">
+                        <div class="d-flex justify-content-between w-100 modal__actions">
+                            <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="toggleTicketAssignment(true)">Cancel</b-button>
+                            <b-button pill variant="primary" class="font-weight-bold modal__save-btn" :disabled="selectedTicket === ''" @click.prevent="toggleTicketAssignment()">Save</b-button>
+                        </div>
+                    </template>
+                </b-modal>
             </div>
 
-            <div class="selected-ticket__controls" v-if="!booked">
+            <div class="selected-ticket__heading__controls" v-if="!booked">
                 <button @click.prevent="updateIsTimerActiveState(uniqueId)"
-                        class="icon-play"
                         :disabled="(isTimerActive && (activeTicket === uniqueId))"
                         :class="{'disabled': (isTimerActive && (activeTicket === uniqueId)) }">
+                    <play-circle-icon />
                 </button>
+
                 <button @click.prevent="updateIsTimerActiveState(uniqueId)"
-                        class="icon-pause"
                         :disabled="(!isTimerActive && (activeTicket !== uniqueId)) || (isTimerActive && (activeTicket !== uniqueId)) || !isTimerActive"
                         :class="{'disabled': (!isTimerActive && (activeTicket !== uniqueId)) || (isTimerActive && (activeTicket !== uniqueId)) || !isTimerActive}">
+                    <pause-circle-icon />
                 </button>
 
                 <button @click.prevent="bookSingleTaskOnly()"
-                        class="icon-flash"
                         :disabled="isTimerActive || !taskWorklogComment || !timeSpent || booked || !assignedToTicket"
                         :class="{'disabled':  isTimerActive || !taskWorklogComment || !timeSpent || booked || !assignedToTicket }">
+                    <upload-cloud-icon />
                 </button>
 
-
-                <button v-b-modal="`confirm-deletion-modal-${uniqueId}`" class="icon-trash"></button>
+                <button v-b-modal="`confirm-deletion-modal-${uniqueId}`">
+                    <trash2-icon />
+                </button>
                 <b-modal :id="`confirm-deletion-modal-${uniqueId}`" centered>
                     <template v-slot:modal-header="{ close }">
                         <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
@@ -76,31 +107,42 @@
                         </div>
                     </template>
                 </b-modal>
+
+                <div class="selected-ticket__tracked-time d-flex align-items-center justify-content-between">
+                    <div class="font-weight-bold">Total:</div>
+                    <div v-if="!editingTrackedTime" class="selected-ticket__tracked-time__displayed">{{ parsedTimeSpent }}</div>
+                    <div v-else class="selected-ticket__tracked-time__editing pl-2">
+                       <input type="time" step="1" :value="parsedTimeSpent" @input="saveEditedWorklogTimeSpent">
+                    </div>
+                    <button v-if="!booked"
+                            class="navigation__icon"
+                            @click.prevent="activateEditModeForTrackedTime">
+                        <edit2-icon v-if="!editingTrackedTime" />
+                        <check-icon v-else />
+                    </button>
+                </div>
             </div>
         </div>
-        <button v-b-toggle="`selected-task-${uniqueId}`" class="time-collapse"></button>
         <b-collapse :id="`selected-task-${uniqueId}`" visible class="selected-ticket__content">
             <textarea rows="4" :value="taskWorklogComment" @input="saveCommentToStore" :disabled="booked"></textarea>
-
-            <div class="selected-ticket__tracked-time">
-                <div v-if="!editingTrackedTime" class="selected-ticket__tracked-time__displayed"><div>{{ parsedStartTime }}</div> - <div>{{ parsedEndTime }}</div> = <div>{{ parsedTimeSpent }}</div></div>
-                <div v-else class="selected-ticket__tracked-time__editing">
-                    <input type="time" step="1" :value="parsedStartTime" @input="saveEditedStartTime"> - <input type="time" step="1" :value="parsedEndTime" @input="saveEditedEndTime"> timeSpent <input type="time" step="1" :value="parsedTimeSpent" @input="saveEditedWorklogTimeSpent">
-                </div>
-                <button v-if="!booked" :class="{ 'icon-pencil': !editingTrackedTime, 'icon-check': editingTrackedTime }" class="navigation__icon" @click.prevent="activateEditModeForTrackedTime"></button>
-            </div>
         </b-collapse>
+        <div class="d-flex justify-content-center">
+            <button v-b-toggle="`selected-task-${uniqueId}`" @click="toggleChevronsIcon()">
+                <chevrons-down-icon v-if="!chevronsUp"/>
+                <chevrons-up-icon v-else />
+            </button>
+        </div>
     </div>
 </template>
 
 <script>
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { XIcon } from 'vue-feather-icons';
+    import { XIcon, Edit2Icon, SaveIcon, PlusCircleIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, ChevronDownIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
     import _ from "lodash";
 
     export default {
         name: "SelectedTask",
-        components: { XIcon },
+        components: { XIcon, SaveIcon, Edit2Icon, PlusCircleIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, ChevronDownIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon },
         props: {
             taskKey: {
                 required: true
@@ -151,7 +193,8 @@
                 editingName: false,
                 localEditedName: '',
                 initialTimeSpent: 0,
-                updatedComment: ''
+                updatedComment: '',
+                chevronsUp: true
             };
         },
         computed: {
@@ -209,6 +252,9 @@
                 requestRelatedTickets: 'moduleUser/requestRelatedTickets',
                 requestSavingSingleWorklog: 'moduleUser/requestSavingSingleWorklog'
             }),
+            toggleChevronsIcon() {
+                this.chevronsUp = !this.chevronsUp;
+            },
             bookSingleTaskOnly() {
                 this.requestSavingSingleWorklog({ comment: this.taskWorklogComment, timeSpentSeconds: this.timeSpent, ticketId: this.taskKey, uniqueId: this.uniqueId })
                     .then(() => {
@@ -294,21 +340,28 @@
                 if (cancelEdit) this.localEditedName = ''; // on cancel revert to initial state
 
                 if (!this.editingName && (this.uniqueId !== this.localEditedName) && !_.isEmpty(this.localEditedName) && !cancelEdit) {
-                    this.assignNameToCustomTask({ assignedTaskKey: this.localEditedName, currentTaskKey: this.uniqueId }); //todo
+                    this.assignNameToCustomTask({ assignedTaskKey: this.localEditedName, currentTaskKey: this.uniqueId });
 
                     this.saveSelectedTasksToStorage();
                 }
             },
-            saveEditedCustomTaskName: _.debounce(function (event) {
+            saveEditedCustomTaskName: function (event) {
                 if (!_.isEmpty(event.target.value) && (this.localEditedName !== this.uniqueId)) this.localEditedName = event.target.value;
-            }, 1500),
+            },
             toggleTicketAssignment: function (cancelAssignment = false) {
                 this.showSelection = !this.showSelection;
 
                 if (this.showSelection && this.allExistingProjects.length === 0) this.requestAllProjects(); // if search offCanvas was not opened yet allExistingProjects is empty
-                if (this.showSelection) this.lastSelectedTicket = this.selectedTicket;
+                if (this.showSelection) {
+                    this.lastSelectedTicket = this.selectedTicket;
+                    this.$bvModal.show(`ticket-assignment-${this.uniqueId}`);
+                }
 
-                if (cancelAssignment) this.selectedTicket = this.lastSelectedTicket; this.selectedProject = ''; // on cancel revert to initial state
+                if (cancelAssignment) {
+                    this.selectedTicket = this.lastSelectedTicket;
+                    this.selectedProject = ''; // on cancel revert to initial state
+                    this.$bvModal.hide(`ticket-assignment-${this.uniqueId}`);
+                }
 
                 // saving to vuex store/localStorage only needed if there was a change in the assigned ticket
                 // if cancelBtn was used: do not save

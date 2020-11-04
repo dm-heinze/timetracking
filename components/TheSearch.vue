@@ -1,26 +1,27 @@
 <template>
     <div>
-        <autocompleted-search/>
-        <div>Get All Tickets by Project</div>
-        <select v-model="selectedProject">
-            <option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</option>
-            <option v-else disabled value="">Select a project</option>
-            <option
+        <autocompleted-search class="mb-2" />
+        <b-form-select size="lg" v-model="selectedProject" class="rounded-pill mb-2">
+            <b-form-select-option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</b-form-select-option>
+            <b-form-select-option v-else disabled value="">{{ selectedProject !== '' ? 'Select a project' : 'Get All Tickets by Project' }}</b-form-select-option>
+            <b-form-select-option
                 v-for="existingProject in allExistingProjects"
                 :value="existingProject.id"
-            >{{ existingProject.name }}</option>
-        </select>
+                :key="existingProject.id"
+            >{{ existingProject.name }}</b-form-select-option>
+        </b-form-select>
         <div v-show="selectedProject !== ''">
-            <select v-model="selectedTicket">
-                <option v-if="!relatedTickets.length" disabled value="">Loading Related Tickets...</option>
-                <option v-else disabled value="">Select a ticket</option>
-                <option
+            <b-form-select size="lg" v-model="selectedTicket" class="rounded-pill mb-2">
+                <b-form-select-option v-if="!relatedTickets.length" disabled value="">Loading Related Tickets...</b-form-select-option>
+                <b-form-select-option v-else disabled value="">Select a ticket</b-form-select-option>
+                <b-form-select-option
                     v-for="relatedTicket in relatedTickets"
                     :value="relatedTicket.key"
-                >{{ relatedTicket.key }}: {{ relatedTicket.summary }} </option>
-            </select>
-            <div v-if="selectedTicket !== ''">
-                <button v-b-toggle.sidebar-search @click="addSelectionToSelectedTasks">Select</button>
+                    :key="relatedTicket.key"
+                >{{ relatedTicket.key }}: {{ relatedTicket.summary }} </b-form-select-option>
+            </b-form-select >
+            <div v-if="selectedTicket !== ''" class="d-flex justify-content-end">
+                <b-button pill variant="primary" class="font-weight-bold modal__save-btn pl-4 pr-4" @click.prevent="addSelectionToSelectedTasks()">Select</b-button>
             </div>
         </div>
 
@@ -92,6 +93,10 @@
                     booked: false,
                     uniqueId: _.now()
                 }
+
+                // reset search via project selection
+                this.selectedTicket = '';
+                this.selectedProject = '';
 
                 this.addSelectedTask(selectedTaskObject);
                 this.saveSelectedTasksToStorage();

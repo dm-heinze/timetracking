@@ -156,7 +156,7 @@ export const mutations = {
     },
     assignNameToCustomTask: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
-            if (__selectedTask.key === value.currentTaskKey) {
+            if (__selectedTask.uniqueId === value.currentTaskKey) {
                 __selectedTask.key = value.assignedTaskKey;
                 __selectedTask.issueLink = process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + value.assignedTaskKey;
             }

@@ -7,6 +7,18 @@
 }
 
 /*===  SelectedTask.vue  ===*/
+.selected-ticket__heading__assignments__project-selection {
+    position: relative;
+}
+
+.selected-ticket__heading__assignments__projects-btn {
+    position: absolute;
+    right: 40px;
+    top: 24px;
+    background: transparent;
+    border: none;
+}
+
 .selected-ticket__container {
     margin-bottom: $indent__m;
     padding: $indent__m;
@@ -27,32 +39,49 @@
         cursor: pointer;
     }
 
-    /* todo: extract -> similar styles needed in the-navigation.scss */
-    button {
-        border: none;
-        background: transparent;
-        font-size: $icon-medium__font-size;
-        transition: all 0.3s ease-in-out;
-
-        &:hover {
-            color: $highlight-color;
-
-            &.disabled {
-                color: $disabled-color;
-                cursor: not-allowed;
-            }
-        }
-
-        .icon-play, .icon-pause {
-            &.disabled {
-                color: $disabled-color;
-            }
-        }
-    }
-
     .selected-ticket__heading {
         display: flex;
         justify-content: space-between;
+
+        &__assignments {
+
+            & button {
+                font-size: $small-button__font-size;
+                font-weight: bold;
+                padding: 10px 16px;
+                @include box-shadow;
+
+                & span {
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        &__controls {
+
+            button {
+                border: none;
+                background: transparent;
+                font-size: $icon-medium__font-size;
+                transition: all 0.3s ease-in-out;
+                outline: none;
+
+                &:hover {
+                    color: $highlight-color;
+
+                    &.disabled {
+                        color: $disabled-color;
+                        cursor: not-allowed;
+                    }
+                }
+
+                .icon-play, .icon-pause {
+                    &.disabled {
+                        color: $disabled-color;
+                    }
+                }
+            }
+        }
     }
 
     .time-collapse {
@@ -76,10 +105,9 @@
         }
 
         .selected-ticket__tracked-time {
-            display: flex;
+            color: $primary;
 
             .selected-ticket__tracked-time__displayed {
-                display: flex;
 
                 div {
                     padding: 0 10px 0 10px;
