@@ -38,7 +38,7 @@
             <b-col cols="12" lg="8" class="login-content__container--right vh-100" v-if="$mq === 'lg'">
                 <div class="login-content__titles">
                     <h3>Time Tracker</h3>
-                    <h5>by {{ brandName }}</h5>
+                    <h5>by dmf</h5>
                 </div>
                 <img src="~/assets/images/illustration.svg" alt="illustration" :height="$mq === 'lg' ? '376px' : '275px'" class="mt-5">
             </b-col>
@@ -68,9 +68,6 @@
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
                 if (this.$mq === 'lg') return { marginBottom: '180px' }
                 else return { marginBottom: '90px' }
-            },
-            brandName () {
-                return process.env.BRAND_NAME;
             }
         },
         methods: {

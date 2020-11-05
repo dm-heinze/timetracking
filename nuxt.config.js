@@ -8,8 +8,7 @@ export default {
         BASE_DOMAIN: process.env.BASE_DOMAIN || 'https://<YOUR-JIRA-DOMAIN>/',
         ENDPOINT_BROWSE: process.env.ENDPOINT_BROWSE || 'browse/',
         ENDPOINT_REST: process.env.ENDPOINT_REST || 'rest/api/2/',
-        ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session',
-        BRAND_NAME: process.env.BRAND_NAME || '<YOUR-BRAND-NAME>'
+        ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session'
     },
     /*
      ** Headers of the page
