@@ -1,11 +1,9 @@
 <template>
-    <b-container fluid>
-        <div class="row">
-            <div class="col-12">
-                <nuxt />
-            </div>
+    <div class="row no-gutters">
+        <div class="col-12">
+            <nuxt />
         </div>
-    </b-container>
+    </div>
 </template>
 
 <script>

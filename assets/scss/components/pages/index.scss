@@ -5,9 +5,6 @@
         height: 86px;
         color: white;
 
-        margin-left: -15px;
-        margin-right: -15px;
-
         // todo
         & button {
             font-weight: bold;
@@ -26,18 +23,12 @@
     }
 
     .container--left, .container--right {
-        padding-left: 50px;
-        padding-right: 50px;
         padding-top: 40px;
     }
 
     .container--right {
         background: $muted-white;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
         padding-top: 50px;
-        padding-right: 60px;
 
         &__main-actions {
             width: 100%;
@@ -109,6 +100,16 @@
             &:hover {
                 @include button-hover-styles;
             }
+        }
+    }
+}
+
+@media(min-width: 768px) {
+    .overview {
+
+        .container--left, .container--right {
+            padding-left: 50px;
+            padding-right: 50px;
         }
     }
 }

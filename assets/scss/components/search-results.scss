@@ -4,4 +4,15 @@
             @include button-hover-styles;
         }
     }
+
+    .ticket__info {
+        &__key {
+            color: $primary;
+        }
+
+        &__summary {
+            color: $dark-grey;
+            font-size: $small-button__font-size; //
+        }
+    }
 }

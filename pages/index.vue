@@ -1,5 +1,5 @@
 <template>
-    <div class="overview">
+    <div class="overview" :class="{ 'container': $mq === 'sm' }">
         <div class="w-100">
             <b-collapse is-nav id="breakTracker">
                 <b-navbar-nav class="d-flex flex-row justify-content-center align-items-center stickyBreakTracker">
@@ -12,9 +12,9 @@
                     </b-button>
                 </b-navbar-nav>
             </b-collapse>
-            <b-row align-v="stretch">
-                <b-col cols="12" lg="4" class="container--left vh-100">
-                    <div class="login-content__titles" :style="marginBottomTitle">
+           <b-row align-v="stretch" class="no-gutters">
+                <b-col cols="12" lg="4" class="container--left">
+                    <div class="login-content__titles">
                         <h3>Ticket search</h3>
                         <the-search />
                         <div class="d-flex flex-row" v-b-toggle.sidebar-settings :style="{ 'outline': 'none' }">
@@ -24,78 +24,80 @@
                         <settings />
                     </div>
                 </b-col>
-                <b-col cols="12" lg="8" class="container--right">
-                    <div class="row d-flex justify-content-between container--right__main-actions">
-                        <div class="d-flex flex-row">
-                            <b-button pill variant="primary" type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-3" v-b-modal="'add-custom-task'">
-                                <plus-circle-icon />
-                                <span class="pl-1">Add Custom task</span>
-                                <b-modal :id="'add-custom-task'" centered>
-                                    <template v-slot:modal-header="{ close }">
-                                        <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
-                                            <h3 class="primary">Add Custom Task</h3>
-                                            <span>
+                <b-col cols="12" lg="8" class="container--right min-vh-100">
+                    <div class="col-xl-10">
+                        <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
+                            <div class="d-flex" :class="[flexDirection]">
+                                <b-button pill variant="primary" type="button" class="login-content__sign-in-btn pt-2 pb-2" v-b-modal="'add-custom-task'" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg', 'mb-2': $mq === 'sm' }">
+                                    <plus-circle-icon />
+                                    <span class="pl-1">Add Custom task</span>
+                                    <b-modal :id="'add-custom-task'" centered>
+                                        <template v-slot:modal-header="{ close }">
+                                            <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
+                                                <h3 class="primary">Add Custom Task</h3>
+                                                <span>
                                                 <x-icon @click="resetAndCloseModal()" />
                                             </span>
-                                        </div>
-                                    </template>
-                                    <template v-slot:default>
-                                        <div class="modal__main-container">
-                                            <div class="modal__main-container__main-text">Do you want to add a custom name? Otherwise a random name will be set. You can edit the name later regardless.</div>
-                                            <b-form-input class="form-control rounded-pill pt-4 pl-4 pb-4" type="text" v-model="customNameCustomTask" placeholder="Add Custom Name"></b-form-input>
-                                        </div>
-                                    </template>
-                                    <template v-slot:modal-footer="{ ok, cancel }">
-                                        <div class="d-flex justify-content-between w-100 modal__actions">
-                                            <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="resetAndCloseModal()">Cancel</b-button>
-                                            <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="startNewCustomTask()">Save</b-button>
-                                        </div>
-                                    </template>
-                                </b-modal>
-                            </b-button>
-                            <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-1">
-                                <coffee-icon />
-                                <span class="pl-1">Take a break</span>
-                            </b-button>
-                        </div>
-                        <div>
-                            <span v-if="totalTime" class="mr-3">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span>
-                            <b-button
-                                pill
-                                variant="success"
-                                type="button"
-                                class="login-content__sign-in-btn pt-2 pb-2 mr-1"
-                                v-b-modal="'confirm-push-time'"
-                                :disabled="selectedTasks.length===0 || everythingBookedAlready || !noMissingComments"
-                                :class="{ 'disabled': selectedTasks.length===0 || everythingBookedAlready || !noMissingComments }"
-                            >
-                                <send-icon />
-                                <span class="pl-1">Push all your tasks</span>
-                                <b-modal :id="'confirm-push-time'" centered>
-                                    <template v-slot:modal-header="{ close }">
-                                        <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
-                                            <h3 class="primary">Push Time?</h3>
-                                            <span>
+                                            </div>
+                                        </template>
+                                        <template v-slot:default>
+                                            <div class="modal__main-container">
+                                                <div class="modal__main-container__main-text">Do you want to add a custom name? Otherwise a random name will be set. You can edit the name later regardless.</div>
+                                                <b-form-input class="form-control rounded-pill pt-4 pl-4 pb-4" type="text" v-model="customNameCustomTask" placeholder="Add Custom Name"></b-form-input>
+                                            </div>
+                                        </template>
+                                        <template v-slot:modal-footer="{ ok, cancel }">
+                                            <div class="d-flex justify-content-between w-100 modal__actions">
+                                                <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="resetAndCloseModal()">Cancel</b-button>
+                                                <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="startNewCustomTask()">Save</b-button>
+                                            </div>
+                                        </template>
+                                    </b-modal>
+                                </b-button>
+                                <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-1" :class="{ 'mb-3': $mq === 'sm' }">
+                                    <coffee-icon />
+                                    <span class="pl-1">Take a break</span>
+                                </b-button>
+                            </div>
+                            <div class="d-flex" :class="[flexDirection, { 'align-items-center': $mq === 'md' || $mq === 'lg' }]">
+                                <span v-if="totalTime" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg', 'align-self-center': $mq === 'sm' }">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span>
+                                <b-button
+                                    pill
+                                    variant="success"
+                                    type="button"
+                                    class="login-content__sign-in-btn pt-2 pb-2"
+                                    v-b-modal="'confirm-push-time'"
+                                    :disabled="selectedTasks.length===0 || everythingBookedAlready || !noMissingComments"
+                                    :class="{ 'disabled': selectedTasks.length===0 || everythingBookedAlready || !noMissingComments, 'mr-1': $mq === 'md' || $mq === 'lg' }"
+                                >
+                                    <send-icon />
+                                    <span class="pl-1">Push all your tasks</span>
+                                    <b-modal :id="'confirm-push-time'" centered>
+                                        <template v-slot:modal-header="{ close }">
+                                            <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
+                                                <h3 class="primary">Push Time?</h3>
+                                                <span>
                                                 <x-icon @click="close()" />
                                             </span>
-                                        </div>
-                                    </template>
-                                    <template v-slot:default>
-                                        <div class="modal__main-container">
-                                            <div class="modal__main-container__main-text">Are you sure you want to book tracked time?</div>
-                                        </div>
-                                    </template>
-                                    <template v-slot:modal-footer="{ ok, cancel }">
-                                        <div class="d-flex justify-content-between w-100 modal__actions">
-                                            <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
-                                            <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="saveWorklogs()">Push Time</b-button>
-                                        </div>
-                                    </template>
-                                </b-modal>
-                            </b-button>
+                                            </div>
+                                        </template>
+                                        <template v-slot:default>
+                                            <div class="modal__main-container">
+                                                <div class="modal__main-container__main-text">Are you sure you want to book tracked time?</div>
+                                            </div>
+                                        </template>
+                                        <template v-slot:modal-footer="{ ok, cancel }">
+                                            <div class="d-flex justify-content-between w-100 modal__actions">
+                                                <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
+                                                <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="saveWorklogs()">Push Time</b-button>
+                                            </div>
+                                        </template>
+                                    </b-modal>
+                                </b-button>
+                            </div>
                         </div>
+                        <selected-tasks />
                     </div>
-                    <selected-tasks />
                 </b-col>
             </b-row>
         </div>
@@ -159,6 +161,9 @@
             },
             noMissingComments () {
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.comment).length === 0;
+            },
+            flexDirection () {
+                return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
             }
         },
         watch: {

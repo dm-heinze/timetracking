@@ -5,11 +5,15 @@
             <b-list-group-item
                 v-for="assignedTicket in assignedTickets"
                 :key="assignedTicket.uniqueId"
+                @click="addToSelectedIssues(assignedTicket)"
+                class="d-flex justify-content-between"
             >
-                {{ assignedTicket.key }}: {{ assignedTicket.summary }}
-                <b-icon class="h4 mb-2 tickets__icon" icon="bookmark-check-fill" variant="success" @click="toggleBookmarked(assignedTicket.key)" v-if="bookmarked.find((marked) => marked.key === assignedTicket.key)"></b-icon>
-                <b-icon class="h4 mb-2 tickets__icon" icon="bookmark" variant="primary" @click="toggleBookmarked(assignedTicket.key, assignedTicket.summary)" v-else></b-icon>
-                <b-icon class="h4 mb-2 tickets__icon" icon="plus-square" variant="primary"  @click="addToSelectedIssues(assignedTicket)" v-b-toggle.sidebar-search></b-icon>
+                <div class="ticket__info">
+                    <div class="ticket__info__key font-weight-bold">{{ assignedTicket.key }}</div>
+                    <div class="ticket__info__summary">{{ assignedTicket.summary }}</div>
+                </div>
+
+                <plus-circle-icon class="ticket__icon align-self-center" />
             </b-list-group-item>
         </b-list-group>
 
@@ -51,13 +55,14 @@
 
 <script>
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { BIcon, BIconBookmark, BIconBookmarkCheckFill, BIconPlusSquare } from 'bootstrap-vue';
+    import { BIcon, BIconBookmark, BIconBookmarkCheckFill, BIconPlusSquare } from 'bootstrap-vue'; //
+    import { PlusCircleIcon, BookmarkIcon } from 'vue-feather-icons';
     import _ from "lodash";
 
     export default {
         name: "SearchResults",
         components: {
-            BIcon, BIconBookmark, BIconBookmarkCheckFill, BIconPlusSquare
+            BIcon, BIconBookmark, BIconBookmarkCheckFill, BIconPlusSquare, PlusCircleIcon, BookmarkIcon //
         },
         computed: {
             ...mapState({

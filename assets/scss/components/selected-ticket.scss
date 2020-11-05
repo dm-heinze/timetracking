@@ -19,19 +19,54 @@
     border: none;
 }
 
+.btn--edit {
+    svg {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.selected-ticket__heading__assignments {
+    button {
+        font-size: $small-button__font-size;
+        font-weight: bold;
+        padding: 10px 16px;
+        @include box-shadow;
+
+        & span {
+            vertical-align: middle;
+            font-size: $small-button__font-size;
+            line-height: 19px;
+        }
+
+        & svg {
+            width: $small-button__font-size;
+            height: $small-button__font-size;
+        }
+    }
+}
+
 .selected-ticket__container {
     margin-bottom: $indent__m;
     padding: $indent__m;
     border: 1px solid $body-color;
     border-radius: 3px;
+    background: white;
+    @include box-shadow;
+    position: relative;
 
     &:hover {
-        box-shadow: 0 4px 10px 0 rgba(41, 40, 47, .1);
+        @include box-shadow;
         cursor: pointer;
     }
 
     &.already-booked {
         background: $disabled-color;
+    }
+
+    &.not-assigned {
+        background: $not-assigned;
     }
 
     li {
@@ -43,41 +78,23 @@
         display: flex;
         justify-content: space-between;
 
-        &__assignments {
-
-            & button {
-                font-size: $small-button__font-size;
-                font-weight: bold;
-                padding: 10px 16px;
-                @include box-shadow;
-
-                & span {
-                    vertical-align: middle;
-                }
-            }
-        }
-
         &__controls {
 
-            button {
-                border: none;
-                background: transparent;
-                font-size: $icon-medium__font-size;
-                transition: all 0.3s ease-in-out;
-                outline: none;
+            .ticket-trackers {
 
-                &:hover {
-                    color: $highlight-color;
+                & button {
+                    border: none;
+                    background: transparent;
+                    transition: all 0.3s ease-in-out;
+                    outline: none;
 
-                    &.disabled {
-                        color: $disabled-color;
-                        cursor: not-allowed;
-                    }
-                }
+                    &:hover {
+                        color: $highlight-color;
 
-                .icon-play, .icon-pause {
-                    &.disabled {
-                        color: $disabled-color;
+                        &.disabled {
+                            color: $disabled-color;
+                            cursor: not-allowed;
+                        }
                     }
                 }
             }
@@ -94,13 +111,13 @@
         }
     }
 
-    .selected-ticket__content {
+    .selected-ticket__content { //
         display: flex;
         flex-direction: column;
 
         textarea {
             width: 100%;
-            height: 70px;
+            height: 100px;
             margin: 7px 0 7px 0;
         }
 
@@ -112,6 +129,35 @@
                 div {
                     padding: 0 10px 0 10px;
                 }
+            }
+        }
+    }
+    .selected-ticket__toggle-btn { //
+        padding-top: 16px;
+
+        & button {
+            border: none;
+            background: transparent;
+            position: absolute;
+            bottom: 1px;
+            overflow: hidden;
+            z-index: 60;
+
+            & svg {
+                color: $dark-grey;
+            }
+
+            &::after {
+                content: '';
+                width: 36px;
+                height: 35px;
+                border-radius: 13.5px;
+                background-color: $muted-white;
+                position: absolute;
+                bottom: -10px;
+                z-index: -1;
+                left: 0;
+                transform: rotate(90deg);
             }
         }
     }

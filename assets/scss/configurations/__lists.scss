@@ -1,0 +1,15 @@
+$list-group-border-color: $light-grey;
+$list-group-border-width: 1px;
+$list-group-border-radius: 4px;
+
+.list-group-item + .list-group-item {
+    border-top-width: 1px !important;
+}
+
+.list-group-item {
+    margin-bottom: 10px;
+
+    &:hover {
+        cursor: pointer;
+    }
+}

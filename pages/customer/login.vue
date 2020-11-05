@@ -1,6 +1,6 @@
 <template>
-    <div class="login-content w-100">
-        <b-row>
+    <div class="login-content">
+        <b-row class="no-gutters">
             <b-col cols="12" lg="4"  class="login-content__container--left vh-100">
                 <div class="login-content__titles" :style="marginBottomTitle">
                     <h3>Sign in to Time Tracker</h3>
@@ -40,7 +40,7 @@
                     <h3>Time Tracker</h3>
                     <h5>by {{ brandName }}</h5>
                 </div>
-                <img src="~/assets/images/illustration.svg" alt="illustration" :height="$mq === 'Infinity' ? '376px' : '275px'" class="mt-5">
+                <img src="~/assets/images/illustration.svg" alt="illustration" :height="$mq === 'lg' ? '376px' : '275px'" class="mt-5">
             </b-col>
         </b-row>
     </div>
