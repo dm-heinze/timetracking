@@ -81,10 +81,33 @@
                         <pause-circle-icon />
                     </button>
 
-                    <button @click.prevent="bookSingleTaskOnly()"
+                    <button v-b-modal="`confirm-push-time-singleTaskOnly-${uniqueId}`"
                             :disabled="isTimerActive || !taskWorklogComment || !timeSpent || booked || !assignedToTicket"
                             :class="{'disabled':  isTimerActive || !taskWorklogComment || !timeSpent || booked || !assignedToTicket }">
                         <upload-cloud-icon />
+
+                        <b-modal :id="`confirm-push-time-singleTaskOnly-${uniqueId}`" centered>
+                            <template v-slot:modal-header="{ close }">
+                                <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
+                                    <h3 class="primary">Push Single Task?</h3>
+                                    <span>
+                                        <x-icon @click="close()" />
+                                    </span>
+                                </div>
+                            </template>
+                            <template v-slot:default>
+                                <div class="modal__main-container">
+                                    <div class="modal__main-container__main-text">Are you sure you want to book tracked time for {{ taskKey }}?</div>
+                                </div>
+                            </template>
+                            <template v-slot:modal-footer="{ ok, cancel }">
+                                <div class="d-flex justify-content-between w-100 modal__actions">
+                                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
+                                    <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="bookSingleTaskOnly()">Push Time</b-button>
+                                </div>
+                            </template>
+                        </b-modal>
+
                     </button>
 
                     <button v-b-modal="`confirm-deletion-modal-${uniqueId}`">
