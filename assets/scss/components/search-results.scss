@@ -1,8 +1,8 @@
 .search-results {
-    .tickets__icon {
-        &:hover {
-            @include button-hover-styles;
-        }
+
+    .ticket__icon {
+        flex-shrink: 0;
+        stroke: $primary;
     }
 
     .ticket__info {

@@ -1,4 +1,8 @@
 .overview {
+    .sidebar__title {
+        font-size: $sidebar-sections__font-size;
+        line-height: $line-height-large;
+    }
 
     .stickyBreakTracker {
         background-color: $danger;
@@ -26,6 +30,20 @@
         padding-top: 40px;
     }
 
+    .container--left {
+        .group--settings {
+            margin-bottom: $main-bottom-padding;
+
+            .button--settings {
+                stroke: $primary;
+            }
+
+            .sidebar__option--settings {
+                font-size: $default__font-size;
+            }
+        }
+    }
+
     .container--right {
         background: $muted-white;
         padding-top: 50px;
@@ -39,6 +57,11 @@
                 font-weight: bold;
                 padding: 12px 31px 12px 29px;
                 @include box-shadow;
+
+                & svg {
+                    height: $action-svg-large;
+                    width: $action-svg-large;
+                }
 
                 & span {
                     vertical-align: middle;

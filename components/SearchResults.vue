@@ -1,6 +1,6 @@
 <template>
     <div class="search-results">
-        <div>Assigned Tickets</div>
+        <h3 class="sidebar__title">Assigned Tickets</h3>
         <b-list-group>
             <b-list-group-item
                 v-for="assignedTicket in assignedTickets"
@@ -18,17 +18,21 @@
         </b-list-group>
 
 
-        <h4>Suggestions</h4>
+        <h3 class="sidebar__title">Suggestions</h3>
         <div v-if="smartPickedSuggestions.length !== 0">
             <b-list-group>
                 <b-list-group-item
                     v-for="searchResult in smartPickedSuggestions"
                     :key="searchResult.key"
                     @click="addToSelectedIssues(searchResult)"
-                    v-b-toggle.sidebar-search
+                    class="d-flex justify-content-between"
                 >
-                    {{ searchResult.key }}: {{ searchResult.summary }}
-                    <b-icon icon="bookmark" variant="primary" @click="toggleBookmarked(searchResult.key, searchResult.summary)" v-if="bookmarked.find((marked) => marked.key === searchResult.key)"></b-icon>
+                    <div class="ticket__info">
+                        <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
+                        <div class="ticket__info__summary">{{ searchResult.summary }}</div>
+                    </div>
+
+                    <plus-circle-icon class="ticket__icon align-self-center" />
                 </b-list-group-item>
             </b-list-group>
         </div>
@@ -36,16 +40,20 @@
 
 
 
-        <h4>Bookmarks</h4>
+        <h3 class="sidebar__title">Bookmarks</h3>
         <div v-if="bookmarked.length !== 0">
             <b-list-group>
                 <b-list-group-item
                     v-for="bookmarkedTicket in bookmarked"
                     :key="bookmarkedTicket.key"
+                    class="d-flex justify-content-between"
+                    @click="addToSelectedIssues(bookmarkedTicket, false)"
                 >
-                    {{ bookmarkedTicket.key }}
-                    <b-icon class="h4 mb-2 tickets__icon" icon="bookmark-check-fill" variant="success" @click="toggleBookmarked(bookmarkedTicket.key)"></b-icon>
-                    <b-icon class="h4 mb-2 tickets__icon" icon="plus-square" variant="primary"  @click="addToSelectedIssues(bookmarkedTicket, false)" v-b-toggle.sidebar-search></b-icon>
+                    <div class="ticket__info">
+                        <div class="ticket__info__key font-weight-bold">{{ bookmarkedTicket.key }}</div>
+                        <div class="ticket__info__summary">{{ bookmarkedTicket.summary }}</div>
+                    </div>
+                    <plus-circle-icon class="ticket__icon align-self-center" />
                 </b-list-group-item>
             </b-list-group>
         </div>

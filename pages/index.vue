@@ -15,11 +15,11 @@
            <b-row align-v="stretch" class="no-gutters">
                 <b-col cols="12" lg="4" class="container--left">
                     <div class="login-content__titles">
-                        <h3>Ticket search</h3>
+                        <h3 class="sidebar__title">Ticket search</h3>
                         <the-search />
-                        <div class="d-flex flex-row" v-b-toggle.sidebar-settings :style="{ 'outline': 'none' }">
-                            <settings-icon/>
-                            <h5 class="pl-1">Settings</h5>
+                        <div class="d-flex flex-row group--settings" v-b-toggle.sidebar-settings :style="{ 'outline': 'none' }">
+                            <settings-icon class="button--settings" />
+                            <h5 class="pl-1 my-auto sidebar__option--settings">Settings</h5>
                         </div>
                         <settings />
                     </div>
@@ -27,7 +27,7 @@
                 <b-col cols="12" lg="8" class="container--right min-vh-100">
                     <div class="col-xl-10">
                         <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
-                            <div class="d-flex" :class="[flexDirection]">
+                            <div class="d-flex pr-3" :class="[flexDirection]">
                                 <b-button pill variant="primary" type="button" class="login-content__sign-in-btn pt-2 pb-2" v-b-modal="'add-custom-task'" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg', 'mb-2': $mq === 'sm' }">
                                     <plus-circle-icon />
                                     <span class="pl-1">Add Custom task</span>

@@ -8,8 +8,16 @@ $list-group-border-radius: 4px;
 
 .list-group-item {
     margin-bottom: 10px;
+    border-radius: $list-item-border-radius;
+    height: $list-item-height;
+    align-items: center;
 
     &:hover {
         cursor: pointer;
+        @include button-hover-styles;
+
+        & svg {
+            fill: $success;
+        }
     }
 }

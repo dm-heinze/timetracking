@@ -1,0 +1,12 @@
+.result-wrp {
+    padding-bottom: $sidebar-gap-large;
+
+    & .sidebar__title {
+
+        &:first-of-type {
+            padding-top: $sidebar-gap-large;
+        }
+
+        padding-top: $sidebar-gap-small;
+    }
+}

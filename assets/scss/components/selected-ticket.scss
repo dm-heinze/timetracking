@@ -47,117 +47,144 @@
     }
 }
 
-.selected-ticket__container {
-    margin-bottom: $indent__m;
-    padding: $indent__m;
-    border: 1px solid $body-color;
-    border-radius: 3px;
-    background: white;
-    @include box-shadow;
-    position: relative;
 
-    &:hover {
+.selected-ticket {
+    &__container {
+        margin-bottom: $indent__m;
+        padding: $indent__m;
+        border: 1px solid $light-grey;
+        border-radius: $list-item-border-radius;
+        background: white;
         @include box-shadow;
-        cursor: pointer;
-    }
+        position: relative;
 
-    &.already-booked {
-        background: $disabled-color;
-    }
+        &:hover {
+            @include box-shadow;
+            cursor: pointer;
+        }
 
-    &.not-assigned {
-        background: $not-assigned;
-    }
+        &.already-booked {
+            background: $disabled-color;
+        }
 
-    li {
-        list-style: none;
-        cursor: pointer;
-    }
+        &.not-assigned {
+            background: $not-assigned;
+            border: 1px solid $danger;
+        }
 
-    .selected-ticket__heading {
-        display: flex;
-        justify-content: space-between;
+        &.currently-active {
+            background: $currently-active;
+            border: 1px solid $success;
+        }
 
-        &__controls {
+        li {
+            list-style: none;
+            cursor: pointer;
+        }
 
-            .ticket-trackers {
+        .selected-ticket__heading {
+            display: flex;
+            justify-content: space-between;
 
-                & button {
-                    border: none;
-                    background: transparent;
-                    transition: all 0.3s ease-in-out;
-                    outline: none;
+            &__summary {
+                color: $dark-grey;
+                font-size: $small-button__font-size;
+            }
+
+            &__controls {
+
+                .ticket-trackers {
+
+                    & button {
+                        border: none;
+                        background: transparent;
+                        transition: all 0.3s ease-in-out;
+                        outline: none;
+                        color: $primary;
 
                     &:hover {
-                        color: $highlight-color;
+                        color: $secondary;
 
-                        &.disabled {
-                            color: $disabled-color;
-                            cursor: not-allowed;
+                            &.disabled {
+                                color: $light-grey;
+                                cursor: not-allowed;
+                            }
                         }
+                    }
+                }
+
+                .selected-ticket__tracked-time {
+                    color: $primary;
+                }
+
+                .selected-ticket__tracked-time__displayed {
+
+                    div {
+                        padding: 0 10px 0 10px;
                     }
                 }
             }
         }
-    }
 
-    .time-collapse {
-        cursor: pointer;
-        @extend [class^="icon-"];
-        @extend .icon-toggle-off;
+        .time-collapse {
+            cursor: pointer;
+            @extend [class^="icon-"];
+            @extend .icon-toggle-off;
 
-        &.collapsed {
-            @extend .icon-toggle-on;
-        }
-    }
-
-    .selected-ticket__content { //
-        display: flex;
-        flex-direction: column;
-
-        textarea {
-            width: 100%;
-            height: 100px;
-            margin: 7px 0 7px 0;
+            &.collapsed {
+                @extend .icon-toggle-on;
+            }
         }
 
-        .selected-ticket__tracked-time {
-            color: $primary;
+        .selected-ticket__content { //
+            display: flex;
+            flex-direction: column;
 
-            .selected-ticket__tracked-time__displayed {
+            textarea {
+                width: 100%;
+                height: 100px;
+                margin: 7px 0 7px 0;
+                border-color: $light-grey;
+            }
 
-                div {
-                    padding: 0 10px 0 10px;
+            .selected-ticket__tracked-time {
+                color: $primary;
+
+                .selected-ticket__tracked-time__displayed {
+
+                    div {
+                        padding: 0 10px 0 10px;
+                    }
                 }
             }
         }
-    }
-    .selected-ticket__toggle-btn { //
-        padding-top: 16px;
+        .selected-ticket__toggle-btn { //
+            padding-top: 16px;
 
-        & button {
-            border: none;
-            background: transparent;
-            position: absolute;
-            bottom: 1px;
-            overflow: hidden;
-            z-index: 60;
-
-            & svg {
-                color: $dark-grey;
-            }
-
-            &::after {
-                content: '';
-                width: 36px;
-                height: 35px;
-                border-radius: 13.5px;
-                background-color: $muted-white;
+            & button {
+                border: none;
+                background: transparent;
                 position: absolute;
-                bottom: -10px;
-                z-index: -1;
-                left: 0;
-                transform: rotate(90deg);
+                bottom: 1px;
+                overflow: hidden;
+                z-index: 60;
+
+                & svg {
+                    color: $dark-grey;
+                }
+
+                &::after {
+                    content: '';
+                    width: 36px;
+                    height: 35px;
+                    border-radius: 13.5px;
+                    background-color: $muted-white;
+                    position: absolute;
+                    bottom: -10px;
+                    z-index: -1;
+                    left: 0;
+                    transform: rotate(90deg);
+                }
             }
         }
     }
