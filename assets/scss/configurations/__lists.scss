@@ -11,6 +11,12 @@ $list-group-border-radius: 4px;
     border-radius: $list-item-border-radius;
     height: $list-item-height;
     align-items: center;
+    transition: all 0.25s ease-in-out;
+
+    svg {
+        fill: white;
+        transition: fill 0.25s ease-in-out;
+    }
 
     &:hover {
         cursor: pointer;

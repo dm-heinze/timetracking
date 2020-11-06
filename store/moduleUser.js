@@ -21,10 +21,14 @@ export const state = () => ({
     selectedTasks: [],
     prefilledSearchSuggestions: [],
     lastTicket: '',
-    bookmarked: []
+    bookmarked: [],
+    settingsOpen: false
 });
 
 export const mutations = {
+    toggleSettings: (state) => {
+        state.settingsOpen = !state.settingsOpen;
+    },
     updateBookmarks: (state, value) => {
         if (state.bookmarked.find((__bookmarked) => __bookmarked.key === value.bookmark)) {
             state.bookmarked = state.bookmarked.filter((__bookmarked) => __bookmarked.key !== value.bookmark)

@@ -15,13 +15,19 @@
            <b-row align-v="stretch" class="no-gutters">
                 <b-col cols="12" lg="4" class="container--left">
                     <div class="login-content__titles">
-                        <h3 class="sidebar__title">Ticket search</h3>
-                        <the-search />
-                        <div class="d-flex flex-row group--settings" v-b-toggle.sidebar-settings :style="{ 'outline': 'none' }">
-                            <settings-icon class="button--settings" />
-                            <h5 class="pl-1 my-auto sidebar__option--settings">Settings</h5>
-                        </div>
-                        <settings />
+                        <transition name="toggle">
+                            <div v-if="!settingsOpen">
+                                <h3 class="sidebar__title">Ticket search</h3>
+                                <the-search />
+                                <div class="d-flex flex-row group--settings" :style="{ 'outline': 'none' }" @click="toggleSettings">
+                                    <settings-icon class="button--settings" />
+                                    <h5 class="pl-1 my-auto sidebar__option--settings">Settings</h5>
+                                </div>
+                            </div>
+                        </transition>
+                        <transition name="toggle">
+                            <settings v-if="settingsOpen" />
+                        </transition>
                     </div>
                 </b-col>
                 <b-col cols="12" lg="8" class="container--right min-vh-100">
@@ -134,6 +140,7 @@
                 onABreak: state => state.moduleUser.onABreak,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket,
+                settingsOpen: state => state.moduleUser.settingsOpen
             }),
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
@@ -198,6 +205,7 @@
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
                 setLastTicket: 'moduleUser/setLastTicket',
                 addBreak: 'moduleUser/addBreak',
+                toggleSettings: 'moduleUser/toggleSettings'
             }),
             startNewCustomTask: function () {
                 const newCustomTask = {
@@ -307,3 +315,19 @@
         }
     }
 </script>
+
+<style lang="scss">
+    .toggle-enter-active, .toggle-leave-active {
+        transition: all .3s ease-in-out;
+    }
+
+    .toggle-enter, .toggle-leave-to {
+        opacity: 0;
+        left: -100%;
+    }
+
+    .toggle-enter-to, .toggle-leave {
+        opacity: 1;
+        left: 0;
+    }
+</style>

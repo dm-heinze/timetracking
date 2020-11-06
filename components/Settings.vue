@@ -1,56 +1,90 @@
 <template>
-    <b-sidebar id="sidebar-settings" title="Settings" shadow backdrop :width="'500px'" @hidden="resetSearch">
-        <div class="px-4">
-            <button @click.prevent="removeCurrentSession">LOGOUT</button>
-
-            <div class="autocompleted-search__container">
-                <input v-model="searchTerm" @input="requestSearch" placeholder="Search for Tickets to Bookmark" :disabled="$nuxt.isOffline" :class="{ 'disabled': $nuxt.isOffline }">
-                <button :class="{ 'icon-close': !searchLoading && searchTerm !== '', 'icon-search': !searchLoading || searchTerm === '' }" :disabled="searchTerm === '' && searchLoading" @click="resetSearch()">
-                    <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
-                </button>
-            </div>
-
-            <div v-if="searchLoading">Loading Search Results...</div>
-            <div v-if="searchResults.length !== 0">
-                <b-list-group>
-                    <b-list-group-item
-                        v-for="searchResult in searchResults"
-                        :key="searchResult.key"
-                    >
-                        {{ searchResult.key }}: {{ searchResult.summary }}
-                        <b-icon class="h4 mb-2 tickets__icon" icon="bookmark-check-fill" variant="success" @click="toggleBookmarked(searchResult.key)" v-if="bookmarked.find((marked) => marked.key === searchResult.key)"></b-icon>
-                        <b-icon class="h4 mb-2 tickets__icon" icon="bookmark" variant="primary" @click="toggleBookmarked(searchResult.key, searchResult.summary)" v-else></b-icon>
-                        <b-icon class="h4 mb-2 tickets__icon" icon="plus-square" variant="primary"  @click="addToSelectedIssues(searchResult)" v-b-toggle.sidebar-settings></b-icon>
-                    </b-list-group-item>
-                </b-list-group>
-            </div>
-
-            <h4>Bookmarks</h4>
-            <div v-if="bookmarked.length !== 0">
-                <b-list-group>
-                    <b-list-group-item
-                        v-for="bookmarkedTicket in bookmarked"
-                        :key="bookmarkedTicket.key"
-                    >
-                        {{ bookmarkedTicket.key }}: {{ bookmarkedTicket.summary }}
-                        <b-icon class="h4 mb-2 tickets__icon" icon="bookmark-check-fill" variant="success" @click="toggleBookmarked(bookmarkedTicket.key)"></b-icon>
-                        <b-icon class="h4 mb-2 tickets__icon" icon="plus-square" variant="primary"  @click="addToSelectedIssues(bookmarkedTicket, false)" v-b-toggle.sidebar-settings></b-icon>
-                    </b-list-group-item>
-                </b-list-group>
-            </div>
-            <div v-else>No Bookmarks Saved.</div>
+    <div id="sidebar-settings">
+        <div class="sidebar-settings__header d-flex flex-row justify-content-between">
+            <h3 class="sidebar__title">Settings</h3>
+            <button @click.prevent="resetSearch(true)" class="button--close"><x-circle-icon /></button>
         </div>
-    </b-sidebar>
+        <div class="autocompleted-search__container">
+            <b-form-input
+                v-model="searchTerm"
+                @input="requestSearch"
+                placeholder="Search for Tickets to Bookmark"
+                :disabled="$nuxt.isOffline"
+                :class="{ 'disabled': $nuxt.isOffline }"
+                class="form-control rounded-pill pt-4 pl-4 pb-4"
+            />
+            <button :disabled="searchTerm === '' && searchLoading" @click="resetSearch()">
+                <search-icon v-if="!searchLoading && searchTerm === ''" />
+                <x-icon v-if="!searchLoading && searchTerm !== ''" class="button--close" />
+                <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
+            </button>
+        </div>
+
+        <div v-if="searchLoading">Loading Search Results...</div>
+        <div v-if="searchResults.length !== 0" class="search-results--settings">
+            <b-list-group>
+                <b-list-group-item
+                    v-for="searchResult in searchResults"
+                    :key="searchResult.key"
+                    class="d-flex justify-content-between"
+                >
+                    <div class="ticket__info">
+                        <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
+                        <div class="ticket__info__summary">{{ searchResult.summary }}</div>
+                    </div>
+                    <div class="ticket__actions">
+                        <bookmark-icon
+                            v-if="bookmarked.find((marked) => marked.key === searchResult.key)"
+                            class="ticket__icon align-self-center ticket__icon--bookmarked"
+                            @click="toggleBookmarked(searchResult.key, searchResult.summary)"
+                        />
+                        <bookmark-icon
+                            v-else
+                            class="ticket__icon align-self-center ticket__icon--not-bookmarked"
+                            @click="toggleBookmarked(searchResult.key, searchResult.summary)"
+                        />
+                        <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues(searchResult)" />
+                    </div>
+                </b-list-group-item>
+            </b-list-group>
+        </div>
+
+        <h3 class="sidebar__title sidebar__title--bookmarks">Bookmarks</h3>
+        <div v-if="bookmarked.length !== 0">
+            <b-list-group>
+                <b-list-group-item
+                    v-for="bookmarkedTicket in bookmarked"
+                    :key="bookmarkedTicket.key"
+                    class="d-flex justify-content-between"
+                >
+                    <div class="ticket__info">
+                        <div class="ticket__info__key font-weight-bold">{{ bookmarkedTicket.key }}</div>
+                        <div class="ticket__info__summary">{{ bookmarkedTicket.summary }}</div>
+                    </div>
+                    <div class="ticket__actions">
+                        <bookmark-icon class="ticket__icon align-self-center ticket__icon--bookmarked" @click="toggleBookmarked(bookmarkedTicket.key)" />
+                        <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues(bookmarkedTicket, false)" />
+                    </div>
+                </b-list-group-item>
+            </b-list-group>
+        </div>
+        <div v-else>No Bookmarks Saved.</div>
+
+        <b-button pill variant="danger" @click.prevent="removeCurrentSession" type="button" class="login-content__sign-in-btn button--logout pt-2 pb-2 mr-1 w-100">
+            <log-out-icon />
+            <span class="pl-1">Logout</span>
+        </b-button>
+    </div>
 </template>
 
 <script>
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { BIcon, BIconBookmark, BIconBookmarkCheckFill, BIconPlusSquare } from 'bootstrap-vue';
+    import { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
     import _ from "lodash";
 
 	export default {
 		name: "Settings",
-        components: { BIcon, BIconBookmark, BIconBookmarkCheckFill, BIconPlusSquare },
+        components: { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon },
         data () {
             return {
                 searchTerm: '',
@@ -67,11 +101,14 @@
             ...mapActions({
                 requestSessionRemoval: 'moduleUser/requestSessionRemoval',
                 saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
-                getIssue: 'moduleUser/getIssue'
+                getIssue: 'moduleUser/getIssue',
+                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
                 updateBookmarks: 'moduleUser/updateBookmarks',
-                setSearchResult: 'moduleUser/setSearchResult'
+                setSearchResult: 'moduleUser/setSearchResult',
+                toggleSettings: 'moduleUser/toggleSettings',
+                addSelectedTask: 'moduleUser/addSelectedTask'
             }),
             removeCurrentSession: function () {
                 this.requestSessionRemoval()
@@ -89,10 +126,12 @@
 
                 this.saveBookmarksToStorage();
             },
-            resetSearch: function () { // todo
+            resetSearch: function (close = false) { // todo
                 this.searchTerm = '';
 
                 this.setSearchResult([]);
+
+                if (close) this.toggleSettings();
             },
             addToSelectedIssues: function (selectedTicket, fromSearchResults = true) { // todo
                 let __selection;
@@ -122,7 +161,3 @@
         }
 	}
 </script>
-
-<style scoped>
-
-</style>
