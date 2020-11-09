@@ -1,10 +1,10 @@
 <template>
     <div class="selected-tickets__container">
-        <div v-if="selectedTasks.length !== 0">
+        <div v-if="notAlreadyBooked.length !== 0">
             <ul>
                 <li>
                     <SelectedTask
-                        v-for="selectedTask in selectedTasks"
+                        v-for="selectedTask in notAlreadyBooked"
                         :key="selectedTask.uniqueId"
                         :taskKey="selectedTask.key"
                         :taskDirectLink="selectedTask.assignedToTicket ? selectedTask.issueLink : ''"
@@ -35,7 +35,10 @@
         computed: {
             ...mapState({
                 selectedTasks: state => state.moduleUser.selectedTasks
-            })
+            }),
+            notAlreadyBooked () {
+                return this.selectedTasks.filter((__task) => !__task.booked)
+            }
         }
     }
 </script>

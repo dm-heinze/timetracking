@@ -154,6 +154,11 @@
                         if (__selectedTask.timeSpent !== '0') return __selectedTask.timeSpent;
                     })
 
+                    // if only visible/non-booked tasks should be part of calculation
+                    /* const allSelectedTasksTimes = this.selectedTasks
+                        .filter((__selected) => !__selected.booked)
+                        .map((__selectedTask) => { if (__selectedTask.timeSpent !== '0') return __selectedTask.timeSpent }) */
+
                     for (let timeSpentOnIndividualSelectedTask of allSelectedTasksTimes) {
                         sumOfWorkedTime += timeSpentOnIndividualSelectedTask
                     }
