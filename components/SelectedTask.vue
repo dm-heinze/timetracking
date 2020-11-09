@@ -8,7 +8,7 @@
                 </li>
             </a>
             <div v-else-if="editingName">
-                <input type="text" :value="taskKey" @input="saveEditedCustomTaskName">
+                <input type="text" :value="taskKey" @input="saveEditedCustomTaskName" @keyup.esc="toggleNameEditing(true)" @keyup.enter.prevent="toggleNameEditing()">
             </div>
 
             <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm' }" v-if="!booked">
@@ -18,8 +18,6 @@
                         <save-icon v-else />
                         <span class="pl-1">{{ editingName ? 'Save' : 'Edit' }} Name</span>
                     </b-button>
-
-                    <button v-if="!assignedToTicket && editingName" class="icon-close" @click.prevent="toggleNameEditing(true)">Cancel</button>
 
                     <b-button pill variant="light-grey" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' }" @click.prevent="toggleTicketAssignment()">
                         <plus-circle-icon />
@@ -138,7 +136,7 @@
                         <div class="font-weight-bold pr-1">Total:</div>
                         <div v-if="!editingTrackedTime" class="selected-ticket__tracked-time__displayed">{{ parsedTimeSpent }}</div>
                         <div v-else class="selected-ticket__tracked-time__editing pl-2">
-                            <input type="time" step="1" :value="parsedTimeSpent" @input="saveEditedWorklogTimeSpent">
+                            <input type="time" step="1" :value="parsedTimeSpent" @input="saveEditedWorklogTimeSpent" @keyup.enter.prevent="activateEditModeForTrackedTime">
                         </div>
                         <button v-if="!booked"
                                 class="btn--edit"

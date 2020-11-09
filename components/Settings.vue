@@ -12,6 +12,7 @@
                 :disabled="$nuxt.isOffline"
                 :class="{ 'disabled': $nuxt.isOffline }"
                 class="form-control rounded-pill pt-4 pl-4 pb-4"
+                @keyup.esc="resetSearch()"
             />
             <button :disabled="searchTerm === '' && searchLoading" @click="resetSearch()">
                 <search-icon v-if="!searchLoading && searchTerm === ''" />
