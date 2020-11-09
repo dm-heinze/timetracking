@@ -104,7 +104,7 @@
     }
 
     .modal__main-container {
-        padding: 20px 30px;
+        padding: 20px 30px !important;
 
         &__main-text {
             font-size: 14px;
@@ -116,7 +116,7 @@
     .modal__actions {
         padding: 8px 30px 20px;
 
-        .modal__cancel-btn, .modal__save-btn {
+        .modal__cancel-btn, .modal__save-btn, button {
             padding: 12px 30px;
         }
 
@@ -127,6 +127,15 @@
             &:hover {
                 @include button-hover-styles;
             }
+        }
+    }
+
+    .modal__feedback__footer {
+        border: none;
+        margin-top: -20px;
+
+        button {
+            font-weight: bold;
         }
     }
 }

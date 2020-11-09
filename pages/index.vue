@@ -237,24 +237,36 @@
                     .then(() => {
                         this.$bvModal.msgBoxOk('Worklogs were successfully booked', {
                             centered: true,
-                            okVariant: 'success'
+                            okVariant: 'success rounded-pill',
+                            okTitle: 'Okay',
+                            bodyClass: 'modal__main-container',
+                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                         })
                     })
                     .catch((__res) => {
                         if (__res === 'hasUnassignedCustomTasks') {
                             this.$bvModal.msgBoxOk('There are unassigned custom tasks. Either assign them to tickets or remove before booking.', {
                                 centered: true,
-                                okVariant: 'danger'
+                                okVariant: 'danger rounded-pill',
+                                okTitle: 'Okay',
+                                bodyClass: 'modal__main-container',
+                                footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                             })
                         } else if ('hasNonTrackedTasks') {
                             this.$bvModal.msgBoxOk('There are tasks with no tracked time. Please remove or edit before booking.', {
-                                centered: true,
-                                okVariant: 'danger'
-                            })
+                            centered: true,
+                            okVariant: 'danger rounded-pill',
+                            okTitle: 'Okay',
+                            bodyClass: 'modal__main-container',
+                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                        })
                         } else {
                             this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
                                 centered: true,
-                                okVariant: 'danger'
+                                okVariant: 'danger rounded-pill',
+                                okTitle: 'Okay',
+                                bodyClass: 'modal__main-container',
+                                footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                             })
                         }
                     });

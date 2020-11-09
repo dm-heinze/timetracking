@@ -102,11 +102,14 @@
                         outline: none;
                         color: $primary;
 
+                        &.disabled {
+                            color: $light-grey;
+                        }
+
                     &:hover {
                         color: $secondary;
 
                             &.disabled {
-                                color: $light-grey;
                                 cursor: not-allowed;
                             }
                         }
@@ -118,6 +121,7 @@
                 }
 
                 .selected-ticket__tracked-time__displayed {
+                    width: $tracker-width;
 
                     div {
                         padding: 0 10px 0 10px;

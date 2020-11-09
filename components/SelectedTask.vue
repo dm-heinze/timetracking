@@ -107,7 +107,6 @@
                                 </div>
                             </template>
                         </b-modal>
-
                     </button>
 
                     <button v-b-modal="`confirm-deletion-modal-${uniqueId}`">
@@ -291,13 +290,19 @@
                     .then(() => {
                         this.$bvModal.msgBoxOk('Worklog was successfully booked', {
                             centered: true,
-                            okVariant: 'success'
+                            okVariant: 'success rounded-pill',
+                            okTitle: 'Okay',
+                            bodyClass: 'modal__main-container',
+                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                         })
                     })
                     .catch(() => {
                         this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
                             centered: true,
-                            okVariant: 'danger'
+                            okVariant: 'danger rounded-pill',
+                            okTitle: 'Okay',
+                            bodyClass: 'modal__main-container',
+                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                         })
                     })
             },
