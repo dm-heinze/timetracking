@@ -16,7 +16,9 @@
                             type="text"
                             class="form-control rounded-pill pt-4 pl-4 pb-4"
                             placeholder="Username"
-                            v-model="userObj.name" />
+                            v-model="userObj.name"
+                            @keyup.enter.prevent="setUser()"
+                        />
                     </div>
                     <div class="row mt-3">
                         <b-form-input
@@ -24,14 +26,19 @@
                             type="password"
                             class="form-control rounded-pill pt-4 pl-4 pb-4"
                             placeholder="Password"
-                            v-model="userObj.pass" />
+                            v-model="userObj.pass"
+                            @keyup.enter.prevent="setUser()"
+                        />
                     </div>
-                    <div class="row login-content__problem d-flex mt-2" :class="{ 'justify-content-between': $mq === 'lg', 'justify-content-center': $mq === 'sm' || $mq === 'md' }">
+                    <div class="row login-content__problem d-flex mt-2" :class="{ 'justify-content-between': $mq === 'lg', 'flex-column align-items-center': $mq === 'sm' || $mq === 'md' }">
                         <div class="login-content__error-message" :class="{ 'ml-4': $mq === 'lg' }">{{ errorMessage }}</div>
                         <div :class="{ 'mr-3': $mq === 'lg' }"><a :href="directLinkPasswordReset">Forgot password?</a></div>
                     </div>
                     <div class="row">
-                        <b-button pill variant="primary" @click.prevent="setUser()" type="button" class="mt-4 col-12 login-content__sign-in-btn pt-2 pb-2">Sign In</b-button>
+                        <b-button pill variant="primary" @click.prevent="setUser()" type="button" class="mt-4 col-12 login-content__sign-in-btn pt-2 pb-2" :disabled="loading">
+                            <b-icon v-if="loading" icon="three-dots" animation="cylon" font-scale="1"></b-icon>
+                            <span v-else>Sign In</span>
+                        </b-button>
                     </div>
                 </form>
             </b-col>
@@ -48,16 +55,19 @@
 
 <script>
     import { mapActions } from 'vuex';
+    import { BIcon, BIconThreeDots } from 'bootstrap-vue';
 
     export default {
         name: 'login',
+        components: { BIcon, BIconThreeDots },
         data() {
             return {
                 userObj: {
                     name: null,
                     pass: null
                 },
-                errorMessage: ''
+                errorMessage: '',
+                loading: false
             }
         },
         computed: {
@@ -75,9 +85,23 @@
                 createApiObject: 'moduleUser/createApiObject',
             }),
             setUser: function () {
-                this.createApiObject({ data: this.userObj })
-                    .then(() => this.$router.push('/'))
-                    .catch((__errorMessage) => this.errorMessage = __errorMessage);
+                if (_.isEmpty(this.userObj.name) || _.isEmpty(this.userObj.pass)) {
+                    this.errorMessage = "Please enter both username and password."
+                } else {
+                    this.loading = true;
+
+                    this.createApiObject({ data: this.userObj })
+                        .then(() => {
+                            this.loading = false;
+
+                            this.$router.push('/');
+                        })
+                        .catch((__errorMessage) => {
+                            this.loading = false;
+
+                            this.errorMessage = __errorMessage;
+                        });
+                }
             }
         },
         mounted() {

@@ -48,5 +48,9 @@
         &:hover {
             @include box-shadow;
         }
+
+        &.disabled {
+            cursor: not-allowed;
+        }
     }
 }

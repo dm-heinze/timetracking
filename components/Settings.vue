@@ -112,6 +112,8 @@
                 addSelectedTask: 'moduleUser/addSelectedTask'
             }),
             removeCurrentSession: function () {
+                this.toggleSettings();
+
                 this.requestSessionRemoval()
                     .then(() => this.$router.push('/customer/login'))
                     .catch(() => console.log("err occurred"));
