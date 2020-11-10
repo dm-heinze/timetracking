@@ -63,15 +63,12 @@
 
 <script>
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { BIcon, BIconBookmark, BIconBookmarkCheckFill, BIconPlusSquare } from 'bootstrap-vue'; //
     import { PlusCircleIcon, BookmarkIcon } from 'vue-feather-icons';
     import _ from "lodash";
 
     export default {
         name: "SearchResults",
-        components: {
-            BIcon, BIconBookmark, BIconBookmarkCheckFill, BIconPlusSquare, PlusCircleIcon, BookmarkIcon //
-        },
+        components: { PlusCircleIcon, BookmarkIcon },
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,

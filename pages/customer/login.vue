@@ -91,11 +91,7 @@
                     this.loading = true;
 
                     this.createApiObject({ data: this.userObj })
-                        .then(() => {
-                            this.loading = false;
-
-                            this.$router.push('/');
-                        })
+                        .then(() => this.$router.push('/', () => this.loading = false))
                         .catch((__errorMessage) => {
                             this.loading = false;
 
