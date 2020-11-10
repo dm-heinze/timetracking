@@ -12,7 +12,7 @@ export default function ({app, store, route, error, redirect}) {
         // redirect to login form
 
         let hasSessionKey = false;
-        if (!_.isEmpty(store.state.moduleUser.sessionObject) && !_.isEmpty(store.state.moduleUser.currentUser)) {
+        if (!_.isEmpty(store.state.moduleUser.sessionObject)) {
             if (store.state.moduleUser.sessionObject.value !== '') hasSessionKey = true;
         }
 

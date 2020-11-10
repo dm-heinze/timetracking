@@ -14,7 +14,7 @@ const response = function (request, response) {
             cookie: `JSESSIONID=${parsedDataObject.sessionId}`,
         }
 
-        const jqlSearchString = `assignee = ${parsedDataObject.currentUser} AND resolution = Unresolved order by updated DESC`;
+        const jqlSearchString = `assignee = currentUser() AND resolution = Unresolved order by updated DESC`;
 
         axios({
             method: 'POST', // use POST to get the assigned tickets only

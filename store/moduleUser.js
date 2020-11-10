@@ -60,19 +60,8 @@ export const mutations = {
     setSessionObject: (state, value) => {
         state.sessionObject = value;
     },
-    setCurrentUser: (state, value) => {
-        if (_.isEmpty(value)) {
-            state.currentUser = {}
-        } else {
-            state.currentUser = {
-                // avatar: value.avatarUrls['48x48'],
-                displayName: value.displayName,
-                key: value.key,
-                name: value.name,
-                emailAddress: value.emailAddress
-                // timeZone: value.timeZone
-            }
-        }
+    setCurrentUserName: (state, value) => {
+        state.currentUser = { name: value.name }
     },
     setSearchResult: (state, value) => {
         state.searchResults = value;
@@ -258,40 +247,6 @@ export const actions = {
             }
         })
     },
-    saveCurrentUserToStorage: function ({ state }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.setItem('JIRAUSER', {
-                // avatar: state.currentUser.avatarUrls['48x48'],
-                displayName: state.currentUser.displayName,
-                key: state.currentUser.key,
-                name: state.currentUser.name,
-                emailAddress: state.currentUser.emailAddress
-                // timeZone: state.currentUser.timeZone
-            })
-                .then(() => resolve())
-                .catch(() => reject())
-        })
-    },
-    retrieveCurrentUserFromStorage: function({ commit }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.getItem('JIRAUSER').then((__result) => {
-                if (!_.isEmpty(__result)) {
-                    commit('setCurrentUser', {
-                        // avatar: __result.avatarUrls['48x48'],
-                        displayName: __result.displayName,
-                        key: __result.key,
-                        name: __result.name,
-                        emailAddress: __result.emailAddress
-                        // timeZone: __result.timeZone
-                    })
-
-                    resolve();
-                } else {
-                    resolve();
-                }
-            })
-        })
-    },
     removeFromStorage: function({commit, state}, payload) {
         return new Promise((resolve, reject) => {
             this.$localForage.removeItem(payload)
@@ -335,20 +290,13 @@ export const actions = {
                 .then((_response) => {
                     if (_response.data.status === 204) {
                         commit('setSessionObject', {});
-                        commit('setCurrentUser', {});
+                        commit('setCurrentUserName', {});
                         commit('setSearchResult', []);
                         commit('setUserName', {});
                         commit('setUserPass', {});
 
                         dispatch('removeFromStorage', 'JSESSIONID')
-                            .then(() => {
-                                dispatch('removeFromStorage', 'JIRAUSER')
-                                    .then(() => resolve())
-                                    .catch(() => {
-                                        console.log("err occurred while removing entry from storage");
-                                        reject();
-                                    })
-                            })
+                            .then(() => resolve())
                             .catch(() => {
                                 console.log("err occurred while removing entry from storage");
                                 reject();
@@ -376,16 +324,7 @@ export const actions = {
                             commit('setSessionObject', response.data);
 
                             dispatch('saveSessionIdToStorage')
-                                .then(() => {
-                                    dispatch('getCurrentUser')
-                                        .then(() => {
-                                            commit('setUserName', {});
-                                            commit('setUserPass', {});
-
-                                            resolve()
-                                        })
-                                        .catch(() => reject());
-                                })
+                                .then(() => resolve())
                                 .catch(() => console.log("err occurred while saving to localForage"))
                         }
                     } else {
@@ -395,24 +334,6 @@ export const actions = {
                 .catch(() => {
                     reject();
                 })
-        })
-    },
-    getCurrentUser: function({ commit, state, dispatch }) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/getCurrentUser', { sessionId: state.sessionObject.value })
-                .then((__res) => {
-                    if (!_.isEmpty(__res.data)) {
-                        commit('setCurrentUser', __res.data);
-
-                        dispatch('saveCurrentUserToStorage').then(() => resolve()).catch(() => reject());
-                    } else {
-                        resolve();
-                    }
-                })
-                .catch(() => {
-                    console.log("err in getCurrentUser occurred");
-                    reject();
-                });
         })
     },
     getIssue: function ({commit, state, dispatch}, payload) {
@@ -514,7 +435,7 @@ export const actions = {
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/getAssignedTickets', { sessionId: state.sessionObject.value, currentUser: state.currentUser.name })
+            axios.post('/api/getAssignedTickets', { sessionId: state.sessionObject.value })
                 .then((__res) => resolve(__res))
                 .catch(() => console.log("err occurred"))
         })
@@ -523,6 +444,8 @@ export const actions = {
         return new Promise((resolve, reject) => {
             dispatch('requestAssignedTickets')
                 .then((__res) => {
+                    commit('setCurrentUserName', { name: __res.data.issues[0].fields.assignee.name });
+
                     const __parsedAssignedIssues = __res.data.issues.map((__issue, index) => {
                         return {
                             key: __issue.key,
@@ -564,7 +487,9 @@ export const actions = {
 
                             __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue))
 
-                            dispatch('requestAllProjects').then(() => resolve()).catch(() => console.log("err happened")); // todo
+                            dispatch('requestAllProjects')
+                                .then(() => resolve())
+                                .catch(() => console.log("err happened")); // todo
                         })
                         .catch((err) => console.log("err occurred: ", err))
 
