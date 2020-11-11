@@ -27,6 +27,7 @@
         "nuxt": "^2.6.3",
         "nuxt-mq": "^2.0.1",
         "tls": "0.0.1",
+        "v-click-outside": "^2.1.5",
         "vue-feather-icons": "^5.1.0"
     },
     "devDependencies": {

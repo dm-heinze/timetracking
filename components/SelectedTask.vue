@@ -8,12 +8,12 @@
                 </li>
             </a>
             <div v-else-if="editingName">
-                <input type="text" :value="taskKey" @input="saveEditedCustomTaskName" @keyup.esc="toggleNameEditing(true)" @keyup.enter.prevent="toggleNameEditing()">
+                <input type="text" :value="taskKey" @input="saveEditedCustomTaskName" @keyup.esc="toggleNameEditingClassic(true)" @keyup.enter.prevent="toggleNameEditingClassic()" name="customNameEditField">
             </div>
 
             <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm' }" v-if="!booked">
                 <div v-if="!booked" class="selected-ticket__heading__assignments d-flex" :class="[flexDirection]">
-                    <b-button size="sm" v-if="!assignedToTicket" pill :variant="editingName ? 'success' : 'light-grey'" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' }" @click.prevent="toggleNameEditing()">
+                    <b-button size="sm" v-if="!assignedToTicket" pill :variant="editingName ? 'success' : 'light-grey'" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' }" @click.prevent="toggleNameEditingClassic()" v-click-outside="toggleNameEditing">
                         <edit2-icon v-if="!editingName" />
                         <save-icon v-else />
                         <span class="pl-1">{{ editingName ? 'Save' : 'Edit' }} Name</span>
@@ -164,6 +164,10 @@
     import { mapState, mapMutations, mapActions } from 'vuex';
     import { XIcon, Edit2Icon, SaveIcon, PlusCircleIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, ChevronDownIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
     import _ from "lodash";
+    import Vue from 'vue';
+    import vClickOutside from 'v-click-outside';
+    Vue.use(vClickOutside);
+
 
     export default {
         name: "SelectedTask",
@@ -368,15 +372,20 @@
             activateEditModeForTrackedTime: function () {
                 this.editingTrackedTime = !this.editingTrackedTime;
             },
-            toggleNameEditing: function (cancelEdit = false) {
+            toggleNameEditingClassic: function (cancelEdit = false) {
                 this.editingName = !this.editingName;
-
                 if (cancelEdit) this.localEditedName = ''; // on cancel revert to initial state
-
                 if (!this.editingName && (this.uniqueId !== this.localEditedName) && !_.isEmpty(this.localEditedName) && !cancelEdit) {
                     this.assignNameToCustomTask({ assignedTaskKey: this.localEditedName, currentTaskKey: this.uniqueId });
-
                     this.saveSelectedTasksToStorage();
+                }
+            },
+            toggleNameEditing: function (event) {
+                if (!this.editingName) this.editingName = !this.editingName;
+
+                if (event !== undefined && this.editingName && (event.target.name !== 'customNameEditField')) {
+                    this.editingName = !this.editingName;
+                    this.localEditedName = '';
                 }
             },
             saveEditedCustomTaskName: function (event) {
