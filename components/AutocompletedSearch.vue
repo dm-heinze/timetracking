@@ -34,6 +34,7 @@
     import { mapMutations, mapState, mapActions } from 'vuex';
     import _ from "lodash";
     import { SearchIcon, XIcon } from 'vue-feather-icons';
+    import { regexForTicketKeys } from "../utility/constants";
 
     export default {
         name: "AutocompletedSearch",
@@ -48,10 +49,21 @@
         computed: {
             ...mapState({
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
+                searchResults: state => state.moduleUser.searchResults,
                 selectedTasks: state => state.moduleUser.selectedTasks
             }),
             searchResultList () {
-                if (!this.alreadyExists) return this.prefilledSearchSuggestions;
+                if (!this.alreadyExists) {
+                    let resultsToBeDisplayed = _.cloneDeep(this.searchResults);
+                    let keyOfResultsToBeDisplayed = resultsToBeDisplayed.map((__resultToBeDisplayed) => __resultToBeDisplayed.key);
+
+                    this.prefilledSearchSuggestions.forEach((__prefilledSuggestion) => {
+                        if (!_.includes(keyOfResultsToBeDisplayed, __prefilledSuggestion.key)) resultsToBeDisplayed.push(__prefilledSuggestion);
+                    })
+
+                    return resultsToBeDisplayed;
+                }
+
                 if (this.alreadyExists) {
                     const __searchTerm = this.searchTerm;
 
@@ -78,8 +90,9 @@
             },
             requestSearch: _.debounce(function () {
                 if (!_.isEmpty(this.searchTerm)) {
-                    const isAlreadyInSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase());
-                    if (isAlreadyInSuggestions.length === 0) {
+                    let isAlreadyInSuggestions = 0;
+                    if(this.searchTerm.match(regexForTicketKeys)) isAlreadyInSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase()).length;
+                    if (isAlreadyInSuggestions === 0) {
                         this.searchLoading = true;
                         this.getIssue({ searchTerm: this.searchTerm }).then(() => this.searchLoading = false);
                     } else {
