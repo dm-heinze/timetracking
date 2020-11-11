@@ -163,7 +163,7 @@
             }
         }
         .selected-ticket__toggle-btn { //
-            padding-top: 16px;
+            padding-top: $default__font-size;
 
             & button {
                 border: none;
@@ -175,19 +175,23 @@
 
                 & svg {
                     color: $dark-grey;
+                    height: 20px; //
+                    width: 36px; //
                 }
 
                 &::after {
                     content: '';
-                    width: 36px;
-                    height: 35px;
-                    border-radius: 13.5px;
+                    width: 36px; //
+                    height: 35px; //
+                    border-radius: 13.5px; //
                     background-color: $muted-white;
                     position: absolute;
                     bottom: -10px;
                     z-index: -1;
                     left: 0;
+                    right: 0;
                     transform: rotate(90deg);
+                    margin: 0 auto;
                 }
             }
         }
