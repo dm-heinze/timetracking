@@ -140,7 +140,8 @@
                 onABreak: state => state.moduleUser.onABreak,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket,
-                settingsOpen: state => state.moduleUser.settingsOpen
+                settingsOpen: state => state.moduleUser.settingsOpen,
+                searchResults: state => state.moduleUser.searchResults,
             }),
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
@@ -187,6 +188,9 @@
                     // save to localStorage
                     this.saveBreaksToStorage();
                 }
+            },
+            settingsOpen: function(newValue) {
+                if (newValue && this.searchResults.length !== 0) this.setSearchResult([]);
             }
         },
         methods: {
@@ -204,7 +208,8 @@
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
                 setLastTicket: 'moduleUser/setLastTicket',
                 addBreak: 'moduleUser/addBreak',
-                toggleSettings: 'moduleUser/toggleSettings'
+                toggleSettings: 'moduleUser/toggleSettings',
+                setSearchResult: 'moduleUser/setSearchResult'
             }),
             startNewCustomTask: function () {
                 const newCustomTask = {

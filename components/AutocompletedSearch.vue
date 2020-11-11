@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="sidebar-search">
         <div class="autocompleted-search__container">
             <b-form-input
                 v-model="searchTerm"
@@ -17,28 +17,38 @@
                 <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
             </button>
         </div>
-        <transition name="fade">
-            <div v-if="!searchLoading && (searchTerm !== '')" class="autocompleted-search__results">
-                <ul>
-                    <li v-for="searchResult in searchResultList" @click.prevent="addTicketToSelectedTasks(searchResult)" :key="searchResult.key">
-                        <div v-b-toggle.sidebar-search><b-badge variant="primary">{{ searchResult.key }}</b-badge> <span>{{ searchResult.summary }}</span></div>
-                    </li>
-                </ul>
-            </div>
-            <div v-if="$nuxt.isOffline">No network connection available. You can track your time with a custom task instead.</div>
-        </transition>
+
+        <div v-if="!searchLoading && (searchTerm !== '')" class="autocompleted-search__results">
+            <b-list-group>
+                <b-list-group-item
+                    v-for="searchResult in searchResultList"
+                    :key="searchResult.key"
+                    class="d-flex justify-content-between"
+                    @click="addTicketToSelectedTasks(searchResult)"
+                >
+                    <div class="ticket__info">
+                        <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
+                        <div class="ticket__info__summary">{{ searchResult.summary }}</div>
+                    </div>
+                    <div class="ticket__actions">
+                        <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" />
+                    </div>
+                </b-list-group-item>
+            </b-list-group>
+        </div>
+        <div v-if="$nuxt.isOffline">No network connection available. You can track your time with a custom task instead.</div>
     </div>
 </template>
 
 <script>
     import { mapMutations, mapState, mapActions } from 'vuex';
     import _ from "lodash";
-    import { SearchIcon, XIcon } from 'vue-feather-icons';
+    import { SearchIcon, XIcon, PlusCircleIcon } from 'vue-feather-icons';
     import { regexForTicketKeys } from "../utility/constants";
 
     export default {
         name: "AutocompletedSearch",
-        components: { SearchIcon, XIcon },
+        components: { SearchIcon, XIcon, PlusCircleIcon },
         data() {
             return {
                 searchTerm: '',
@@ -105,7 +115,7 @@
                 __selection.uniqueId = _.now();
                 this.addSelectedTask(__selection);
                 this.saveSelectedTasksToStorage();
-                this.searchTerm = '';
+                // this.searchTerm = ''; // toggles visibility of search results
                 this.alreadyExists = false;
             }
         }
