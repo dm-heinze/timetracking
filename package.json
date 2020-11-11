@@ -15,8 +15,10 @@
     "dependencies": {
         "@nuxtjs/axios": "^5.3.6",
         "@nuxtjs/dotenv": "^1.4.1",
+        "base-64": "^1.0.0",
         "bootstrap": "^4.3.1",
         "bootstrap-vue": "^2.0.0-rc.19",
+        "cookie-universal-nuxt": "^2.1.4",
         "cross-env": "^7.0.2",
         "fs": "0.0.1-security",
         "localforage-nuxt": "1.0.5",

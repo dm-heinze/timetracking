@@ -58,7 +58,8 @@ export default {
         // Doc: https://bootstrap-vue.js.org/docs/
         'bootstrap-vue/nuxt',
         'localforage-nuxt',
-        'nuxt-mq'
+        'nuxt-mq',
+        'cookie-universal-nuxt'
     ],
     buildModules: [
         ['@nuxtjs/dotenv', {

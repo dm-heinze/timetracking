@@ -1,5 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
+import base64 from 'base-64';
 
 export const state = () => ({
     user: {
@@ -254,27 +255,31 @@ export const actions = {
                 .catch(() => reject())
         })
     },
-    saveSessionIdToStorage: function({commit, state}, payload) {
+    removeFromCookies: function({commit, state}, payload) {
         return new Promise((resolve, reject) => {
-            // todo
-            this.$localForage.setItem(state.sessionObject.name, { sessionId: state.sessionObject.value, addedAt: Date.now() })
-                .then(() => resolve())
-                .catch(() => {
-                    console.log("err occurred when saving to localForage");
-                    reject();
-                })
+            this.$cookies.remove(payload);
+
+            resolve();
         })
     },
-    retrieveSessionFromStorage: function({ commit, state }, payload) {
+    saveSessionIdToCookies: function({commit, state}, payload) {
         return new Promise((resolve, reject) => {
-            this.$localForage.getItem('JSESSIONID').then((__result) => {
-                if (!_.isEmpty(__result)) {
-                    commit('setSessionObject', { value: __result.sessionId, name: 'JSESSIONID' })
-                    resolve();
-                } else {
-                    resolve();
-                }
-            })
+            this.$cookies.set(state.sessionObject.name, base64.encode(state.sessionObject.value))
+
+            resolve();
+        })
+    },
+    retrieveSessionFromCookies: function({ commit, state }, payload) {
+        return new Promise((resolve, reject) => {
+            const __sessionIdVal = this.$cookies.get('JSESSIONID')
+            if (!_.isEmpty(__sessionIdVal)) {
+                commit('setSessionObject', { value: base64.decode(__sessionIdVal), name: 'JSESSIONID' })
+
+                resolve();
+            } else {
+                resolve();
+            }
+
         })
     },
     setUser: function({commit, state}, payload) {
@@ -295,7 +300,7 @@ export const actions = {
                         commit('setUserName', {});
                         commit('setUserPass', {});
 
-                        dispatch('removeFromStorage', 'JSESSIONID')
+                        dispatch('removeFromCookies', 'JSESSIONID')
                             .then(() => resolve())
                             .catch(() => {
                                 console.log("err occurred while removing entry from storage");
@@ -323,7 +328,7 @@ export const actions = {
                         if (response.data !== 401 && response.data !== 403) {
                             commit('setSessionObject', response.data);
 
-                            dispatch('saveSessionIdToStorage')
+                            dispatch('saveSessionIdToCookies')
                                 .then(() => resolve())
                                 .catch(() => console.log("err occurred while saving to localForage"))
                         }
