@@ -35,7 +35,7 @@
                         <template v-slot:default>
                             <div class="modal__main-container">
                                 <div class="select__container mb-3">
-                                    <b-form-select v-model="selectedProject" class="rounded-pill pl-4 px-4">
+                                    <b-form-select v-model="selectedProject" class="rounded-pill pl-4 pr-5">
                                         <b-form-select-option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</b-form-select-option>
                                         <b-form-select-option v-else disabled value="">Select a project</b-form-select-option>
                                         <b-form-select-option
@@ -48,7 +48,7 @@
                                 </div>
 
                                 <div class="select__container mb-3">
-                                    <b-form-select  v-model="selectedTicket" :disabled="selectedProject === ''" class="rounded-pill pl-4 px-4">
+                                    <b-form-select  v-model="selectedTicket" :disabled="selectedProject === ''" class="rounded-pill pl-4 pr-5">
                                         <b-form-select-option v-if="!relatedTickets.length && selectedProject !== ''" disabled value="">Loading Related Tickets...</b-form-select-option>
                                         <b-form-select-option v-else disabled value="">Select a ticket</b-form-select-option>
                                         <b-form-select-option

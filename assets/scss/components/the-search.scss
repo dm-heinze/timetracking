@@ -3,6 +3,8 @@
 
     select {
         height: 50px; //
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
         option {
             overflow: hidden;
