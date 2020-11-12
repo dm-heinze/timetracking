@@ -34,26 +34,31 @@
                         </template>
                         <template v-slot:default>
                             <div class="modal__main-container">
-                                <select v-model="selectedProject" class="custom-select selected-ticket__heading__assignments__project-selection mb-3">
-                                    <option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</option>
-                                    <option v-else disabled value="">Select a project</option>
-                                    <option
-                                        v-for="existingProject in allExistingProjects"
-                                        :value="existingProject.id"
-                                    >{{ existingProject.name }}</option>
-                                </select>
-                                <button :disabled="!allExistingProjects.length" class="selected-ticket__heading__assignments__projects-btn">
-                                    <chevron-down-icon />
-                                </button>
+                                <div class="select__container mb-3">
+                                    <b-form-select v-model="selectedProject" class="rounded-pill pl-4 px-4">
+                                        <b-form-select-option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</b-form-select-option>
+                                        <b-form-select-option v-else disabled value="">Select a project</b-form-select-option>
+                                        <b-form-select-option
+                                            v-for="existingProject in allExistingProjects"
+                                            :value="existingProject.id"
+                                            :key="existingProject.id"
+                                        >{{ existingProject.name }}</b-form-select-option>
+                                    </b-form-select>
+                                    <chevron-down-icon class="select__icon" />
+                                </div>
 
-                                <select v-model="selectedTicket" :disabled="selectedProject === ''" class="custom-select">
-                                    <option v-if="!relatedTickets.length && selectedProject !== ''" disabled value="">Loading Related Tickets...</option>
-                                    <option v-else disabled value="">Select a ticket</option>
-                                    <option
-                                        v-for="relatedTicket in relatedTickets"
-                                        :value="relatedTicket.key"
-                                    >{{ relatedTicket.key }}: {{ relatedTicket.summary }}</option>
-                                </select>
+                                <div class="select__container mb-3">
+                                    <b-form-select  v-model="selectedTicket" :disabled="selectedProject === ''" class="rounded-pill pl-4 px-4">
+                                        <b-form-select-option v-if="!relatedTickets.length && selectedProject !== ''" disabled value="">Loading Related Tickets...</b-form-select-option>
+                                        <b-form-select-option v-else disabled value="">Select a ticket</b-form-select-option>
+                                        <b-form-select-option
+                                            v-for="relatedTicket in relatedTickets"
+                                            :value="relatedTicket.key"
+                                            :key="relatedTicket.key"
+                                        >{{ relatedTicket.key }}: {{ relatedTicket.summary }}</b-form-select-option>
+                                    </b-form-select>
+                                    <chevron-down-icon class="select__icon" />
+                                </div>
                             </div>
                         </template>
                         <template v-slot:modal-footer="{ ok, cancel }">

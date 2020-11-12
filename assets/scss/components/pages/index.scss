@@ -111,6 +111,17 @@
             color: $primary;
             padding-bottom: 20px;
         }
+
+        .select__container {
+
+            select {
+                height: inherit;
+            }
+
+            svg {
+                right: 15px; //
+            }
+        }
     }
 
     .modal__actions {
