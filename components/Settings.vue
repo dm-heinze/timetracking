@@ -29,9 +29,9 @@
                     :key="searchResult.key"
                     class="d-flex justify-content-between"
                 >
-                    <div class="ticket__info">
+                    <div class="ticket__info col-10">
                         <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
-                        <div class="ticket__info__summary">{{ searchResult.summary }}</div>
+                        <div class="ticket__info__summary text-truncate">{{ searchResult.summary }}</div>
                     </div>
                     <div class="ticket__actions">
                         <bookmark-icon
@@ -58,9 +58,9 @@
                     :key="bookmarkedTicket.key"
                     class="d-flex justify-content-between"
                 >
-                    <div class="ticket__info">
+                    <div class="ticket__info col-10">
                         <div class="ticket__info__key font-weight-bold">{{ bookmarkedTicket.key }}</div>
-                        <div class="ticket__info__summary">{{ bookmarkedTicket.summary }}</div>
+                        <div class="ticket__info__summary text-truncate">{{ bookmarkedTicket.summary }}</div>
                     </div>
                     <div class="ticket__actions">
                         <bookmark-icon class="ticket__icon align-self-center ticket__icon--bookmarked" @click="toggleBookmarked(bookmarkedTicket.key)" />

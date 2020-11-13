@@ -8,9 +8,9 @@
                 @click="addToSelectedIssues(assignedTicket)"
                 class="d-flex justify-content-between"
             >
-                <div class="ticket__info">
+                <div class="ticket__info col-11">
                     <div class="ticket__info__key font-weight-bold">{{ assignedTicket.key }}</div>
-                    <div class="ticket__info__summary">{{ assignedTicket.summary }}</div>
+                    <div class="ticket__info__summary text-truncate">{{ assignedTicket.summary }}</div>
                 </div>
 
                 <plus-circle-icon class="ticket__icon align-self-center" />
@@ -27,9 +27,9 @@
                     @click="addToSelectedIssues(searchResult)"
                     class="d-flex justify-content-between"
                 >
-                    <div class="ticket__info">
+                    <div class="ticket__info col-11">
                         <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
-                        <div class="ticket__info__summary">{{ searchResult.summary }}</div>
+                        <div class="ticket__info__summary text-truncate">{{ searchResult.summary }}</div>
                     </div>
 
                     <plus-circle-icon class="ticket__icon align-self-center" />
@@ -49,9 +49,9 @@
                     class="d-flex justify-content-between"
                     @click="addToSelectedIssues(bookmarkedTicket, false)"
                 >
-                    <div class="ticket__info">
+                    <div class="ticket__info col-11">
                         <div class="ticket__info__key font-weight-bold">{{ bookmarkedTicket.key }}</div>
-                        <div class="ticket__info__summary">{{ bookmarkedTicket.summary }}</div>
+                        <div class="ticket__info__summary text-truncate">{{ bookmarkedTicket.summary }}</div>
                     </div>
                     <plus-circle-icon class="ticket__icon align-self-center" />
                 </b-list-group-item>

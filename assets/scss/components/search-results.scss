@@ -6,6 +6,8 @@
     }
 
     .ticket__info {
+        margin-left: -15px; //
+
         &__key {
             color: $primary;
         }

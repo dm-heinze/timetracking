@@ -85,6 +85,10 @@
             display: flex;
             justify-content: space-between;
 
+            a {
+                margin-left: -15px; //
+            }
+
             &__summary {
                 color: $dark-grey;
                 font-size: $small-button__font-size;
