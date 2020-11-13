@@ -1,7 +1,7 @@
 <template>
     <div class="selected-ticket__container" :class="{ 'currently-active': markedAsActive, 'already-booked': booked }">
         <div class="selected-ticket__heading" :class="{ 'flex-column align-items-start': $mq === 'md', 'flex-column align-items-center': $mq === 'sm', 'align-items-center': $mq === 'lg' }">
-            <a :href="taskDirectLink" target="_blank" class="col-5 col-xl-6" v-if="!editingName">
+            <a :href="taskDirectLink" target="_blank" class="col-5" v-if="!editingName">
                 <li class="pb-2" :class="{ 'd-flex flex-column align-items-center justify-content-center': $mq === 'sm' }">
                     <div class="font-weight-bold">{{ taskKey }}</div>
                     <div class="selected-ticket__heading__summary text-truncate">{{ taskSummary }}</div>
@@ -74,18 +74,21 @@
                 <div class="ticket-trackers d-flex flex-row" :class="{ 'align-self-center': $mq === 'sm' }">
                     <button @click.prevent="updateIsTimerActiveState(uniqueId)"
                             :disabled="(isTimerActive && (activeTicket === uniqueId))"
+                            class="px-2"
                             :class="{'disabled': (isTimerActive && (activeTicket === uniqueId)) }">
                         <play-circle-icon />
                     </button>
 
                     <button @click.prevent="updateIsTimerActiveState(uniqueId)"
                             :disabled="(!isTimerActive && (activeTicket !== uniqueId)) || (isTimerActive && (activeTicket !== uniqueId)) || !isTimerActive"
+                            class="px-2"
                             :class="{'disabled': (!isTimerActive && (activeTicket !== uniqueId)) || (isTimerActive && (activeTicket !== uniqueId)) || !isTimerActive}">
                         <pause-circle-icon />
                     </button>
 
                     <button v-b-modal="`confirm-push-time-singleTaskOnly-${uniqueId}`"
                             :disabled="isTimerActive || !taskWorklogComment || !timeSpent || booked || !assignedToTicket"
+                            class="px-2"
                             :class="{'disabled':  isTimerActive || !taskWorklogComment || !timeSpent || booked || !assignedToTicket }">
                         <upload-cloud-icon />
 
@@ -112,7 +115,7 @@
                         </b-modal>
                     </button>
 
-                    <button v-b-modal="`confirm-deletion-modal-${uniqueId}`">
+                    <button v-b-modal="`confirm-deletion-modal-${uniqueId}`" class="px-2">
                         <trash2-icon />
                     </button>
                     <b-modal :id="`confirm-deletion-modal-${uniqueId}`" centered>
