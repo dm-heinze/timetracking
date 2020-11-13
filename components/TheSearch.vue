@@ -14,7 +14,7 @@
             <chevron-down-icon class="select__icon" />
         </div>
         <div v-show="selectedProject !== ''">
-            <div class="select__container mb-2">
+            <div class="select__container mb-3">
                 <b-form-select v-model="selectedTicket" class="rounded-pill pl-4 pr-5">
                     <b-form-select-option v-if="!relatedTickets.length" disabled value="">Loading Related Tickets...</b-form-select-option>
                     <b-form-select-option v-else disabled value="">Select a ticket</b-form-select-option>
@@ -26,8 +26,11 @@
                 </b-form-select >
                 <chevron-down-icon class="select__icon" />
             </div>
-            <div v-if="selectedTicket !== ''" class="d-flex justify-content-end">
-                <b-button pill variant="primary" class="font-weight-bold modal__save-btn pl-4 pr-4" @click.prevent="addSelectionToSelectedTasks()">Select</b-button>
+        </div>
+        <div class="select__container__actions d-flex justify-content-between">
+            <b-button v-if="selectedProject !== ''" pill class="font-weight-bold" @click.prevent="toggleProjectSelection()">Cancel</b-button>
+            <div v-if="selectedProject !== '' && selectedTicket !== ''">
+                <b-button pill variant="primary" class="font-weight-bold px-4 py-2" @click.prevent="addSelectionToSelectedTasks()">Select</b-button>
             </div>
         </div>
 
@@ -103,11 +106,14 @@
                 }
 
                 // reset search via project selection
-                this.selectedTicket = '';
-                this.selectedProject = '';
+                this.toggleProjectSelection();
 
                 this.addSelectedTask(selectedTaskObject);
                 this.saveSelectedTasksToStorage();
+            },
+            toggleProjectSelection: function () {
+                this.selectedTicket = '';
+                this.selectedProject = '';
             }
         }
     }
