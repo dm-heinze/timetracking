@@ -82,6 +82,7 @@
     import { mapState, mapActions, mapMutations } from 'vuex';
     import { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
     import _ from "lodash";
+    import { regexForTicketKeys } from "../utility/constants";
 
 	export default {
 		name: "Settings",
@@ -95,7 +96,8 @@
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
-                bookmarked: state => state.moduleUser.bookmarked
+                bookmarked: state => state.moduleUser.bookmarked,
+                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions
             })
         },
         methods: {
@@ -120,8 +122,17 @@
             },
             requestSearch: _.debounce(function () {
                 if (!_.isEmpty(this.searchTerm)) {
-                    this.searchLoading = true;
-                    this.getIssue({ searchTerm: this.searchTerm }).then(() => this.searchLoading = false);
+                    let isAlreadyInSuggestions = 0;
+                    let filteredSearchSuggestions;
+                    if(this.searchTerm.match(regexForTicketKeys)) {
+                        filteredSearchSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase());
+                        isAlreadyInSuggestions = filteredSearchSuggestions.length;
+                    }
+                    if (isAlreadyInSuggestions !== 0) this.setSearchResult(filteredSearchSuggestions);
+                    if (isAlreadyInSuggestions === 0) {
+                        this.searchLoading = true;
+                        this.getIssue({ searchTerm: this.searchTerm }).then(() => this.searchLoading = false);
+                    }
                 }
             }, 1100),
             toggleBookmarked: function (searchResultToBeToggled, summary = '') { // todo

@@ -26,9 +26,9 @@
                     class="d-flex justify-content-between"
                     @click="addTicketToSelectedTasks(searchResult)"
                 >
-                    <div class="ticket__info">
+                    <div class="ticket__info col-11">
                         <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
-                        <div class="ticket__info__summary">{{ searchResult.summary }}</div>
+                        <div class="ticket__info__summary text-truncate">{{ searchResult.summary }}</div>
                     </div>
                     <div class="ticket__actions">
                         <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" />
