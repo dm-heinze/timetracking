@@ -1,7 +1,7 @@
 <template>
     <div class="selected-ticket__container" :class="{ 'currently-active': markedAsActive, 'already-booked': booked }">
         <div class="selected-ticket__heading" :class="{ 'flex-column align-items-start': $mq === 'md', 'flex-column align-items-center': $mq === 'sm', 'align-items-center': $mq === 'lg' }">
-            <a :href="taskDirectLink" v-if="!editingName">
+            <a :href="taskDirectLink" target="_blank" v-if="!editingName">
                 <li class="pb-2" :class="{ 'd-flex flex-column align-items-center justify-content-center': $mq === 'sm' }">
                     <div class="font-weight-bold">{{ taskKey }}</div>
                     <div class="selected-ticket__heading__summary">{{ taskSummary }}</div>

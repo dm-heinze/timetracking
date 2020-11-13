@@ -479,7 +479,7 @@ export const actions = {
                                     key: issue.key,
                                     summary: issue.summary,
                                     assignee: '',
-                                    issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + this.searchTerm,
+                                    issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + issue.key,
                                     comment: '',
                                     timeSpent: 0,
                                     startTime: '',
