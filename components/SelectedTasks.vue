@@ -21,6 +21,7 @@
             </ul>
         </div>
         <div v-else>There are no selected issues</div>
+        <div v-if="showErrorMessages && (notAlreadyBooked.length === 0)" class="message--error">No selected issues</div>
     </div>
 </template>
 
@@ -34,7 +35,8 @@
         },
         computed: {
             ...mapState({
-                selectedTasks: state => state.moduleUser.selectedTasks
+                selectedTasks: state => state.moduleUser.selectedTasks,
+                showErrorMessages: state => state.moduleUser.showErrorMessages
             }),
             notAlreadyBooked () {
                 return this.selectedTasks.filter((__task) => !__task.booked)

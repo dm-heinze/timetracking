@@ -23,10 +23,14 @@ export const state = () => ({
     prefilledSearchSuggestions: [],
     lastTicket: '',
     bookmarked: [],
-    settingsOpen: false
+    settingsOpen: false,
+    showErrorMessages: false
 });
 
 export const mutations = {
+    toggleShowErrorMessages: (state, payload) => {
+        state.showErrorMessages = payload.show;
+    },
     toggleSettings: (state) => {
         state.settingsOpen = !state.settingsOpen;
     },
@@ -220,13 +224,13 @@ export const actions = {
     },
     requestSavingWorklogs: function ({ state, commit, dispatch }) {
         return new Promise(async (resolve, reject) => {
-            if (state.selectedTasks.length !== 0) {
+            if (state.selectedTasks.length !== 0) { // todo
                 let hasNonTrackedTasks = state.selectedTasks.filter((__selectedTask) => !(__selectedTask.timeSpent)).length !== 0;
 
                 let hasUnassignedCustomTasks = state.selectedTasks.filter((__selectedTask) => !__selectedTask.assignedToTicket).length !== 0;
 
-                if (hasNonTrackedTasks) reject("hasNonTrackedTasks");
-                if (hasUnassignedCustomTasks) reject("hasUnassignedCustomTasks");
+                if (hasNonTrackedTasks || hasUnassignedCustomTasks) reject();
+
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {

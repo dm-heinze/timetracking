@@ -1,3 +1,8 @@
+.message--error {
+    color: $danger;
+    font-weight: bold;
+}
+
 .overview {
     .sidebar__title {
         font-size: $sidebar-sections__font-size;

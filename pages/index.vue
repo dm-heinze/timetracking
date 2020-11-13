@@ -73,8 +73,7 @@
                                     type="button"
                                     class="login-content__sign-in-btn pt-2 pb-2"
                                     v-b-modal="'confirm-push-time'"
-                                    :disabled="selectedTasks.length===0 || everythingBookedAlready || !noMissingComments"
-                                    :class="{ 'disabled': selectedTasks.length===0 || everythingBookedAlready || !noMissingComments, 'mr-1': $mq === 'md' || $mq === 'lg' }"
+                                    :class="{ 'mr-1': $mq === 'md' || $mq === 'lg' }"
                                 >
                                     <send-icon />
                                     <span class="pl-1">Push all your tasks</span>
@@ -142,6 +141,7 @@
                 activeTicket: state => state.moduleUser.activeTicket,
                 settingsOpen: state => state.moduleUser.settingsOpen,
                 searchResults: state => state.moduleUser.searchResults,
+                showErrorMessages: state => state.moduleUser.showErrorMessages
             }),
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
@@ -168,6 +168,9 @@
             },
             noMissingComments () {
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.comment).length === 0;
+            },
+            noUnassignedCustomTasks () {
+                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.assignedToTicket).length === 0;
             },
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
@@ -209,7 +212,8 @@
                 setLastTicket: 'moduleUser/setLastTicket',
                 addBreak: 'moduleUser/addBreak',
                 toggleSettings: 'moduleUser/toggleSettings',
-                setSearchResult: 'moduleUser/setSearchResult'
+                setSearchResult: 'moduleUser/setSearchResult',
+                toggleShowErrorMessages: 'moduleUser/toggleShowErrorMessages'
             }),
             startNewCustomTask: function () {
                 const newCustomTask = {
@@ -237,34 +241,30 @@
             },
             saveWorklogs: function () {
                 this.$bvModal.hide('confirm-push-time'); // any cancel event needed?
-                this.requestSavingWorklogs()
-                    .then(() => {
-                        this.$bvModal.msgBoxOk('Worklogs were successfully booked', {
-                            centered: true,
-                            okVariant: 'success rounded-pill',
-                            okTitle: 'Okay',
-                            bodyClass: 'modal__main-container',
-                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
-                        })
+
+                if (this.selectedTasks.length===0 || this.everythingBookedAlready || !this.noMissingComments || !this.noUnassignedCustomTasks) {
+                    this.toggleShowErrorMessages({ show: true });
+
+                    this.$bvModal.msgBoxOk('Tasks cannot be booked. Please check the error messages.', {
+                        centered: true,
+                        okVariant: 'danger rounded-pill',
+                        okTitle: 'Okay',
+                        bodyClass: 'modal__main-container',
+                        footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                     })
-                    .catch((__res) => {
-                        if (__res === 'hasUnassignedCustomTasks') {
-                            this.$bvModal.msgBoxOk('There are unassigned custom tasks. Either assign them to tickets or remove before booking.', {
+                } else {
+                    if (this.showErrorMessages && this.selectedTasks.length!==0 && !this.everythingBookedAlready && this.noMissingComments && this.noUnassignedCustomTasks) this.toggleShowErrorMessages({ show: false });
+                    this.requestSavingWorklogs()
+                        .then(() => {
+                            this.$bvModal.msgBoxOk('Worklogs were successfully booked', {
                                 centered: true,
-                                okVariant: 'danger rounded-pill',
+                                okVariant: 'success rounded-pill',
                                 okTitle: 'Okay',
                                 bodyClass: 'modal__main-container',
                                 footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                             })
-                        } else if ('hasNonTrackedTasks') {
-                            this.$bvModal.msgBoxOk('There are tasks with no tracked time. Please remove or edit before booking.', {
-                            centered: true,
-                            okVariant: 'danger rounded-pill',
-                            okTitle: 'Okay',
-                            bodyClass: 'modal__main-container',
-                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                         })
-                        } else {
+                        .catch((__res) => {
                             this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
                                 centered: true,
                                 okVariant: 'danger rounded-pill',
@@ -272,8 +272,8 @@
                                 bodyClass: 'modal__main-container',
                                 footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                             })
-                        }
-                    });
+                        });
+                }
             },
             // break
             toggleBreak: function () {

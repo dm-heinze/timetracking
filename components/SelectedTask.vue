@@ -156,8 +156,13 @@
                 </div>
             </div>
         </div>
+        <div class="d-flex flex-row justify-content-between">
+            <div v-if="showErrorMessages && !assignedToTicket" class="message--error">Unassigned Custom Task</div>
+            <div v-if="showErrorMessages && !timeSpent" class="message--error">No Tracked Time</div>
+        </div>
         <b-collapse :id="`selected-task-${uniqueId}`" visible class="selected-ticket__content">
             <textarea rows="4" :value="taskWorklogComment" @input="saveCommentToStore" :disabled="booked"></textarea>
+            <div v-if="showErrorMessages && !taskWorklogComment " class="message--error">No Comment</div>
         </b-collapse>
         <div class="d-flex justify-content-center selected-ticket__toggle-btn">
             <button v-b-toggle="`selected-task-${uniqueId}`" @click="toggleChevronsIcon()">
@@ -243,6 +248,7 @@
                 relatedTickets: state => state.moduleUser.relatedTickets,
                 onABreak: state => state.moduleUser.onABreak,
                 lastTicket: state => state.moduleUser.lastTicket,
+                showErrorMessages: state => state.moduleUser.showErrorMessages
             }),
             parsedStartTime () {
                 if (this.startTime !== '') return this.startTime.toTimeString().slice(0, 8);
