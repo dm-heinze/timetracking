@@ -27,6 +27,15 @@ export const state = () => ({
     showErrorMessages: false
 });
 
+export const getters = {
+    getHeader: (state) => {
+        return {
+            'Content-Type': 'application/json',
+            cookie: `JSESSIONID=${state.sessionObject.value}`,
+        }
+    }
+}
+
 export const mutations = {
     resetPrefilledSearchSuggestions : (state) => {
         state.prefilledSearchSuggestions = [];
@@ -393,15 +402,10 @@ export const actions = {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
                 if (process.server) {
-                    let headers = {
-                        'Content-Type': 'application/json',
-                        cookie: `JSESSIONID=${state.sessionObject.value}`,
-                    }
-
                     axios({
                         method: 'GET',
                         url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'project',
-                        headers: headers,
+                        headers: getters.getHeader(state),
                     })
                         .then((__response) => {
                             const stringifiedResponse = JSON.stringify(__response.data);
@@ -456,15 +460,10 @@ export const actions = {
         return new Promise((resolve, reject) => {
 
             if (process.server) {
-                let headers = {
-                    'Content-Type': 'application/json',
-                    cookie: `JSESSIONID=${state.sessionObject.value}`,
-                }
-
                 axios({
                     method: 'GET',
                     url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'issue/picker',
-                    headers: headers,
+                    headers: getters.getHeader(state),
                 })
                     .then((__response) => {
                         const stringifiedResponse = JSON.stringify(__response.data);
@@ -482,18 +481,13 @@ export const actions = {
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
             if (process.server) {
-                let headers = {
-                    'Content-Type': 'application/json',
-                    cookie: `JSESSIONID=${state.sessionObject.value}`,
-                }
-
                 const jqlSearchString = `assignee = currentUser() AND resolution = Unresolved order by updated DESC`;
 
                 axios({
                     method: 'POST', // use POST to get the assigned tickets only
                     url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'search',
                     data: { jql: jqlSearchString },
-                    headers: headers,
+                    headers: getters.getHeader(state),
                 })
                     .then((__response) => {
                         const stringifiedResponse = JSON.stringify(__response.data);
