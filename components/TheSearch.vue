@@ -74,6 +74,10 @@
             selectedProject: function (newValue) {
                 if (newValue) {
                     this.setSelectedProject(this.selectedProject);
+
+                    // remove selectedTicket so selectBtn disappears until a ticket from new project gets selected
+                    this.selectedTicket = '';
+
                     this.requestRelatedTickets();
                 }
             }

@@ -69,7 +69,7 @@
                 </b-list-group-item>
             </b-list-group>
         </div>
-        <div v-else>No Bookmarks Saved.</div>
+        <div v-else class="sidebar__title sidebar__title--no-bookmarks">No Bookmarks Saved.</div>
 
         <b-button pill variant="danger" @click.prevent="removeCurrentSession" type="button" class="login-content__sign-in-btn button--logout pt-2 pb-2 mr-1 w-100">
             <log-out-icon />

@@ -11,6 +11,9 @@
     .sidebar__title--bookmarks {
         padding-top: $sidebar-gap-large;
     }
+    .sidebar__title--no-bookmarks {
+        padding-bottom: $sidebar-gap-large;
+    }
 
     .button--close {
         background-color: transparent;
