@@ -225,7 +225,7 @@ export const actions = {
     },
     requestSavingSingleWorklog: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
-            axios.post('/api/addWorklog', { sessionId: state.sessionObject.value, comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId })
+            axios.post('/api/addWorklog', { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId })
                 .then(() => {
                     commit('markTaskAsBooked', { taskToMarkAsBooked: payload.uniqueId });
 
@@ -246,7 +246,7 @@ export const actions = {
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            if (!__selectedTask.booked) await axios.post('/api/addWorklog', { sessionId: state.sessionObject.value, comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key })
+                            if (!__selectedTask.booked) await axios.post('/api/addWorklog', { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key })
                         }))
                             .then(() => {
                                 state.selectedTasks.forEach((__bookedTask) => commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId }));
@@ -362,7 +362,7 @@ export const actions = {
     getIssue: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
 
-            axios.post('/api/getTickets', { sessionId: state.sessionObject.value, searchTerm: payload.searchTerm, currentUser: state.currentUser.name })
+            axios.post('/api/getTickets', { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name })
                 .then((__res) => {
                     if (__res.data.issues.length !== 0) {
                         const searchResults =__res.data.issues.map((__issueInSearchResult, index) => {
@@ -414,7 +414,7 @@ export const actions = {
                         })
                         .catch((err) => reject(err))
                 } else {
-                    axios.post('/api/getProjects', { sessionId: state.sessionObject.value })
+                    axios.post('/api/getProjects', { headers: getters.getHeader(state) })
                         .then((__res) => resolve(__res.data))
                         .catch((err) => reject(err))
                 }
@@ -425,7 +425,7 @@ export const actions = {
     },
     requestRelatedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/getProjectRelatedTickets', { sessionId: state.sessionObject.value, selectedProject: state.selectedProject })
+            axios.post('/api/getProjectRelatedTickets', { headers: getters.getHeader(state), selectedProject: state.selectedProject })
                 .then((__res) => {
                     const __relatedTickets = __res.data.issues.map((__ticket) =>  {
                         return {
@@ -472,7 +472,7 @@ export const actions = {
                     })
                     .catch((err) => reject(err))
             } else {
-               axios.post('/api/getSmartPickedIssues', { sessionId: state.sessionObject.value })
+               axios.post('/api/getSmartPickedIssues', { headers: getters.getHeader(state) })
                     .then((__res) => resolve(__res.data))
                     .catch((err) => reject(err))
             }
@@ -496,7 +496,7 @@ export const actions = {
                     })
                     .catch((err) => reject(err))
             } else {
-                axios.post('/api/getAssignedTickets', { sessionId: state.sessionObject.value })
+                axios.post('/api/getAssignedTickets', { headers: getters.getHeader(state) })
                     .then((__res) => resolve(__res.data))
                     .catch((err) => reject(err))
             }

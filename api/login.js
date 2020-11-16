@@ -5,7 +5,9 @@ const response = function (request, response) {
 
     request.on('data', function (data) {
         body += data;
+    })
 
+    request.on('end', function () {
         let headers = {
             'Content-Type': 'application/json',
         }

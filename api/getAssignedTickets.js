@@ -6,13 +6,10 @@ const response = function (request, response) {
 
     request.on('data', function (data) {
         body += data;
+    })
 
-        const parsedDataObject =JSON.parse(body);
-
-        let headers = {
-            'Content-Type': 'application/json',
-            cookie: `JSESSIONID=${parsedDataObject.sessionId}`,
-        }
+    request.on('end', function () {
+        const parsedDataObject = JSON.parse(body);
 
         const jqlSearchString = `assignee = currentUser() AND resolution = Unresolved order by updated DESC`;
 
@@ -20,7 +17,7 @@ const response = function (request, response) {
             method: 'POST', // use POST to get the assigned tickets only
             url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'search',
             data: { jql: jqlSearchString },
-            headers: headers,
+            headers: parsedDataObject.headers,
         })
             .then((__response) => {
                 // if (__response.status === 200) // todo

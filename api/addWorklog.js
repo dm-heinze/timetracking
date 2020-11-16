@@ -9,19 +9,14 @@ const response = function (request, response) {
     })
 
     request.on('end', function () {
-        const parsedDataObject =JSON.parse(body);
+        const parsedDataObject = JSON.parse(body);
 
         const ticketId = parsedDataObject.ticketId;
-
-        let headers = {
-            'Content-Type': 'application/json',
-            cookie: `JSESSIONID=${parsedDataObject.sessionId}`
-        }
 
         axios({
             method: 'POST',
             url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + `issue/${ticketId}/worklog`,
-            headers: headers,
+            headers: parsedDataObject.headers,
             data: {
                 comment: parsedDataObject.comment,
                 timeSpentSeconds: (Math.ceil(parsedDataObject.timeSpentSeconds / 60000) * 60000) / 1000 // todo

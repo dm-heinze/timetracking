@@ -7,13 +7,10 @@ const response = function (request, response) {
 
     request.on('data', function (data) {
         body += data;
+    })
 
-        const parsedDataObject =JSON.parse(body);
-
-        let headers = {
-            'Content-Type': 'application/json',
-            cookie: `JSESSIONID=${parsedDataObject.sessionId}`
-        }
+    request.on('end', function () {
+        const parsedDataObject = JSON.parse(body);
 
         let jqlSearchString;
         if (parsedDataObject.searchTerm.match(regexForTicketKeys)) {
@@ -26,7 +23,7 @@ const response = function (request, response) {
             method: 'POST', // both GET & POST are allowed
             url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'search',
             data: { jql: jqlSearchString },
-            headers: headers,
+            headers: parsedDataObject.headers,
         })
             .then((__response) => {
                 response.end(JSON.stringify(__response.data));
