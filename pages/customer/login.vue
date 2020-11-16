@@ -99,9 +99,6 @@
                         });
                 }
             }
-        },
-        mounted() {
-            this.$router.push('/')
         }
     }
 </script>

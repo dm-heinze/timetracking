@@ -41,23 +41,25 @@
 
 
         <h3 class="sidebar__title">Bookmarks</h3>
-        <div v-if="bookmarked.length !== 0">
-            <b-list-group>
-                <b-list-group-item
-                    v-for="bookmarkedTicket in bookmarked"
-                    :key="bookmarkedTicket.key"
-                    class="d-flex justify-content-between"
-                    @click="addToSelectedIssues(bookmarkedTicket, false)"
-                >
-                    <div class="ticket__info col-11">
-                        <div class="ticket__info__key font-weight-bold">{{ bookmarkedTicket.key }}</div>
-                        <div class="ticket__info__summary text-truncate">{{ bookmarkedTicket.summary }}</div>
-                    </div>
-                    <plus-circle-icon class="ticket__icon align-self-center" />
-                </b-list-group-item>
-            </b-list-group>
-        </div>
-        <div v-else>No Bookmarks Saved.</div>
+        <client-only>
+            <div v-if="bookmarked.length !== 0">
+                <b-list-group>
+                    <b-list-group-item
+                        v-for="bookmarkedTicket in bookmarked"
+                        :key="bookmarkedTicket.key"
+                        class="d-flex justify-content-between"
+                        @click="addToSelectedIssues(bookmarkedTicket, false)"
+                    >
+                        <div class="ticket__info col-11">
+                            <div class="ticket__info__key font-weight-bold">{{ bookmarkedTicket.key }}</div>
+                            <div class="ticket__info__summary text-truncate">{{ bookmarkedTicket.summary }}</div>
+                        </div>
+                        <plus-circle-icon class="ticket__icon align-self-center" />
+                    </b-list-group-item>
+                </b-list-group>
+            </div>
+            <div v-else>No Bookmarks Saved.</div>
+        </client-only>
     </div>
 </template>
 

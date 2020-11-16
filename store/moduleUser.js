@@ -28,6 +28,9 @@ export const state = () => ({
 });
 
 export const mutations = {
+    resetPrefilledSearchSuggestions : (state) => {
+        state.prefilledSearchSuggestions = [];
+    },
     toggleShowErrorMessages: (state, payload) => {
         state.showErrorMessages = payload.show;
     },
@@ -303,6 +306,8 @@ export const actions = {
                         commit('setSearchResult', []);
                         commit('setUserName', {});
                         commit('setUserPass', {});
+                        commit('resetPrefilledSearchSuggestions');
+                        commit('setExistingProjects', []);
 
                         dispatch('removeFromCookies', 'JSESSIONID')
                             .then(() => resolve())
@@ -387,23 +392,28 @@ export const actions = {
         return new Promise((resolve, reject) => {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
-                axios.post('/api/getProjects', { sessionId: state.sessionObject.value })
-                    .then((__res) => {
-                        const __projects = __res.data.map((__project) => { return {
-                            id: __project.id,
-                            key: __project.key,
-                            name: __project.name,
-                            avatar: __project.avatarUrls['16x16']
-                        }})
-                        commit('setExistingProjects', __projects);
+                if (process.server) {
+                    let headers = {
+                        'Content-Type': 'application/json',
+                        cookie: `JSESSIONID=${state.sessionObject.value}`,
+                    }
 
-                        resolve();
+                    axios({
+                        method: 'GET',
+                        url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'project',
+                        headers: headers,
                     })
-                    .catch(() => {
-                        console.log("err occurred");
+                        .then((__response) => {
+                            const stringifiedResponse = JSON.stringify(__response.data);
 
-                        reject();
-                    })
+                            resolve(JSON.parse(stringifiedResponse));
+                        })
+                        .catch((err) => reject(err))
+                } else {
+                    axios.post('/api/getProjects', { sessionId: state.sessionObject.value })
+                        .then((__res) => resolve(__res.data))
+                        .catch((err) => reject(err))
+                }
             } else {
                 resolve();
             }
@@ -442,20 +452,69 @@ export const actions = {
             })
         })
     },
+    requestSmartPickedIssues: function ({ state }) {
+        return new Promise((resolve, reject) => {
+
+            if (process.server) {
+                let headers = {
+                    'Content-Type': 'application/json',
+                    cookie: `JSESSIONID=${state.sessionObject.value}`,
+                }
+
+                axios({
+                    method: 'GET',
+                    url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'issue/picker',
+                    headers: headers,
+                })
+                    .then((__response) => {
+                        const stringifiedResponse = JSON.stringify(__response.data);
+
+                        resolve(JSON.parse(stringifiedResponse));
+                    })
+                    .catch((err) => reject(err))
+            } else {
+               axios.post('/api/getSmartPickedIssues', { sessionId: state.sessionObject.value })
+                    .then((__res) => resolve(__res.data))
+                    .catch((err) => reject(err))
+            }
+        })
+    },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/getAssignedTickets', { sessionId: state.sessionObject.value })
-                .then((__res) => resolve(__res))
-                .catch(() => console.log("err occurred"))
+            if (process.server) {
+                let headers = {
+                    'Content-Type': 'application/json',
+                    cookie: `JSESSIONID=${state.sessionObject.value}`,
+                }
+
+                const jqlSearchString = `assignee = currentUser() AND resolution = Unresolved order by updated DESC`;
+
+                axios({
+                    method: 'POST', // use POST to get the assigned tickets only
+                    url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'search',
+                    data: { jql: jqlSearchString },
+                    headers: headers,
+                })
+                    .then((__response) => {
+                        const stringifiedResponse = JSON.stringify(__response.data);
+
+                        resolve(JSON.parse(stringifiedResponse));
+                    })
+                    .catch((err) => reject(err))
+            } else {
+                axios.post('/api/getAssignedTickets', { sessionId: state.sessionObject.value })
+                    .then((__res) => resolve(__res.data))
+                    .catch((err) => reject(err))
+            }
         })
     },
     requestPrefill: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
             dispatch('requestAssignedTickets')
                 .then((__res) => {
-                    commit('setCurrentUserName', { name: __res.data.issues[0].fields.assignee.name });
+                    commit('setCurrentUserName', { name: __res.issues[0].fields.assignee.name });
 
-                    const __parsedAssignedIssues = __res.data.issues.map((__issue, index) => {
+                    const __parsedAssignedIssues = __res.issues.map((__issue, index) => {
                         return {
                             key: __issue.key,
                             id: __issue.id,
@@ -475,10 +534,9 @@ export const actions = {
 
                     __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue))
 
-
-                    axios.post('/api/getSmartPickedIssues', { sessionId: state.sessionObject.value })
+                    dispatch('requestSmartPickedIssues')
                         .then((__res) => {
-                            const __parsedSmartPickedIssues = __res.data.sections[0].issues.map((issue, index) => {
+                            const __parsedSmartPickedIssues = __res.sections[0].issues.map((issue, index) => {
                                 return {
                                     key: issue.key,
                                     summary: issue.summary,
@@ -494,17 +552,26 @@ export const actions = {
                                 }
                             })
 
-                            __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue))
+                            __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue));
 
                             dispatch('requestAllProjects')
-                                .then(() => resolve())
-                                .catch(() => console.log("err happened")); // todo
-                        })
-                        .catch((err) => console.log("err occurred: ", err))
+                                .then((__res) => {
+                                    const __projects = __res.map((__project) => { return {
+                                        id: __project.id,
+                                        key: __project.key,
+                                        name: __project.name,
+                                        avatar: __project.avatarUrls['16x16']
+                                    }})
 
-                    resolve()
+                                    commit('setExistingProjects', __projects);
+
+                                    resolve()
+                                })
+                                .catch((err) => reject(err));
+                        })
+                        .catch((err) => reject(err))
                 })
-                .catch((err) => console.log("err occurred: ", err))
+                .catch((err) => resolve(err))
         })
     }
 };

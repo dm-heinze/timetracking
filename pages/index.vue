@@ -325,8 +325,8 @@
             }
         },
         middleware ({ store }) {
-            return new Promise((resolve) => {
-                store.dispatch('moduleUser/requestPrefill').then(() => resolve())
+            return new Promise((resolve, reject) => {
+                store.dispatch('moduleUser/requestPrefill').then(() => resolve()).catch(() => reject())
             })
         }
     }

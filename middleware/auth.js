@@ -2,28 +2,22 @@
 // executes everytime a route changes on clientside
 import _ from 'lodash';
 
-export default function ({app, store, route, error, redirect}) {
-
-    return new Promise((resolve, reject) => {
-
+export default function ({ app, store, route, error, redirect }) {
         let loginRoute = '/customer/login';
 
-        // if user obj in store is not set
-        // redirect to login form
-
         let hasSessionKey = false;
+
         if (!_.isEmpty(store.state.moduleUser.sessionObject)) {
             if (store.state.moduleUser.sessionObject.value !== '') hasSessionKey = true;
         }
 
         if(!hasSessionKey) {
-            resolve('current user not authorized');
-
             if (route.path === loginRoute) return;
 
             return redirect(loginRoute);
-        }
+        } else {
+            if (route.path === '/') return;
 
-        resolve();
-    });
+            if (route.path === loginRoute) redirect('/');
+        }
 }
