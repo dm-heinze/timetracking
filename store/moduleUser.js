@@ -3,11 +3,6 @@ import _ from 'lodash';
 import base64 from 'base-64';
 
 export const state = () => ({
-    user: {
-        name: '',
-        pass: ''
-    },
-    jiraApiObj: {},
     sessionObject: {}, // currently has 2 fields: name & value,
     currentUser: {},
     searchResults: [],
@@ -67,12 +62,6 @@ export const mutations = {
     },
     setLastTicket: (state, value) => {
         state.lastTicket = value;
-    },
-    setUserName: (state, value) => {
-        state.user.name = value;
-    },
-    setUserPass: (state, value) => {
-        state.user.pass = value;
     },
     setSessionObject: (state, value) => {
         state.sessionObject = value;
@@ -285,33 +274,11 @@ export const actions = {
             resolve();
         })
     },
-    retrieveSessionFromCookies: function({ commit, state }, payload) {
-        return new Promise((resolve, reject) => {
-            const __sessionIdVal = this.$cookies.get('JSESSIONID')
-            if (!_.isEmpty(__sessionIdVal)) {
-                commit('setSessionObject', { value: base64.decode(__sessionIdVal), name: 'JSESSIONID' })
-
-                resolve();
-            } else {
-                resolve();
-            }
-
-        })
-    },
-    setUser: function({commit, state}, payload) {
-        return new Promise((resolve, reject) => {
-            commit('setUserName', payload.data.name);
-            commit('setUserPass', payload.data.pass);
-            resolve('user set');
-        })
-    },
     resetState: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             commit('setSessionObject', {});
             commit('setCurrentUserName', {});
             commit('setSearchResult', []);
-            commit('setUserName', {});
-            commit('setUserPass', {});
             commit('resetPrefilledSearchSuggestions');
             commit('setExistingProjects', []);
 
@@ -341,10 +308,8 @@ export const actions = {
     },
     createApiObject: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
-            commit('setUserName', payload.data.name);
-            commit('setUserPass', payload.data.pass);
 
-            axios.post('/api/login', { username: state.user.name, password: state.user.pass })
+            axios.post('/api/login', { username: payload.data.name, password: payload.data.pass })
                 .then((response) => {
                     if (response.data) { // todo
                         if (response.data === 401) reject("Your credentials are not valid.");
