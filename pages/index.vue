@@ -33,7 +33,7 @@
                 <b-col cols="12" lg="8" class="container--right min-vh-100">
                     <div class="col-xl-10">
                         <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
-                            <div class="d-flex pr-3" :class="[flexDirection]">
+                            <div class="d-flex" :class="[flexDirection,  { 'pr-3': $mq === 'md' ||  $mq === 'lg' }]">
                                 <b-button pill variant="primary" type="button" class="login-content__sign-in-btn pt-2 pb-2" v-b-modal="'add-custom-task'" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg', 'mb-2': $mq === 'sm' }">
                                     <plus-circle-icon />
                                     <span class="pl-1">Add Custom task</span>
