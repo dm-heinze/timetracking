@@ -370,6 +370,8 @@ export const actions = {
                     }
                 })
                 .catch((err) => {
+                    if(state.onABreak) commit('toggleBreak');
+                    
                     if (state.isTimerActive) {
                         commit('setLastTicket', state.activeTicket);
 
