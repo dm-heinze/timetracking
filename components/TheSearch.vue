@@ -119,6 +119,7 @@
             toggleProjectSelection: function () {
                 this.selectedTicket = '';
                 this.selectedProject = '';
+                this.setSelectedProject('');
             }
         }
     }
