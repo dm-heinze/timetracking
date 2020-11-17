@@ -305,25 +305,32 @@ export const actions = {
             resolve('user set');
         })
     },
+    resetState: function({ commit, state, dispatch }, payload) {
+        return new Promise((resolve, reject) => {
+            commit('setSessionObject', {});
+            commit('setCurrentUserName', {});
+            commit('setSearchResult', []);
+            commit('setUserName', {});
+            commit('setUserPass', {});
+            commit('resetPrefilledSearchSuggestions');
+            commit('setExistingProjects', []);
+
+            dispatch('removeFromCookies', 'JSESSIONID')
+                .then(() => resolve())
+                .catch(() => {
+                    console.log("err occurred while removing entry from storage");
+                    reject();
+                })
+        })
+    },
     requestSessionRemoval: function({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
             axios.delete('/api/logout', { params: { value: state.sessionObject.value } })
                 .then((_response) => {
                     if (_response.data.status === 204) {
-                        commit('setSessionObject', {});
-                        commit('setCurrentUserName', {});
-                        commit('setSearchResult', []);
-                        commit('setUserName', {});
-                        commit('setUserPass', {});
-                        commit('resetPrefilledSearchSuggestions');
-                        commit('setExistingProjects', []);
-
-                        dispatch('removeFromCookies', 'JSESSIONID')
+                        dispatch('resetState')
                             .then(() => resolve())
-                            .catch(() => {
-                                console.log("err occurred while removing entry from storage");
-                                reject();
-                            })
+                            .catch(() => reject())
                     } else {
                         // todo
                         reject()
@@ -354,7 +361,7 @@ export const actions = {
                         resolve();
                     }
                 })
-                .catch(() => {
+                .catch((err) => {
                     reject();
                 })
         })
@@ -394,7 +401,15 @@ export const actions = {
                         resolve();
                     }
                 })
-                .catch((err) => console.log("err occurred: ", err))
+                .catch((err) => {
+                    if (state.isTimerActive) {
+                        commit('setLastTicket', state.activeTicket);
+
+                        commit('setIsTimerActive');
+                    }
+
+                    reject(err);
+                })
         })
     },
     requestAllProjects: function ({commit, state, dispatch}, payload) {
@@ -494,7 +509,11 @@ export const actions = {
 
                         resolve(JSON.parse(stringifiedResponse));
                     })
-                    .catch((err) => reject(err))
+                    .catch((err) => {
+                        if (err.response.status === 401) console.log("no valid sessionId");
+
+                        reject(err);
+                    })
             } else {
                 axios.post('/api/getAssignedTickets', { headers: getters.getHeader(state) })
                     .then((__res) => resolve(__res.data))
@@ -565,7 +584,13 @@ export const actions = {
                         })
                         .catch((err) => reject(err))
                 })
-                .catch((err) => resolve(err))
+                .catch((err) => {
+                    commit('setSessionObject', {}); // todo
+
+                    dispatch('removeFromCookies', 'JSESSIONID') // todo
+                        .then(() => reject(err)) // todo
+                        .catch(() => reject(err))
+                })
         })
     }
 };

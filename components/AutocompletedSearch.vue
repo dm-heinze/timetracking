@@ -60,7 +60,8 @@
             ...mapState({
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
                 searchResults: state => state.moduleUser.searchResults,
-                selectedTasks: state => state.moduleUser.selectedTasks
+                selectedTasks: state => state.moduleUser.selectedTasks,
+                isTimerActive: state => state.moduleUser.isTimerActive
             }),
             searchResultList () {
                 if (!this.alreadyExists) {
@@ -88,11 +89,14 @@
         methods: {
             ...mapMutations({
                 setSearchResult: 'moduleUser/setSearchResult', // todo
-                addSelectedTask: 'moduleUser/addSelectedTask'
+                addSelectedTask: 'moduleUser/addSelectedTask',
+                setIsTimerActive: 'moduleUser/setIsTimerActive',
+                setActiveTicket: 'moduleUser/setActiveTicket'
             }),
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
+                resetState: 'moduleUser/resetState'
             }),
             resetSearch: function () { // todo
                 this.searchTerm = '';
@@ -104,7 +108,25 @@
                     if(this.searchTerm.match(regexForTicketKeys)) isAlreadyInSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase()).length;
                     if (isAlreadyInSuggestions === 0) {
                         this.searchLoading = true;
-                        this.getIssue({ searchTerm: this.searchTerm }).then(() => this.searchLoading = false);
+
+                        this.getIssue({ searchTerm: this.searchTerm })
+                            .then(() => this.searchLoading = false)
+                            .catch((err) => {
+                                if (err.response.status === 401) { // todo
+                                    this.resetState()
+                                        .then(() => {
+                                            this.searchLoading = false;
+
+                                            if (this.isTimerActive) { // todo
+                                                this.setActiveTicket('');
+
+                                                this.setIsTimerActive();
+                                            }
+
+                                            this.$router.push('/customer/login');
+                                        })
+                                }
+                            })
                     } else {
                         this.alreadyExists = true;
                     }

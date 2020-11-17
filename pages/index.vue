@@ -324,9 +324,14 @@
                 this.customNameCustomTask = '';
             }
         },
-        middleware ({ store }) {
+        middleware ({ store, redirect }) {
             return new Promise((resolve, reject) => {
-                store.dispatch('moduleUser/requestPrefill').then(() => resolve()).catch(() => reject())
+                store.dispatch('moduleUser/requestPrefill')
+                    .then(() => resolve())
+                    .catch((err) => {
+                        redirect('/customer/login');
+                        reject();
+                    })
             })
         }
     }
