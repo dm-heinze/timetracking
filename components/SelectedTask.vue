@@ -524,7 +524,9 @@
             selectedProject: function (newValue) {
                 if (newValue) {
                     this.setSelectedProject(this.selectedProject);
-                    this.requestRelatedTickets();
+
+                    this.requestRelatedTickets()
+                        .catch((err) => { if (err.response.status === 401) this.$router.push('/customer/login') })
                 }
             }
         },

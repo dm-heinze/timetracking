@@ -78,7 +78,8 @@
                     // remove selectedTicket so selectBtn disappears until a ticket from new project gets selected
                     this.selectedTicket = '';
 
-                    this.requestRelatedTickets();
+                    this.requestRelatedTickets()
+                        .catch((err) => { if (err.response.status === 401) this.$router.push('/customer/login') })
                 }
             }
         },

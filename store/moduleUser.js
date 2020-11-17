@@ -425,7 +425,10 @@ export const actions = {
 
                     resolve();
                 })
-                .catch(() => console.log("err occurred"))
+                .catch((err) => {
+                    // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                    dispatch('resetState').then(() => reject(err)).catch(() => reject(err));
+                })
         })
     },
     retrieveSelectedTasksFromStorage: function({ commit }) {

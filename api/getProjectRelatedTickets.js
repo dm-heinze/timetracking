@@ -22,7 +22,9 @@ const response = function (request, response) {
             .then((__response) => {
                 response.end(JSON.stringify(__response.data));
             })
-            .catch((err) =>{
+            .catch((err) => {
+                response.writeHead(err.response.status);
+
                 response.end(JSON.stringify(err));
             })
     })
