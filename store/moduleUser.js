@@ -135,6 +135,9 @@ export const mutations = {
         })
     },
     addSelectedTask: (state, value) => {
+        // hide any validation messages
+        if (state.showErrorMessages) state.showErrorMessages = false; // todo
+
         state.selectedTasks.push(value);
     },
 
