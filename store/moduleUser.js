@@ -76,7 +76,17 @@ export const mutations = {
         state.isTimerActive = !(state.isTimerActive);
     },
     setExistingProjects: (state, value) => {
-        state.allExistingProjects = value;
+        if (value.length === 0) state.allExistingProjects = value;
+        else {
+            state.allExistingProjects = value.map((__project) => {
+                return {
+                    id: __project.id,
+                    key: __project.key,
+                    name: __project.name,
+                    avatar: __project.avatarUrls['16x16']
+                }
+            });
+        }
     },
     setSelectedProject: (state, value) => {
         state.selectedProject = value;
@@ -395,16 +405,7 @@ export const actions = {
                         .then((__response) => {
                             const stringifiedResponse = JSON.stringify(__response.data);
 
-                            const parsedStringifiedResponse = JSON.parse(stringifiedResponse);
-
-                            const __projects = parsedStringifiedResponse.map((__project) => { return {
-                                id: __project.id,
-                                key: __project.key,
-                                name: __project.name,
-                                avatar: __project.avatarUrls['16x16']
-                            }})
-
-                            commit('setExistingProjects', __projects);
+                            commit('setExistingProjects', JSON.parse(stringifiedResponse));
 
                             resolve();
                         })
@@ -412,14 +413,7 @@ export const actions = {
                 } else {
                     axios.post('/api/getProjects', { headers: getters.getHeader(state) })
                         .then((__res) => {
-                            const __projects = __res.data.map((__project) => { return {
-                                id: __project.id,
-                                key: __project.key,
-                                name: __project.name,
-                                avatar: __project.avatarUrls['16x16']
-                            }})
-
-                            commit('setExistingProjects', __projects);
+                            commit('setExistingProjects', __res.data);
 
                             resolve();
                         })
