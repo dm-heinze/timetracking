@@ -1,7 +1,7 @@
 <template>
     <div class="selected-ticket__container" :class="{ 'currently-active': markedAsActive, 'already-booked': booked }">
-        <div class="selected-ticket__heading" :class="{ 'flex-column align-items-start': $mq === 'md', 'flex-column align-items-center': $mq === 'sm', 'align-items-center': $mq === 'lg' }">
-            <a :href="taskDirectLink" target="_blank" class="col-5" v-if="!editingName">
+        <div class="selected-ticket__heading mb-2" :class="{ 'flex-column align-items-start': $mq === 'md', 'flex-column align-items-center': $mq === 'sm', 'align-items-center': ($mq === 'lg' && assignedToTicket) || ($mq === 'plg' && assignedToTicket), 'flex-column': $mq === 'mdp' || !assignedToTicket }">
+            <a :href="taskDirectLink" target="_blank" class="col-sm-12" :class="{ 'col-12': $mq === 'mdp' || !assignedToTicket, 'col-lg-4': assignedToTicket }" v-if="!editingName">
                 <div class="pb-2" :class="{ 'd-flex flex-column align-items-center justify-content-center': $mq === 'sm' }">
                     <div class="font-weight-bold">{{ taskKey }}</div>
                     <div class="selected-ticket__heading__summary text-truncate">{{ taskSummary }}</div>
@@ -11,15 +11,15 @@
                 <input type="text" :value="taskKey" @input="saveEditedCustomTaskName" @keyup.esc="toggleNameEditingClassic(true)" @keyup.enter.prevent="toggleNameEditingClassic()" name="customNameEditField">
             </div>
 
-            <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm' }" v-if="!booked">
+            <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm', 'justify-content-between': $mq === 'mdp' || !assignedToTicket }" v-if="!booked">
                 <div v-if="!booked" class="selected-ticket__heading__assignments d-flex" :class="[flexDirection]">
-                    <b-button size="sm" v-if="!assignedToTicket" pill :variant="editingName ? 'success' : 'light-grey'" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' }" @click.prevent="toggleNameEditingClassic()" v-click-outside="toggleNameEditing">
+                    <b-button size="sm" v-if="!assignedToTicket" pill :variant="editingName ? 'success' : 'light-grey'" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleNameEditingClassic()" v-click-outside="toggleNameEditing">
                         <edit2-icon v-if="!editingName" />
                         <save-icon v-else />
                         <span class="pl-1">{{ editingName ? 'Save' : 'Edit' }} Name</span>
                     </b-button>
 
-                    <b-button pill variant="light-grey" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' }" @click.prevent="toggleTicketAssignment()">
+                    <b-button pill variant="light-grey" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg', 'mr-2': $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleTicketAssignment()">
                         <plus-circle-icon />
                         <span class="pl-1">Assign Ticket</span>
                     </b-button>

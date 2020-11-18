@@ -31,12 +31,12 @@
                     </div>
                 </b-col>
                 <b-col cols="12" lg="8" class="container--right min-vh-100">
-                    <div class="col-xl-10">
+                    <div class="col-xl-11 col-xxl-10">
                         <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
                             <div class="d-flex" :class="[flexDirection,  { 'pr-3': $mq === 'md' ||  $mq === 'lg' }]">
-                                <b-button pill variant="primary" type="button" class="login-content__sign-in-btn pt-2 pb-2" v-b-modal="'add-custom-task'" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg', 'mb-2': $mq === 'sm' }">
+                                <b-button pill variant="primary" type="button" class="login-content__sign-in-btn py-2" v-b-modal="'add-custom-task'" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'mb-2': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
                                     <plus-circle-icon />
-                                    <span class="pl-1">Add Custom task</span>
+                                    <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Add Custom task</span>
                                     <b-modal :id="'add-custom-task'" centered>
                                         <template v-slot:modal-header="{ close }">
                                             <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
@@ -60,23 +60,23 @@
                                         </template>
                                     </b-modal>
                                 </b-button>
-                                <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-1" :class="{ 'mb-3': $mq === 'sm' }">
+                                <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn py-2 mr-1" :class="{ 'mb-3': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
                                     <coffee-icon />
-                                    <span class="pl-1">Take a break</span>
+                                    <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Take a break</span>
                                 </b-button>
                             </div>
-                            <div class="d-flex" :class="[flexDirection, { 'align-items-center': $mq === 'md' || $mq === 'lg' }]">
-                                <span v-if="totalTime" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg', 'align-self-center': $mq === 'sm' }">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span>
+                            <div class="d-flex" :class="[flexDirection, { 'align-items-center': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }]">
+                                <span v-if="totalTime" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'align-self-center': $mq === 'sm' }">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span>
                                 <b-button
                                     pill
                                     variant="success"
                                     type="button"
-                                    class="login-content__sign-in-btn pt-2 pb-2"
+                                    class="login-content__sign-in-btn py-2"
                                     v-b-modal="'confirm-push-time'"
-                                    :class="{ 'mr-1': $mq === 'md' || $mq === 'lg' }"
+                                    :class="{ 'mr-1': $mq === 'md' || $mq === 'lg', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }"
                                 >
                                     <send-icon />
-                                    <span class="pl-1">Push all your tasks</span>
+                                    <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Push all your tasks</span>
                                     <b-modal :id="'confirm-push-time'" centered>
                                         <template v-slot:modal-header="{ close }">
                                             <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">

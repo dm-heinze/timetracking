@@ -81,6 +81,8 @@ export default {
         breakpoints: {
             sm: 768,
             md: 1024,
+            mdp: 1300, // todo
+            plg: 1800, // todo
             lg: Infinity
         }
     },
