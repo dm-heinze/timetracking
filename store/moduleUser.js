@@ -371,7 +371,7 @@ export const actions = {
                 })
                 .catch((err) => {
                     if(state.onABreak) commit('toggleBreak');
-                    
+
                     if (state.isTimerActive) {
                         commit('setLastTicket', state.activeTicket);
 
@@ -395,12 +395,34 @@ export const actions = {
                         .then((__response) => {
                             const stringifiedResponse = JSON.stringify(__response.data);
 
-                            resolve(JSON.parse(stringifiedResponse));
+                            const parsedStringifiedResponse = JSON.parse(stringifiedResponse);
+
+                            const __projects = parsedStringifiedResponse.map((__project) => { return {
+                                id: __project.id,
+                                key: __project.key,
+                                name: __project.name,
+                                avatar: __project.avatarUrls['16x16']
+                            }})
+
+                            commit('setExistingProjects', __projects);
+
+                            resolve();
                         })
                         .catch((err) => reject(err))
                 } else {
                     axios.post('/api/getProjects', { headers: getters.getHeader(state) })
-                        .then((__res) => resolve(__res.data))
+                        .then((__res) => {
+                            const __projects = __res.data.map((__project) => { return {
+                                id: __project.id,
+                                key: __project.key,
+                                name: __project.name,
+                                avatar: __project.avatarUrls['16x16']
+                            }})
+
+                            commit('setExistingProjects', __projects);
+
+                            resolve();
+                        })
                         .catch((err) => reject(err))
                 }
             } else {
@@ -540,20 +562,7 @@ export const actions = {
 
                             __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue));
 
-                            dispatch('requestAllProjects')
-                                .then((__res) => {
-                                    const __projects = __res.map((__project) => { return {
-                                        id: __project.id,
-                                        key: __project.key,
-                                        name: __project.name,
-                                        avatar: __project.avatarUrls['16x16']
-                                    }})
-
-                                    commit('setExistingProjects', __projects);
-
-                                    resolve()
-                                })
-                                .catch((err) => reject(err));
+                            resolve();
                         })
                         .catch((err) => reject(err))
                 })

@@ -238,7 +238,7 @@
 
                 this.saveSelectedTasksToStorage();
 
-                if (this.allExistingProjects.length === 0) this.requestAllProjects();
+                if (this.allExistingProjects.length === 0) this.requestAllProjects(); // todo
             },
             saveWorklogs: function () {
                 this.$bvModal.hide('confirm-push-time'); // any cancel event needed?
@@ -334,6 +334,9 @@
                         reject();
                     })
             })
+        },
+        mounted() {
+            this.requestAllProjects();
         }
     }
 </script>
