@@ -20,15 +20,19 @@
                             @keyup.enter.prevent="setUser()"
                         />
                     </div>
-                    <div class="row mt-3">
+                    <div class="row mt-3 login__input-container--password">
                         <b-form-input
                             id="password"
-                            type="password"
+                            :type="passwordHidden ? 'password' : 'text'"
                             class="form-control rounded-pill pt-4 pl-4 pb-4"
                             placeholder="Password"
                             v-model="userObj.pass"
                             @keyup.enter.prevent="setUser()"
                         />
+                        <template v-if="userObj.pass">
+                            <eye-icon v-if="passwordHidden" @click="togglePasswordHidden()" class="select__icon show" />
+                            <eye-off-icon v-else @click="togglePasswordHidden()" class="select__icon hide" />
+                        </template>
                     </div>
                     <div class="row login-content__problem d-flex mt-2" :class="{ 'justify-content-between': $mq === 'lg' || $mq === 'plg', 'flex-column align-items-center': $mq === 'sm' || $mq === 'md' || $mq === 'mdp' }">
                         <div class="login-content__error-message" :class="{ 'ml-4': $mq === 'lg' }">{{ errorMessage }}</div>
@@ -56,10 +60,11 @@
 <script>
     import { mapActions } from 'vuex';
     import { BIcon, BIconThreeDots } from 'bootstrap-vue';
+    import { EyeIcon, EyeOffIcon } from 'vue-feather-icons';
 
     export default {
         name: 'login',
-        components: { BIcon, BIconThreeDots },
+        components: { BIcon, BIconThreeDots, EyeIcon, EyeOffIcon },
         data() {
             return {
                 userObj: {
@@ -67,7 +72,8 @@
                     pass: null
                 },
                 errorMessage: '',
-                loading: false
+                loading: false,
+                passwordHidden: true
             }
         },
         computed: {
@@ -99,6 +105,9 @@
                             this.errorMessage = __errorMessage;
                         });
                 }
+            },
+            togglePasswordHidden () {
+                this.passwordHidden = !this.passwordHidden;
             }
         }
     }

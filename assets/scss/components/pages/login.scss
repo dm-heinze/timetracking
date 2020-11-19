@@ -3,6 +3,33 @@
     .login-content__container--left {
         padding-left: 50px;
         padding-right: 50px;
+
+       .login__input-container--password {
+           position: relative;
+
+           .select__icon { // todo
+               position: absolute;
+               right: 24px; //
+               top: 0;
+               bottom: 0;
+               margin: auto;
+               cursor: pointer;
+               color: $dark-grey;
+               transition: all 0.2s ease-in-out;
+
+               &.show {
+                   &:hover {
+                       color: $success;
+                   }
+               }
+
+               &.hide {
+                   &:hover {
+                       color: $danger;
+                   }
+               }
+           }
+       }
     }
 
     .login-content__container--right {
