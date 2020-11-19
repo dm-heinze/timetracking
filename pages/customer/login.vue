@@ -76,7 +76,8 @@
             },
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
-                if (this.$mq === 'lg') return { marginBottom: '180px' }
+                if (this.$mq === 'lg' || this.$mq === 'plg') return { marginBottom: '180px' }
+                if (this.$mq === 'mdp') return { marginBottom: '130px' }
                 else return { marginBottom: '90px' }
             }
         },
