@@ -1,5 +1,10 @@
 $enable-rounded: true;
 
+::-webkit-scrollbar {
+    background: transparent;
+    width: 0;
+}
+
 @import './__colors.scss';
 @import './__fonts.scss';
 @import './__layout.scss';

@@ -13,7 +13,7 @@
                 </b-navbar-nav>
             </b-collapse>
            <b-row align-v="stretch" class="no-gutters">
-                <b-col cols="12" lg="4" class="container--left">
+                <b-col cols="12" lg="4" class="container--left vh-100">
                     <div class="login-content__titles">
                         <transition name="toggle">
                             <div v-if="!settingsOpen">
@@ -30,7 +30,7 @@
                         </transition>
                     </div>
                 </b-col>
-                <b-col cols="12" lg="8" class="container--right min-vh-100">
+                <b-col cols="12" lg="8" class="container--right vh-100">
                     <div class="col-xl-11 col-xxl-10">
                         <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
                             <div class="d-flex" :class="[flexDirection,  { 'pr-3': $mq === 'md' ||  $mq === 'lg' }]">
