@@ -8,7 +8,7 @@
                 </div>
             </a>
             <div v-else-if="editingName">
-                <input type="text" :value="taskKey" @input="saveEditedCustomTaskName" @keyup.esc="toggleNameEditingClassic(true)" @keyup.enter.prevent="toggleNameEditingClassic()" name="customNameEditField">
+                <input type="text" :value="taskKey" @input="saveEditedCustomTaskName" @keyup.esc="toggleNameEditingClassic(true)" @keyup.enter.prevent="toggleNameEditingClassic()" :name="`customNameEditField-${uniqueId}`">
             </div>
 
             <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm', 'justify-content-between': $mq === 'mdp' || !assignedToTicket }" v-if="!booked">
@@ -248,7 +248,8 @@
                 relatedTickets: state => state.moduleUser.relatedTickets,
                 onABreak: state => state.moduleUser.onABreak,
                 lastTicket: state => state.moduleUser.lastTicket,
-                showErrorMessages: state => state.moduleUser.showErrorMessages
+                showErrorMessages: state => state.moduleUser.showErrorMessages,
+                editingCustomTask: state => state.moduleUser.editingCustomTask
             }),
             parsedStartTime () {
                 if (this.startTime !== '') return this.startTime.toTimeString().slice(0, 8);
@@ -290,7 +291,8 @@
                 assignToTicket: 'moduleUser/assignToTicket',
                 toggleBreakMutation: 'moduleUser/toggleBreak',
                 setLastTicket: 'moduleUser/setLastTicket',
-                assignNameToCustomTask: 'moduleUser/assignNameToCustomTask'
+                assignNameToCustomTask: 'moduleUser/assignNameToCustomTask',
+                updateEditingCustomTask: 'moduleUser/updateEditingCustomTask'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
@@ -387,19 +389,31 @@
                 this.editingTrackedTime = !this.editingTrackedTime;
             },
             toggleNameEditingClassic: function (cancelEdit = false) {
+                if (cancelEdit === false) this.updateEditingCustomTask({ activeTaskId: this.uniqueId });
+
                 this.editingName = !this.editingName;
-                if (cancelEdit) this.localEditedName = ''; // on cancel revert to initial state
+
+                if (cancelEdit) {
+                    // on cancel revert to initial state
+                    this.localEditedName = '';
+                    this.updateEditingCustomTask({ activeTaskId: '' });
+                }
                 if (!this.editingName && (this.uniqueId !== this.localEditedName) && !_.isEmpty(this.localEditedName) && !cancelEdit) {
                     this.assignNameToCustomTask({ assignedTaskKey: this.localEditedName, currentTaskKey: this.uniqueId });
                     this.saveSelectedTasksToStorage();
+                    this.localEditedName = '';
+                    this.updateEditingCustomTask({ activeTaskId: '' });
                 }
             },
             toggleNameEditing: function (event) {
-                if (!this.editingName) this.editingName = !this.editingName;
+                if (this.editingCustomTask === this.uniqueId) {
+                    if (!this.editingName) this.editingName = !this.editingName;
 
-                if (event !== undefined && this.editingName && (event.target.name !== 'customNameEditField')) {
-                    this.editingName = !this.editingName;
-                    this.localEditedName = '';
+                    if (event !== undefined && this.editingName && (event.target.name !== `customNameEditField-${this.uniqueId}`)) {
+                        this.editingName = !this.editingName;
+                        this.localEditedName = '';
+                        this.updateEditingCustomTask({ activeTaskId: '' });
+                    }
                 }
             },
             saveEditedCustomTaskName: function (event) {

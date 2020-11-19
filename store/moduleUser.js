@@ -19,7 +19,8 @@ export const state = () => ({
     lastTicket: '',
     bookmarked: [],
     settingsOpen: false,
-    showErrorMessages: false
+    showErrorMessages: false,
+    editingCustomTask: ''
 });
 
 export const getters = {
@@ -32,6 +33,9 @@ export const getters = {
 }
 
 export const mutations = {
+    updateEditingCustomTask: (state, payload) => {
+        state.editingCustomTask = payload.activeTaskId;
+    },
     resetPrefilledSearchSuggestions : (state) => {
         state.prefilledSearchSuggestions = [];
     },
