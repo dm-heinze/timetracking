@@ -13,8 +13,9 @@
                 :class="{ 'disabled': $nuxt.isOffline }"
                 class="form-control rounded-pill pt-4 pl-4 pb-4"
                 @keyup.esc="resetSearch()"
+                aria-label="search for tickets for bookmarking"
             />
-            <button :disabled="searchTerm === '' && searchLoading" @click="resetSearch()">
+            <button :disabled="searchTerm === '' && searchLoading" @click="resetSearch()" :aria-label="searchFieldButtonAriaLabel">
                 <search-icon v-if="!searchLoading && searchTerm === ''" />
                 <x-icon v-if="!searchLoading && searchTerm !== ''" class="button--close" />
                 <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
@@ -83,10 +84,12 @@
     import { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
     import _ from "lodash";
     import { regexForTicketKeys } from "../utility/constants";
+    import { searchAriaLabelMixin } from "~/utility/mixins";
 
 	export default {
 		name: "Settings",
         components: { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon },
+        mixins: [searchAriaLabelMixin],
         data () {
             return {
                 searchTerm: '',

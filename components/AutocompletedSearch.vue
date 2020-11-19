@@ -10,8 +10,9 @@
                 class="form-control rounded-pill pt-4 pl-4 pb-4"
                 :class="{ 'disabled': $nuxt.isOffline }"
                 @keyup.esc="resetSearch()"
+                aria-label="search for tickets"
             />
-            <button :disabled="searchTerm === '' && searchLoading" @click="resetSearch()">
+            <button :disabled="searchTerm === '' && searchLoading" @click="resetSearch()" :aria-label="searchFieldButtonAriaLabel">
                 <search-icon v-if="!searchLoading && searchTerm === ''" />
                 <x-icon v-if="!searchLoading && searchTerm !== ''" class="button--close" />
                 <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
@@ -44,11 +45,13 @@
     import { mapMutations, mapState, mapActions } from 'vuex';
     import _ from "lodash";
     import { SearchIcon, XIcon, PlusCircleIcon } from 'vue-feather-icons';
-    import { regexForTicketKeys } from "../utility/constants";
+    import { regexForTicketKeys } from "~/utility/constants";
+    import { searchAriaLabelMixin } from "~/utility/mixins";
 
     export default {
         name: "AutocompletedSearch",
         components: { SearchIcon, XIcon, PlusCircleIcon },
+        mixins: [searchAriaLabelMixin],
         data() {
             return {
                 searchTerm: '',

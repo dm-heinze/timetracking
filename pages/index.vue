@@ -21,7 +21,7 @@
                                 <the-search />
                                 <div class="d-flex flex-row group--settings" :style="{ 'outline': 'none' }" @click="toggleSettings">
                                     <settings-icon class="button--settings" />
-                                    <h5 class="pl-1 my-auto sidebar__option--settings">Settings</h5>
+                                    <div class="pl-1 my-auto sidebar__option--settings">Settings</div>
                                 </div>
                             </div>
                         </transition>

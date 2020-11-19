@@ -4,7 +4,7 @@
             <b-col cols="12" lg="4" class="login-content__container--left vh-100">
                 <div class="login-content__titles" :style="marginBottomTitle">
                     <h3>Sign in to Time Tracker</h3>
-                    <h5>Welcome back</h5>
+                    <div class="subtitle">Welcome back</div>
                 </div>
                 <b-row align-h="center" v-if="$mq === 'sm' || $mq === 'md'" :class="{ 'pt-5': $mq === 'sm', 'pt-1': $mq === 'md', 'pb-2': $mq === 'md' }">
                     <img src="~/assets/images/login.png" alt="illustration" :height="$mq === 'md' ? '250px' : '180px'">
@@ -18,6 +18,7 @@
                             placeholder="Username"
                             v-model="userObj.name"
                             @keyup.enter.prevent="setUser()"
+                            aria-label="username"
                         />
                     </div>
                     <div class="row mt-3 login__input-container--password">
@@ -28,6 +29,7 @@
                             placeholder="Password"
                             v-model="userObj.pass"
                             @keyup.enter.prevent="setUser()"
+                            aria-label="user password"
                         />
                         <template v-if="userObj.pass">
                             <eye-icon v-if="passwordHidden" @click="togglePasswordHidden()" class="select__icon show" />
@@ -49,7 +51,7 @@
             <b-col cols="12" lg="8" class="login-content__container--right vh-100" v-if="$mq === 'lg' || $mq === 'plg' || $mq === 'mdp'">
                 <div class="login-content__titles">
                     <h3>Time Tracker</h3>
-                    <h5>by dmf</h5>
+                    <div class="subtitle">by dmf</div>
                 </div>
                 <img src="~/assets/images/login.png" alt="illustration" :height="($mq === 'lg' || $mq === 'plg') ? '376px' : '275px'" class="mt-5">
             </b-col>

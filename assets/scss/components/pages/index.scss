@@ -26,7 +26,7 @@
         }
     }
 
-    h3, h5 {
+    h3, h5 { //
         color: $primary;
         font-weight: bold;
     }
@@ -49,6 +49,9 @@
             }
 
             .sidebar__option--settings {
+                color: $primary; //
+                font-weight: bold; //
+
                 font-size: $default__font-size;
             }
         }
