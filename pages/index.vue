@@ -34,7 +34,7 @@
                     <div class="col-xl-11 col-xxl-10">
                         <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
                             <div class="d-flex" :class="[flexDirection,  { 'pr-3': $mq === 'md' ||  $mq === 'lg' }]">
-                                <b-button pill variant="primary" type="button" class="login-content__sign-in-btn py-2" v-b-modal="'add-custom-task'" v-b-tooltip:hover title="Add Custom task" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'mb-2': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
+                                <b-button pill variant="primary" type="button" class="login-content__sign-in-btn py-2" v-b-modal="'add-custom-task'" v-b-tooltip.hover title="Add Custom task" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'mb-2': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
                                     <plus-circle-icon />
                                     <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Add Custom task</span>
                                     <b-modal :id="'add-custom-task'" centered>
@@ -60,7 +60,7 @@
                                         </template>
                                     </b-modal>
                                 </b-button>
-                                <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn py-2 mr-1" v-b-tooltip:hover title="Take a break" :class="{ 'mb-3': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
+                                <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn py-2 mr-1" v-b-tooltip.hover title="Take a break" :class="{ 'mb-3': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
                                     <coffee-icon />
                                     <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Take a break</span>
                                 </b-button>
@@ -74,7 +74,7 @@
                                     class="login-content__sign-in-btn py-2"
                                     v-b-modal="'confirm-push-time'"
                                     :class="{ 'mr-1': $mq === 'md' || $mq === 'lg', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }"
-                                    v-b-tooltip:hover title="Push all your tasks"
+                                    v-b-tooltip.hover title="Push all your tasks"
                                 >
                                     <send-icon />
                                     <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Push all your tasks</span>
