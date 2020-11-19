@@ -87,6 +87,15 @@
 
             a {
                 margin-left: -15px; //
+
+                &.notALink {
+
+                    &:hover {
+                        cursor: default;
+                        color: $primary;
+                        text-decoration: none;
+                    }
+                }
             }
 
             &__summary {
