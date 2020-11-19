@@ -510,63 +510,65 @@ export const actions = {
             }
         })
     },
-    requestPrefill: function ({commit, state, dispatch}, payload) {
-        return new Promise((resolve, reject) => {
-            dispatch('requestAssignedTickets')
-                .then((__res) => {
-                    commit('setCurrentUserName', { name: __res.issues[0].fields.assignee.name });
+    requestPrefill: function ({ commit, dispatch }) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const [ assignedTickets, smartPickedIssues ] = await Promise.all([ dispatch('requestAssignedTickets'), dispatch('requestSmartPickedIssues') ]);
 
-                    const __parsedAssignedIssues = __res.issues.map((__issue, index) => {
-                        return {
-                            key: __issue.key,
-                            id: __issue.id,
-                            summary: __issue.fields.summary, // todo
-                            assignee: __issue.fields.assignee.name,
-                            // avatarUrl: __issue.fields.project.avatarUrls['16x16']
-                            issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + __issue.key,
-                            comment: '',
-                            timeSpent: 0,
-                            startTime: '',
-                            endTime: '',
-                            assignedToTicket: true,
-                            booked: false,
-                            uniqueId: _.now() + index // todo
-                        }
-                    });
 
-                    __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue))
+                // assignedTickets
+                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name });
 
-                    dispatch('requestSmartPickedIssues')
-                        .then((__res) => {
-                            const __parsedSmartPickedIssues = __res.sections[0].issues.map((issue, index) => {
-                                return {
-                                    key: issue.key,
-                                    summary: issue.summary,
-                                    assignee: '',
-                                    issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + issue.key,
-                                    comment: '',
-                                    timeSpent: 0,
-                                    startTime: '',
-                                    endTime: '',
-                                    assignedToTicket: true,
-                                    booked: false,
-                                    uniqueId: _.now() + index // todo
-                                }
-                            })
+                const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => {
+                    return {
+                        key: __issue.key,
+                        id: __issue.id,
+                        summary: __issue.fields.summary, // todo
+                        assignee: __issue.fields.assignee.name,
+                        // avatarUrl: __issue.fields.project.avatarUrls['16x16']
+                        issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + __issue.key,
+                        comment: '',
+                        timeSpent: 0,
+                        startTime: '',
+                        endTime: '',
+                        assignedToTicket: true,
+                        booked: false,
+                        uniqueId: _.now() + index // todo
+                    }
+                });
+                __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue));
 
-                            __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue));
 
-                            resolve();
-                        })
-                        .catch((err) => reject(err))
+                // smartPickedIssues
+                const __parsedSmartPickedIssues = smartPickedIssues.sections[0].issues.map((issue, index) => {
+                    return {
+                        key: issue.key,
+                        summary: issue.summary,
+                        assignee: '',
+                        issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + issue.key,
+                        comment: '',
+                        timeSpent: 0,
+                        startTime: '',
+                        endTime: '',
+                        assignedToTicket: true,
+                        booked: false,
+                        uniqueId: _.now() + index // todo
+                    }
                 })
-                .catch((err) => {
+                __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue));
+
+                resolve();
+            } catch (err) {
+                if (err.response.status === 401) {
                     commit('setSessionObject', {}); // todo
 
                     dispatch('removeFromCookies', 'JSESSIONID') // todo
                         .then(() => reject(err)) // todo
                         .catch(() => reject(err))
-                })
+                } else {
+                    reject(err); // todo
+                }
+            }
         })
     }
 };
