@@ -85,10 +85,12 @@
     import _ from "lodash";
     import { regexForTicketKeys } from "../utility/constants";
     import { searchAriaLabelMixin } from "~/utility/mixins";
+    import { BListGroup, BListGroupItem, BFormInput } from 'bootstrap-vue';
 
 	export default {
 		name: "Settings",
-        components: { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon },
+        components: { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon, BListGroup, BListGroupItem, BFormInput },
+        directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem, 'b-form-input': BFormInput },
         mixins: [searchAriaLabelMixin],
         data () {
             return {

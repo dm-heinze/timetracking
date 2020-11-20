@@ -116,10 +116,12 @@
     import SelectedTasks from "../components/SelectedTasks";
     import TheSearch from "../components/TheSearch";
     import _ from "lodash";
+    import { BCollapse, BFormInput, BNavbarNav } from "bootstrap-vue";
 
     export default {
         name: 'Index',
-        components: { TheSearch, SelectedTasks, PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon, Settings: () => import('../components/Settings') },
+        components: { TheSearch, SelectedTasks, BCollapse, BFormInput, BNavbarNav, PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon, Settings: () => import('../components/Settings') },
+        directives: { 'b-collapse': BCollapse, 'b-form-input': BFormInput, 'b-navbar-nav': BNavbarNav },
         data () {
             return {
                 customNameCustomTask: '',

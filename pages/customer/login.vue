@@ -61,12 +61,13 @@
 
 <script>
     import { mapActions } from 'vuex';
-    import { BIcon, BIconThreeDots } from 'bootstrap-vue';
+    import { BIcon, BIconThreeDots, BFormInput } from 'bootstrap-vue';
     import { EyeIcon, EyeOffIcon } from 'vue-feather-icons';
 
     export default {
         name: 'login',
-        components: { BIcon, BIconThreeDots, EyeIcon, EyeOffIcon },
+        components: { BIcon, BIconThreeDots, BFormInput, EyeIcon, EyeOffIcon },
+        directives: { 'b-form-input': BFormInput, 'b-icon': BIcon, 'b-icon-three-dots': BIconThreeDots },
         data() {
             return {
                 userObj: {

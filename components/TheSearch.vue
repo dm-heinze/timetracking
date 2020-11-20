@@ -46,6 +46,7 @@
     import { mapMutations, mapState, mapActions } from 'vuex';
     import AutocompletedSearch from "./AutocompletedSearch";
     import { ChevronDownIcon } from 'vue-feather-icons';
+    import { BFormSelect, BFormSelectOption } from 'bootstrap-vue';
     import _ from 'lodash';
 
     export default {
@@ -53,8 +54,10 @@
         components: {
             AutocompletedSearch,
             SearchResults: () => import('./SearchResults'),
-            ChevronDownIcon
+            ChevronDownIcon,
+            BFormSelect, BFormSelectOption
         },
+        directives: { 'b-form-select': BFormSelect, 'b-form-select-option': BFormSelectOption },
         data() {
             return {
                 show: true,

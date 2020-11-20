@@ -66,11 +66,13 @@
 <script>
     import { mapState, mapMutations, mapActions } from 'vuex';
     import { PlusCircleIcon, BookmarkIcon } from 'vue-feather-icons';
+    import { BListGroupItem, BListGroup } from 'bootstrap-vue';
     import _ from "lodash";
 
     export default {
         name: "SearchResults",
-        components: { PlusCircleIcon, BookmarkIcon },
+        components: { PlusCircleIcon, BookmarkIcon, BListGroupItem, BListGroup },
+        directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,

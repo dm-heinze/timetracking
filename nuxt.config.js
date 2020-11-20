@@ -59,7 +59,6 @@ export default {
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         // Doc: https://bootstrap-vue.js.org/docs/
-        'bootstrap-vue/nuxt',
         'localforage-nuxt',
         'nuxt-mq',
         'cookie-universal-nuxt'
@@ -69,10 +68,6 @@ export default {
             only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH']
         }]
     ],
-    bootstrapVue: {
-        bootstrapCSS: false,
-        bootstrapVueCSS: false
-    },
     /*
      ** Axios module configuration
      */

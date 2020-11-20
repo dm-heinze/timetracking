@@ -176,6 +176,7 @@
 <script>
     import { mapState, mapMutations, mapActions } from 'vuex';
     import { XIcon, Edit2Icon, SaveIcon, PlusCircleIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, ChevronDownIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
+    import { BFormSelect, BCollapse, BFormSelectOption } from 'bootstrap-vue';
     import _ from "lodash";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
@@ -184,7 +185,8 @@
 
     export default {
         name: "SelectedTask",
-        components: { XIcon, SaveIcon, Edit2Icon, PlusCircleIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, ChevronDownIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon },
+        components: { XIcon, SaveIcon, Edit2Icon, PlusCircleIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, ChevronDownIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon, BFormSelect, BCollapse, BFormSelectOption },
+        directives: { 'b-collapse': BCollapse, 'b-form-select': BFormSelect, 'b-form-select-option': BFormSelectOption },
         props: {
             taskKey: {
                 required: true

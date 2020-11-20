@@ -47,10 +47,12 @@
     import { SearchIcon, XIcon, PlusCircleIcon } from 'vue-feather-icons';
     import { regexForTicketKeys } from "~/utility/constants";
     import { searchAriaLabelMixin } from "~/utility/mixins";
+    import { BListGroupItem, BListGroup, BFormInput } from 'bootstrap-vue';
 
     export default {
         name: "AutocompletedSearch",
-        components: { SearchIcon, XIcon, PlusCircleIcon },
+        components: { SearchIcon, XIcon, PlusCircleIcon, BListGroupItem, BListGroup, BFormInput },
+        directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem, 'b-form-input': BFormInput },
         mixins: [searchAriaLabelMixin],
         data() {
             return {
