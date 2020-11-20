@@ -26,6 +26,8 @@ const response = function (request, response) {
                 response.end(); // todo: add error handling -> pass statusCode to caller
             })
             .catch((err) =>{
+                response.writeHead(err.response.status);
+
                 response.end(JSON.stringify(err.response.status));
             })
     })

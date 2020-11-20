@@ -300,12 +300,15 @@
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
                 requestAllProjects: 'moduleUser/requestAllProjects',
                 requestRelatedTickets: 'moduleUser/requestRelatedTickets',
-                requestSavingSingleWorklog: 'moduleUser/requestSavingSingleWorklog'
+                requestSavingSingleWorklog: 'moduleUser/requestSavingSingleWorklog',
+                resetState: 'moduleUser/resetState'
             }),
             toggleChevronsIcon() {
                 this.chevronsUp = !this.chevronsUp;
             },
             bookSingleTaskOnly() {
+                this.$bvModal.hide(`confirm-push-time-singleTaskOnly-${this.uniqueId}`); // any cancel event needed?
+
                 this.requestSavingSingleWorklog({ comment: this.taskWorklogComment, timeSpentSeconds: this.timeSpent, ticketId: this.taskKey, uniqueId: this.uniqueId })
                     .then(() => {
                         this.$bvModal.msgBoxOk('Worklog was successfully booked', {
@@ -316,14 +319,27 @@
                             footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                         })
                     })
-                    .catch(() => {
-                        this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
-                            centered: true,
-                            okVariant: 'danger rounded-pill',
-                            okTitle: 'Okay',
-                            bodyClass: 'modal__main-container',
-                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
-                        })
+                    .catch((err) => {
+                        if (err.response.status === 401) {
+                            this.$bvModal.msgBoxOk('The session has expired. Booking was not successful!', {
+                                centered: true,
+                                okVariant: 'danger rounded-pill',
+                                okTitle: 'Okay',
+                                bodyClass: 'modal__main-container',
+                                footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                            }).then(() => {
+                                this.resetState().then(() => this.$router.push('/customer/login')).catch(() => console.log("error occurred")) // todo
+
+                            })
+                        } else {
+                            this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
+                                centered: true,
+                                okVariant: 'danger rounded-pill',
+                                okTitle: 'Okay',
+                                bodyClass: 'modal__main-container',
+                                footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                            })
+                        }
                     })
             },
             saveEditedStartTime: _.debounce(function (event) {

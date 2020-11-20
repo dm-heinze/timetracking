@@ -237,7 +237,7 @@ export const actions = {
 
                     dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                 })
-                .catch(() => reject());
+                .catch((err) => reject(err));
         })
     },
     requestSavingWorklogs: function ({ state, commit, dispatch }) {
@@ -260,9 +260,9 @@ export const actions = {
                                 dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                             })
                             .catch(() => reject()); // todo
-                    } catch (e) {
+                    } catch (err) {
                         console.log("err occurred in requestSavingWorklogs");
-                        reject();
+                        reject(err);
                     }
                 }
             } else {
