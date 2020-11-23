@@ -15,7 +15,8 @@ const response = function (request, response) {
 
         axios({
             method: 'POST', // use POST to get the assigned tickets only
-            url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'search',
+            baseURL: process.env.BASE_DOMAIN,
+            url: process.env.ENDPOINT_REST + 'search',
             data: { jql: jqlSearchString },
             headers: parsedDataObject.headers,
         })

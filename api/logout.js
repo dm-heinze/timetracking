@@ -11,7 +11,8 @@ const response = function (request, response) {
 
     axios({
         method: 'DELETE',
-        url: process.env.BASE_DOMAIN + process.env.ENDPOINT_AUTH,
+        baseURL: process.env.BASE_DOMAIN,
+        url: process.env.ENDPOINT_AUTH,
         headers: headers,
     })
         .then((__response) => response.end(JSON.stringify({ status: __response.status }))) // todo

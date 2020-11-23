@@ -15,7 +15,8 @@ const response = function (request, response) {
 
         axios({
             method: 'POST',
-            url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + `issue/${ticketId}/worklog`,
+            baseURL: process.env.BASE_DOMAIN,
+            url: process.env.ENDPOINT_REST + `issue/${ticketId}/worklog`,
             headers: parsedDataObject.headers,
             data: {
                 comment: parsedDataObject.comment,

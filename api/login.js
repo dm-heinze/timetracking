@@ -14,10 +14,10 @@ const response = function (request, response) {
 
         axios({
             method: 'POST',
-            url: process.env.BASE_DOMAIN + process.env.ENDPOINT_AUTH,
+            baseURL: process.env.BASE_DOMAIN,
+            url: process.env.ENDPOINT_AUTH,
             data: body,
             headers: headers,
-
         })
             .then((__response) => {
                 const sessionObject = {
