@@ -330,17 +330,25 @@ export const actions = {
         return new Promise((resolve, reject) => {
 
             axios.post('/api/login', { username: payload.data.name, password: payload.data.pass })
-                .then((response) => {
+                .then(async (response) => {
                     if (response.data) { // todo
-                        if (response.data === 401) reject("Your credentials are not valid.");
+                        if (response.data === 401) reject("Your credentials are not valid."); // todo
                         if (response.data === 403) reject("Try again later.");
 
                         if (response.data !== 401 && response.data !== 403) {
                             commit('setSessionObject', response.data);
 
-                            dispatch('saveSessionIdToCookies')
+                            await Promise.all([
+                                await dispatch('saveSessionIdToCookies'),
+                                await dispatch('retrieveSelectedTasksFromStorage'),
+                                await dispatch('retrieveBreaksFromStorage'),
+                                await dispatch('retrieveBookmarksFromStorage'),
+                            ])
                                 .then(() => resolve())
-                                .catch(() => console.log("err occurred while saving to localForage"))
+                                .catch(() => {
+                                    console.log("err occurred while saving/retrieving to/from localForage");
+                                    reject();
+                                })
                         }
                     } else {
                         resolve();
