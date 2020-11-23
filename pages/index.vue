@@ -156,7 +156,8 @@
                 if (this.selectedTasks.length !== 0) {
                     const allSelectedTasksTimes = this.selectedTasks
                         .filter((__selected) => !__selected.booked)
-                        .map((__selectedTask) => { if (__selectedTask.timeSpent !== '0') return __selectedTask.timeSpent })
+                        .filter((__nonBooked) => __nonBooked.timeSpent !== '0' && __nonBooked.timeSpent !== '')
+                        .map((__selectedTask) => Number.parseInt(__selectedTask.timeSpent))
 
                     for (let timeSpentOnIndividualSelectedTask of allSelectedTasksTimes) {
                         sumOfWorkedTime += timeSpentOnIndividualSelectedTask
