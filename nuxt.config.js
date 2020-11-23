@@ -23,7 +23,7 @@ export default {
             { name: 'viewport', content: 'width=device-width, initial-scale=1' },
             { hid: 'description', name: 'description', content: pkg.description }
         ],
-        link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+        link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }]
     },
 
     /*
@@ -75,7 +75,7 @@ export default {
         // See https://github.com/nuxt-community/axios-module#options
     },
     'mq': {
-        defaultBreakpoint: 'md',
+        defaultBreakpoint: 'plg',
         breakpoints: {
             sm: 768,
             md: 1024,
