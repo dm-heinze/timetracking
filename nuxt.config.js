@@ -8,7 +8,8 @@ export default {
         BASE_DOMAIN: process.env.BASE_DOMAIN || 'https://<YOUR-JIRA-DOMAIN>/',
         ENDPOINT_BROWSE: process.env.ENDPOINT_BROWSE || 'browse/',
         ENDPOINT_REST: process.env.ENDPOINT_REST || 'rest/api/2/',
-        ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session'
+        ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session',
+        VERCEL_URL: process.env.VERCEL_URL || 'http://localhost:3000'
     },
     /*
      ** Headers of the page
@@ -65,7 +66,7 @@ export default {
     ],
     buildModules: [
         ['@nuxtjs/dotenv', {
-            only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH']
+            only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH', 'VERCEL_URL']
         }]
     ],
     /*
