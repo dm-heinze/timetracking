@@ -104,8 +104,7 @@
                     assignee: '',
                     issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + this.selectedTicket,
                     comment: '',
-                    // timeSpent: 0, // todo
-                    timeSpent: '', //
+                    timeSpent: 0,
                     startTime: '',
                     endTime: '',
                     assignedToTicket: true,

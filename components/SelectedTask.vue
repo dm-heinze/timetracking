@@ -479,7 +479,8 @@
 
                 let __timeSpent = calculatedDifference; // todo?
 
-                if (this.timeSpent !== 0 || this.timeSpent !== '') __timeSpent = this.initialTimeSpent + calculatedDifference; // todo?
+                // todo
+                if (this.timeSpent !== 0 || this.timeSpent !== '') __timeSpent = this.initialTimeSpent + calculatedDifference;
 
                 this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: __timeSpent });
 
