@@ -328,6 +328,8 @@ export const actions = {
     },
     createApiObject: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
+            console.log("process.env.baseUrl: ", process.env.baseUrl);
+
             axios({ method: 'post', url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
                 .then(async (response) => {
                     if (response.data) { // todo
