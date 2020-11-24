@@ -10,7 +10,8 @@ export default {
         ENDPOINT_REST: process.env.ENDPOINT_REST || 'rest/api/2/',
         ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session',
         VERCEL_URL: process.env.VERCEL_URL,
-        baseUrl: `https://${process.env.VERCEL_URL}` || 'http://localhost:3000/'
+        VERCEL_ENV: process.env.VERCEL_ENV,
+        baseUrl: (process.env.VERCEL_ENV && process.env.VERCEL_URL) ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000/'
     },
     /*
      ** Headers of the page
@@ -67,7 +68,7 @@ export default {
     ],
     buildModules: [
         ['@nuxtjs/dotenv', {
-            only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH', 'VERCEL_URL', 'baseUrl']
+            only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH', 'VERCEL_ENV', 'VERCEL_URL', 'baseUrl']
         }]
     ],
     /*

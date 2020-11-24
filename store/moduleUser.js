@@ -1,6 +1,7 @@
 import axios from 'axios';
 import _ from 'lodash';
 import base64 from 'base-64';
+import { __base_url } from "../utility/constants";
 
 export const state = () => ({
     sessionObject: {}, // currently has 2 fields: name & value,
@@ -231,7 +232,6 @@ export const actions = {
     },
     requestSavingSingleWorklog: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
-            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
             axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
                 .then(() => {
                     commit('markTaskAsBooked', { taskToMarkAsBooked: payload.uniqueId });
@@ -253,7 +253,6 @@ export const actions = {
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
                             if (!__selectedTask.booked) await axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
                         }))
                             .then(() => {
@@ -314,7 +313,6 @@ export const actions = {
     },
     requestSessionRemoval: function({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
-            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
             axios({ method: 'delete', baseURL: __base_url, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
                 .then((_response) => {
                     if (_response.data.status === 204) {
@@ -333,7 +331,6 @@ export const actions = {
         return new Promise((resolve, reject) => {
             console.log("process.env.baseUrl: ", process.env.baseUrl);
             console.log("process.env.VERCEL_URL: ", process.env.VERCEL_URL);
-            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
             axios({ method: 'post', baseURL: __base_url, url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
                 .then(async (response) => {
                     if (response.data) { // todo
@@ -366,7 +363,6 @@ export const actions = {
     },
     getIssue: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
             axios({ method: 'post', baseURL: __base_url, url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
                 .then((__res) => {
                     if (__res.data.issues.length !== 0) {
@@ -416,7 +412,6 @@ export const actions = {
         return new Promise((resolve, reject) => {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
-                let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
                 axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
                     .then((__res) => {
                         commit('setExistingProjects', __res.data);
@@ -429,7 +424,6 @@ export const actions = {
     },
     requestRelatedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
             axios({ method: 'post', baseURL: __base_url, url: `/api/getProjectRelatedTickets`, data: { headers: getters.getHeader(state), selectedProject: state.selectedProject }})
                 .then((__res) => {
                     const __relatedTickets = __res.data.issues.map((__ticket) =>  {
@@ -466,7 +460,6 @@ export const actions = {
     },
     requestSmartPickedIssues: function ({ state }) {
         return new Promise((resolve, reject) => {
-            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
             axios({ method: 'post', baseURL: __base_url, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
                 .catch((err) => reject(err))
@@ -474,7 +467,6 @@ export const actions = {
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
             axios({ method: 'post', baseURL: __base_url, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
                 .catch((err) => reject(err))
