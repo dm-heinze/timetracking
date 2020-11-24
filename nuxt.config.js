@@ -74,6 +74,7 @@ export default {
      */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
+        baseURL: process.env.VERCEL_URL ? process.env.VERCEL_URL : 'http://localhost:3000'
     },
     'mq': {
         defaultBreakpoint: 'plg',
