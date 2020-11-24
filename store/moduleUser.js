@@ -1,7 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
 import base64 from 'base-64';
-import { __baseURL } from "../utility/constants";
 
 export const state = () => ({
     sessionObject: {}, // currently has 2 fields: name & value,
@@ -232,7 +231,7 @@ export const actions = {
     },
     requestSavingSingleWorklog: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
-            axios({ method: 'post', baseURL: __baseURL, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
+            axios({ method: 'post', url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
                 .then(() => {
                     commit('markTaskAsBooked', { taskToMarkAsBooked: payload.uniqueId });
 
@@ -253,7 +252,7 @@ export const actions = {
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            if (!__selectedTask.booked) await axios({ method: 'post', baseURL: __baseURL, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
+                            if (!__selectedTask.booked) await axios({ method: 'post', url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
                         }))
                             .then(() => {
                                 state.selectedTasks.forEach((__bookedTask) => commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId }));
@@ -313,7 +312,7 @@ export const actions = {
     },
     requestSessionRemoval: function({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'delete', baseURL: __baseURL, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
+            axios({ method: 'delete', url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
                 .then((_response) => {
                     if (_response.data.status === 204) {
                         dispatch('resetState')
@@ -329,7 +328,7 @@ export const actions = {
     },
     createApiObject: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __baseURL, url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
+            axios({ method: 'post', url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
                 .then(async (response) => {
                     if (response.data) { // todo
                         if (response.data === 401) reject("Your credentials are not valid."); // todo
@@ -361,7 +360,7 @@ export const actions = {
     },
     getIssue: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __baseURL, url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
+            axios({ method: 'post', url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
                 .then((__res) => {
                     if (__res.data.issues.length !== 0) {
                         const searchResults =__res.data.issues.map((__issueInSearchResult, index) => {
@@ -410,7 +409,7 @@ export const actions = {
         return new Promise((resolve, reject) => {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
-                axios({ method: 'post', baseURL: __baseURL, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
+                axios({ method: 'post', url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
                     .then((__res) => {
                         commit('setExistingProjects', __res.data);
 
@@ -422,7 +421,7 @@ export const actions = {
     },
     requestRelatedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __baseURL, url: `/api/getProjectRelatedTickets`, data: { headers: getters.getHeader(state), selectedProject: state.selectedProject }})
+            axios({ method: 'post', url: `/api/getProjectRelatedTickets`, data: { headers: getters.getHeader(state), selectedProject: state.selectedProject }})
                 .then((__res) => {
                     const __relatedTickets = __res.data.issues.map((__ticket) =>  {
                         return {
@@ -458,14 +457,14 @@ export const actions = {
     },
     requestSmartPickedIssues: function ({ state }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __baseURL, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
+            axios({ method: 'post', url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
                 .catch((err) => reject(err))
         })
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __baseURL, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
+            axios({ method: 'post', url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
                 .catch((err) => reject(err))
 
