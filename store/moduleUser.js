@@ -231,7 +231,8 @@ export const actions = {
     },
     requestSavingSingleWorklog: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
-            axios({ method: 'post', url: `/api/addWorklog`, baseURL: process.env.VERCEL_URL, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
+            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+            axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
                 .then(() => {
                     commit('markTaskAsBooked', { taskToMarkAsBooked: payload.uniqueId });
 
@@ -252,7 +253,8 @@ export const actions = {
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            if (!__selectedTask.booked) await axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
+                            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+                            if (!__selectedTask.booked) await axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
                         }))
                             .then(() => {
                                 state.selectedTasks.forEach((__bookedTask) => commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId }));
@@ -312,7 +314,8 @@ export const actions = {
     },
     requestSessionRemoval: function({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'delete', baseURL: process.env.VERCEL_URL, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
+            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+            axios({ method: 'delete', baseURL: __base_url, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
                 .then((_response) => {
                     if (_response.data.status === 204) {
                         dispatch('resetState')
@@ -329,8 +332,9 @@ export const actions = {
     createApiObject: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             console.log("process.env.baseUrl: ", process.env.baseUrl);
-
-            axios({ method: 'post', url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
+            console.log("process.env.VERCEL_URL: ", process.env.VERCEL_URL);
+            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+            axios({ method: 'post', baseURL: __base_url, url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
                 .then(async (response) => {
                     if (response.data) { // todo
                         if (response.data === 401) reject("Your credentials are not valid."); // todo
@@ -362,7 +366,8 @@ export const actions = {
     },
     getIssue: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
+            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
                 .then((__res) => {
                     if (__res.data.issues.length !== 0) {
                         const searchResults =__res.data.issues.map((__issueInSearchResult, index) => {
@@ -411,7 +416,8 @@ export const actions = {
         return new Promise((resolve, reject) => {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
-                axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
+                let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+                axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
                     .then((__res) => {
                         commit('setExistingProjects', __res.data);
 
@@ -423,7 +429,8 @@ export const actions = {
     },
     requestRelatedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', url: `/api/getProjectRelatedTickets`, data: { headers: getters.getHeader(state), selectedProject: state.selectedProject }})
+            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getProjectRelatedTickets`, data: { headers: getters.getHeader(state), selectedProject: state.selectedProject }})
                 .then((__res) => {
                     const __relatedTickets = __res.data.issues.map((__ticket) =>  {
                         return {
@@ -459,14 +466,16 @@ export const actions = {
     },
     requestSmartPickedIssues: function ({ state }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
+            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
                 .catch((err) => reject(err))
         })
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
+            let __base_url = process.server ? 'http://localhost:3000' : `https://${process.env.VERCEL_URL}`;
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
                 .catch((err) => reject(err))
 
