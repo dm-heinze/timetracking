@@ -9,6 +9,7 @@ export default {
         ENDPOINT_BROWSE: process.env.ENDPOINT_BROWSE || 'browse/',
         ENDPOINT_REST: process.env.ENDPOINT_REST || 'rest/api/2/',
         ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session',
+        VERCEL_URL: process.env.VERCEL_URL,
         baseUrl: `https://${process.env.VERCEL_URL}` || 'http://localhost:3000/'
     },
     /*
