@@ -231,7 +231,7 @@ export const actions = {
     },
     requestSavingSingleWorklog: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
-            axios({ method: 'post', url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
+            axios({ method: 'post', url: `/api/addWorklog`, baseURL: process.env.VERCEL_URL, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
                 .then(() => {
                     commit('markTaskAsBooked', { taskToMarkAsBooked: payload.uniqueId });
 
@@ -252,7 +252,7 @@ export const actions = {
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            if (!__selectedTask.booked) await axios({ method: 'post', url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
+                            if (!__selectedTask.booked) await axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
                         }))
                             .then(() => {
                                 state.selectedTasks.forEach((__bookedTask) => commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId }));
@@ -312,7 +312,7 @@ export const actions = {
     },
     requestSessionRemoval: function({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'delete', url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
+            axios({ method: 'delete', baseURL: process.env.VERCEL_URL, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
                 .then((_response) => {
                     if (_response.data.status === 204) {
                         dispatch('resetState')
@@ -360,7 +360,7 @@ export const actions = {
     },
     getIssue: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
+            axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
                 .then((__res) => {
                     if (__res.data.issues.length !== 0) {
                         const searchResults =__res.data.issues.map((__issueInSearchResult, index) => {
@@ -409,7 +409,7 @@ export const actions = {
         return new Promise((resolve, reject) => {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
-                axios({ method: 'post', url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
+                axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
                     .then((__res) => {
                         commit('setExistingProjects', __res.data);
 
@@ -457,14 +457,14 @@ export const actions = {
     },
     requestSmartPickedIssues: function ({ state }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
+            axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
                 .catch((err) => reject(err))
         })
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
+            axios({ method: 'post', baseURL: process.env.VERCEL_URL, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
                 .catch((err) => reject(err))
 

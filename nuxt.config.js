@@ -9,7 +9,7 @@ export default {
         ENDPOINT_BROWSE: process.env.ENDPOINT_BROWSE || 'browse/',
         ENDPOINT_REST: process.env.ENDPOINT_REST || 'rest/api/2/',
         ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session',
-        VERCEL_URL: process.env.VERCEL_URL
+        baseUrl: process.env.VERCEL_URL || 'http://localhost:3000/'
     },
     /*
      ** Headers of the page
@@ -66,7 +66,7 @@ export default {
     ],
     buildModules: [
         ['@nuxtjs/dotenv', {
-            only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH', 'VERCEL_URL']
+            only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH', 'VERCEL_URL', 'baseUrl']
         }]
     ],
     /*
@@ -74,7 +74,7 @@ export default {
      */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
-        baseURL: process.env.VERCEL_URL ? process.env.VERCEL_URL : 'http://localhost:3000'
+        baseURL: process.env.baseUrl
     },
     'mq': {
         defaultBreakpoint: 'plg',
