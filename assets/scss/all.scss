@@ -2,16 +2,12 @@
 @import 'configurations/__mixins.scss';
 @import 'configurations/custom.scss';
 
-@import 'dmc/_all.scss';
 @import 'configurations/variables-old';
 @import 'configurations/__select';
-@import 'configurations/_icons.scss';
 @import 'configurations/colors--old.scss';
 @import 'components/pages/login.scss';
 @import 'components/pages/index.scss';
 @import 'components/the-layout';
-@import 'components/the-navigation';
-@import 'components/the-tasks';
 @import 'components/selected-ticket.scss';
 @import 'components/autocompleted-search.scss';
 @import 'components/search-results.scss';
