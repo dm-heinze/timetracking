@@ -290,6 +290,7 @@
                 saveTaskStartTime: 'moduleUser/saveTaskStartTime',
                 saveTaskEndTime: 'moduleUser/saveTaskEndTime',
                 setSelectedProject: 'moduleUser/setSelectedProject',
+                setRelatedTickets: 'moduleUser/setRelatedTickets',
                 assignToTicket: 'moduleUser/assignToTicket',
                 toggleBreakMutation: 'moduleUser/toggleBreak',
                 setLastTicket: 'moduleUser/setLastTicket',
@@ -449,6 +450,9 @@
                 if (cancelAssignment) {
                     this.selectedTicket = this.lastSelectedTicket;
                     this.selectedProject = ''; // on cancel revert to initial state
+
+                    this.resetProjectAndRelatedTicketsInStore();
+
                     this.$bvModal.hide(`ticket-assignment-${this.uniqueId}`);
                 }
 
@@ -457,10 +461,15 @@
                 if (!this.showSelection && (cancelAssignment === false) && (this.lastSelectedTicket !== this.selectedTicket)) {
                     // step 1: update vuex store
                     this.assignToTicket({ uniqueId: this.uniqueId,  assignedTicketKey: this.selectedTicket }); // todo
+                    this.resetProjectAndRelatedTicketsInStore();
 
                     // step 2: update localStorage
                     this.saveSelectedTasksToStorage();
                 }
+            },
+            resetProjectAndRelatedTicketsInStore: function () {
+                this.setSelectedProject('');
+                this.setRelatedTickets([]);
             },
             removeTicketFromSelectedTickets: function (ticketToRemoveFromSelectedTickets) {
                 this.removeSelectedTask(ticketToRemoveFromSelectedTickets);
