@@ -19,22 +19,8 @@
 
 
         <h3 class="sidebar__title">Suggestions</h3>
-        <div v-if="smartPickedSuggestions.length !== 0">
-            <b-list-group>
-                <b-list-group-item
-                    v-for="searchResult in smartPickedSuggestions"
-                    :key="searchResult.key"
-                    @click="addToSelectedIssues(searchResult)"
-                    class="d-flex justify-content-between"
-                >
-                    <div class="ticket__info col-11">
-                        <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
-                        <div class="ticket__info__summary text-truncate">{{ searchResult.summary }}</div>
-                    </div>
-
-                    <plus-circle-icon class="ticket__icon align-self-center" />
-                </b-list-group-item>
-            </b-list-group>
+        <div v-if="smartPickedSuggestions.length !== 0"> <!-- todo: update condition if visibility configurable -->
+            <suggestions @updateSelectedIssues="addToSelectedIssues" />
         </div>
         <div v-else>No Search Results for This Query</div>
 
@@ -68,10 +54,13 @@
     import { PlusCircleIcon, BookmarkIcon } from 'vue-feather-icons';
     import { BListGroupItem, BListGroup } from 'bootstrap-vue';
     import _ from "lodash";
+    import Suggestions from "~/components/Suggestions"; // todo: dynamically import if visibility configurable
+    import { smartPickedIssuesMixin } from "~/utility/mixins";
 
     export default {
         name: "SearchResults",
-        components: { PlusCircleIcon, BookmarkIcon, BListGroupItem, BListGroup },
+        components: { Suggestions, PlusCircleIcon, BookmarkIcon, BListGroupItem, BListGroup },
+        mixins: [smartPickedIssuesMixin],
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
@@ -83,9 +72,6 @@
             }),
             assignedTickets () {
                 return this.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee === this.currentUser)
-            },
-            smartPickedSuggestions () {
-                return _.slice(this.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee !== this.currentUser), 0, 5) // end excluded
             }
         },
         methods: {
