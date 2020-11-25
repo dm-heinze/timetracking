@@ -7,6 +7,7 @@ export const state = () => ({
     sessionObject: {}, // currently has 2 fields: name & value,
     currentUser: {},
     searchResults: [],
+    searchTerm: '',
     isTimerActive: false,
     allExistingProjects: [],
     selectedProject: '',
@@ -82,6 +83,9 @@ export const mutations = {
     },
     setSearchResult: (state, value) => {
         state.searchResults = value;
+    },
+    setSearchTerm: (state, value) => {
+        state.searchTerm = value;
     },
     setIsTimerActive: (state, value) => {
         state.isTimerActive = !(state.isTimerActive);

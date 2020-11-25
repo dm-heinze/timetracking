@@ -6,8 +6,8 @@
         </div>
         <div class="autocompleted-search__container">
             <b-form-input
-                v-model="searchTerm"
                 @input="requestSearch"
+                :value="searchTerm"
                 placeholder="Search for Tickets to Bookmark"
                 :disabled="$nuxt.isOffline"
                 :class="{ 'disabled': $nuxt.isOffline }"
@@ -15,9 +15,9 @@
                 @keyup.esc="resetSearch()"
                 aria-label="search for tickets for bookmarking"
             />
-            <button :disabled="searchTerm === '' && searchLoading" @click="resetSearch()" :aria-label="searchFieldButtonAriaLabel">
-                <search-icon v-if="!searchLoading && searchTerm === ''" />
-                <x-icon v-if="!searchLoading && searchTerm !== ''" class="button--close" />
+            <button :disabled="searchTerm == '' && searchLoading" @click="resetSearch()" :aria-label="searchFieldButtonAriaLabel">
+                <search-icon v-if="!searchLoading && searchTerm == ''" />
+                <x-icon v-if="!searchLoading && searchTerm != ''" class="button--close" />
                 <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
             </button>
         </div>
@@ -92,7 +92,6 @@
         mixins: [searchAriaLabelMixin],
         data () {
             return {
-                searchTerm: '',
                 searchLoading: false
             }
         },
@@ -100,7 +99,8 @@
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
                 bookmarked: state => state.moduleUser.bookmarked,
-                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions
+                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
+                searchTerm: state => state.moduleUser.searchTerm
             })
         },
         methods: {
@@ -113,10 +113,13 @@
                 updateBookmarks: 'moduleUser/updateBookmarks',
                 setSearchResult: 'moduleUser/setSearchResult',
                 toggleSettings: 'moduleUser/toggleSettings',
-                addSelectedTask: 'moduleUser/addSelectedTask'
+                addSelectedTask: 'moduleUser/addSelectedTask',
+                setSearchTerm: 'moduleUser/setSearchTerm'
             }),
-            requestSearch: _.debounce(function () {
-                if (!_.isEmpty(this.searchTerm)) {
+            requestSearch: _.debounce(function (value) {
+                if (!_.isEmpty(value)) {
+                    this.setSearchTerm(value);
+
                     let isAlreadyInSuggestions = 0;
                     let filteredSearchSuggestions;
                     if(this.searchTerm.match(regexForTicketKeys)) {
@@ -136,7 +139,7 @@
                 this.saveBookmarksToStorage();
             },
             resetSearch: function (close = false) { // todo
-                this.searchTerm = '';
+                this.setSearchTerm('');
 
                 this.setSearchResult([]);
 
