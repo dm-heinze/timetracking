@@ -17,23 +17,23 @@
 </template>
 
 <script>
-    import { mapState, mapMutations, mapActions } from 'vuex';
+    import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
     import _ from "lodash";
     import Suggestions from "~/components/Suggestions"; // todo: dynamically import if visibility configurable
     import AssignedTickets from "~/components/AssignedTickets"; // todo: dynamically import
     import BookmarksSelectable from "~/components/BookmarksSelectable"; // todo
-    import { smartPickedIssuesMixin, assignedTicketsMixin } from "~/utility/mixins";
 
     export default {
         name: "SearchResults",
         components: { AssignedTickets, Suggestions, BookmarksSelectable },
-        mixins: [smartPickedIssuesMixin, assignedTicketsMixin], // todo: as store getters
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
-                selectedTasks: state => state.moduleUser.selectedTasks,
-                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
-                currentUser: state => state.moduleUser.currentUser.name
+                selectedTasks: state => state.moduleUser.selectedTasks
+            }),
+            ...mapGetters({
+                assignedTickets: 'moduleUser/getAssignedTickets',
+                smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'
             })
         },
         methods: {

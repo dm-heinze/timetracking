@@ -17,21 +17,17 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapGetters } from 'vuex';
     import { PlusCircleIcon } from "vue-feather-icons";
     import { BListGroup, BListGroupItem } from "bootstrap-vue";
-    import _ from "lodash"; // todo
-    import { smartPickedIssuesMixin } from "~/utility/mixins";
 
     export default {
 		name: "Suggestions",
-        components: {  PlusCircleIcon, BListGroupItem, BListGroup },
-        mixins: [smartPickedIssuesMixin],
+        components: { PlusCircleIcon, BListGroupItem, BListGroup },
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
-            ...mapState({
-                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
-                currentUser: state => state.moduleUser.currentUser.name,
+            ...mapGetters({
+                smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'
             })
         },
         methods: {

@@ -30,6 +30,12 @@ export const getters = {
             'Content-Type': 'application/json',
             cookie: `JSESSIONID=${state.sessionObject.value}`,
         }
+    },
+    getSmartPickedSuggestions: (state) => {
+        return _.slice(state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee !== state.currentUser.name), 0, 5) // end excluded
+    },
+    getAssignedTickets: (state) => {
+        return state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee === state.currentUser.name)
     }
 }
 
