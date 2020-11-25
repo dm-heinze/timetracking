@@ -329,6 +329,7 @@ export const actions = {
     },
     createApiObject: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
+            console.log("process.env.PORT: ", process.env.PORT);
             console.log("process.env.baseUrl: ", process.env.baseUrl);
             console.log("process.env.VERCEL_URL: ", process.env.VERCEL_URL);
             axios({ method: 'post', baseURL: __base_url, url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
