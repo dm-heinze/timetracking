@@ -72,24 +72,22 @@
         </div>
         <div v-else class="sidebar__title sidebar__title--no-bookmarks">No Bookmarks Saved.</div>
 
-        <b-button pill variant="danger" @click.prevent="removeCurrentSession" type="button" class="login-content__sign-in-btn button--logout pt-2 pb-2 mr-1 w-100">
-            <log-out-icon />
-            <span class="pl-1">Logout</span>
-        </b-button>
+        <logout />
     </div>
 </template>
 
 <script>
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
-    import _ from "lodash";
-    import { regexForTicketKeys } from "../utility/constants";
-    import { searchAriaLabelMixin } from "~/utility/mixins";
+    import { XIcon, XCircleIcon, SearchIcon, BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
     import { BListGroup, BListGroupItem, BFormInput } from 'bootstrap-vue';
+    import _ from "lodash";
+    import Logout from '~/components/Logout';
+    import { regexForTicketKeys } from "~/utility/constants";
+    import { searchAriaLabelMixin } from "~/utility/mixins";
 
 	export default {
 		name: "Settings",
-        components: { XIcon, XCircleIcon, LogOutIcon, SearchIcon, BookmarkIcon, PlusCircleIcon, BListGroup, BListGroupItem, BFormInput },
+        components: { XIcon, XCircleIcon, SearchIcon, BookmarkIcon, PlusCircleIcon, BListGroup, BListGroupItem, BFormInput, Logout },
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem, 'b-form-input': BFormInput },
         mixins: [searchAriaLabelMixin],
         data () {
@@ -107,7 +105,6 @@
         },
         methods: {
             ...mapActions({
-                requestSessionRemoval: 'moduleUser/requestSessionRemoval',
                 saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
                 getIssue: 'moduleUser/getIssue',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
@@ -118,13 +115,6 @@
                 toggleSettings: 'moduleUser/toggleSettings',
                 addSelectedTask: 'moduleUser/addSelectedTask'
             }),
-            removeCurrentSession: function () {
-                this.toggleSettings();
-
-                this.requestSessionRemoval()
-                    .then(() => this.$router.push('/customer/login'))
-                    .catch(() => console.log("err occurred"));
-            },
             requestSearch: _.debounce(function () {
                 if (!_.isEmpty(this.searchTerm)) {
                     let isAlreadyInSuggestions = 0;
