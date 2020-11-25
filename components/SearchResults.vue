@@ -1,21 +1,8 @@
 <template>
     <div class="search-results">
-        <h3 class="sidebar__title">Assigned Tickets</h3>
-        <b-list-group>
-            <b-list-group-item
-                v-for="assignedTicket in assignedTickets"
-                :key="assignedTicket.uniqueId"
-                @click="addToSelectedIssues(assignedTicket)"
-                class="d-flex justify-content-between"
-            >
-                <div class="ticket__info col-11">
-                    <div class="ticket__info__key font-weight-bold">{{ assignedTicket.key }}</div>
-                    <div class="ticket__info__summary text-truncate">{{ assignedTicket.summary }}</div>
-                </div>
-
-                <plus-circle-icon class="ticket__icon align-self-center" />
-            </b-list-group-item>
-        </b-list-group>
+        <div v-if="assignedTickets.length !== 0">
+            <assigned-tickets @updateSelectedIssues="addToSelectedIssues" />
+        </div>
 
 
         <h3 class="sidebar__title">Suggestions</h3>
@@ -55,12 +42,13 @@
     import { BListGroupItem, BListGroup } from 'bootstrap-vue';
     import _ from "lodash";
     import Suggestions from "~/components/Suggestions"; // todo: dynamically import if visibility configurable
-    import { smartPickedIssuesMixin } from "~/utility/mixins";
+    import AssignedTickets from "~/components/AssignedTickets"; // todo: dynamically import
+    import { smartPickedIssuesMixin, assignedTicketsMixin } from "~/utility/mixins";
 
     export default {
         name: "SearchResults",
-        components: { Suggestions, PlusCircleIcon, BookmarkIcon, BListGroupItem, BListGroup },
-        mixins: [smartPickedIssuesMixin],
+        components: { AssignedTickets, Suggestions, PlusCircleIcon, BookmarkIcon, BListGroupItem, BListGroup },
+        mixins: [smartPickedIssuesMixin, assignedTicketsMixin], // todo: as store getters
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
@@ -69,10 +57,7 @@
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
                 currentUser: state => state.moduleUser.currentUser.name,
                 bookmarked: state => state.moduleUser.bookmarked
-            }),
-            assignedTickets () {
-                return this.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee === this.currentUser)
-            }
+            })
         },
         methods: {
             ...mapMutations({

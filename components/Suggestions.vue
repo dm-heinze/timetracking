@@ -35,7 +35,7 @@
             })
         },
         methods: {
-            addToSelectedIssues: function (searchResult) {
+            addToSelectedIssues: function (searchResult) { // todo
                 this.$emit('updateSelectedIssues', searchResult)
             }
         }

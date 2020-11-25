@@ -16,3 +16,10 @@ export const smartPickedIssuesMixin = {
         }
     }
 }
+export const assignedTicketsMixin = {
+    computed: {
+        assignedTickets () {
+            return this.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee === this.currentUser)
+        }
+    }
+}
