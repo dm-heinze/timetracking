@@ -299,6 +299,8 @@ export const actions = {
             commit('setSearchResult', []);
             commit('resetPrefilledSearchSuggestions');
             commit('setExistingProjects', []);
+            commit('setSelectedProject', '');
+            commit('setRelatedTickets', []);
             commit('setBookmarks', []);
             commit('setSelectedTasks', []);
             commit('updateTotalBreakTime', { totalBreakTime: '00:00:00' });
