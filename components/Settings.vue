@@ -4,55 +4,11 @@
             <h3 class="sidebar__title">Settings</h3>
             <button @click.prevent="resetSearch(true)" class="button--close"><x-circle-icon /></button>
         </div>
-        <div class="autocompleted-search__container">
-            <b-form-input
-                @input="requestSearch"
-                :value="searchTerm"
-                placeholder="Search for Tickets to Bookmark"
-                :disabled="$nuxt.isOffline"
-                :class="{ 'disabled': $nuxt.isOffline }"
-                class="form-control rounded-pill pt-4 pl-4 pb-4"
-                @keyup.esc="resetSearch()"
-                aria-label="search for tickets for bookmarking"
-            />
-            <button :disabled="searchTerm == '' && searchLoading" @click="resetSearch()" :aria-label="searchFieldButtonAriaLabel">
-                <search-icon v-if="!searchLoading && searchTerm == ''" />
-                <x-icon v-if="!searchLoading && searchTerm != ''" class="button--close" />
-                <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
-            </button>
-        </div>
 
-        <div v-if="searchLoading">Loading Search Results...</div>
-        <div v-if="searchResults.length !== 0" class="search-results--settings">
-            <b-list-group>
-                <b-list-group-item
-                    v-for="searchResult in searchResults"
-                    :key="searchResult.key"
-                    class="d-flex justify-content-between"
-                >
-                    <div class="ticket__info col-10">
-                        <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
-                        <div class="ticket__info__summary text-truncate">{{ searchResult.summary }}</div>
-                    </div>
-                    <div class="ticket__actions">
-                        <bookmark-icon
-                            v-if="bookmarked.find((marked) => marked.key === searchResult.key)"
-                            class="ticket__icon align-self-center ticket__icon--bookmarked"
-                            @click="toggleBookmarked(searchResult.key, searchResult.summary)"
-                        />
-                        <bookmark-icon
-                            v-else
-                            class="ticket__icon align-self-center ticket__icon--not-bookmarked"
-                            @click="toggleBookmarked(searchResult.key, searchResult.summary)"
-                        />
-                        <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues(searchResult)" />
-                    </div>
-                </b-list-group-item>
-            </b-list-group>
-        </div>
+        <search />
 
         <h3 class="sidebar__title sidebar__title--bookmarks">Bookmarks</h3>
-        <div v-if="bookmarked.length !== 0">
+        <div v-if="bookmarked.length !== 0"> <!-- todo: dynamically import template block if true -->
             <b-list-group>
                 <b-list-group-item
                     v-for="bookmarkedTicket in bookmarked"
@@ -78,35 +34,31 @@
 
 <script>
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { XIcon, XCircleIcon, SearchIcon, BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
-    import { BListGroup, BListGroupItem, BFormInput } from 'bootstrap-vue';
-    import _ from "lodash";
+    import { XCircleIcon, BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
+    import { BListGroup, BListGroupItem } from 'bootstrap-vue';
+    import _ from "lodash"; // todo
     import Logout from '~/components/Logout';
-    import { regexForTicketKeys } from "~/utility/constants";
-    import { searchAriaLabelMixin } from "~/utility/mixins";
+    import Search from "~/components/Search";
+    import { addTaskMixin, toggleBookmarkedMixin, resetSearchMixin } from "~/utility/mixins";
 
 	export default {
 		name: "Settings",
-        components: { XIcon, XCircleIcon, SearchIcon, BookmarkIcon, PlusCircleIcon, BListGroup, BListGroupItem, BFormInput, Logout },
-        directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem, 'b-form-input': BFormInput },
-        mixins: [searchAriaLabelMixin],
-        data () {
-            return {
-                searchLoading: false
-            }
+        components: {
+            Search,
+		    XCircleIcon, BookmarkIcon, PlusCircleIcon,
+            BListGroup, BListGroupItem,
+            Logout
         },
+        directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
+        mixins: [addTaskMixin, toggleBookmarkedMixin, resetSearchMixin],
         computed: {
             ...mapState({
-                searchResults: state => state.moduleUser.searchResults,
-                bookmarked: state => state.moduleUser.bookmarked,
-                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
-                searchTerm: state => state.moduleUser.searchTerm
+                bookmarked: state => state.moduleUser.bookmarked
             })
         },
         methods: {
             ...mapActions({
                 saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
-                getIssue: 'moduleUser/getIssue',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
@@ -115,61 +67,7 @@
                 toggleSettings: 'moduleUser/toggleSettings',
                 addSelectedTask: 'moduleUser/addSelectedTask',
                 setSearchTerm: 'moduleUser/setSearchTerm'
-            }),
-            requestSearch: _.debounce(function (value) {
-                if (!_.isEmpty(value)) {
-                    this.setSearchTerm(value);
-
-                    let isAlreadyInSuggestions = 0;
-                    let filteredSearchSuggestions;
-                    if(this.searchTerm.match(regexForTicketKeys)) {
-                        filteredSearchSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase());
-                        isAlreadyInSuggestions = filteredSearchSuggestions.length;
-                    }
-                    if (isAlreadyInSuggestions !== 0) this.setSearchResult(filteredSearchSuggestions);
-                    if (isAlreadyInSuggestions === 0) {
-                        this.searchLoading = true;
-                        this.getIssue({ searchTerm: this.searchTerm }).then(() => this.searchLoading = false);
-                    }
-                }
-            }, 1100),
-            toggleBookmarked: function (searchResultToBeToggled, summary = '') { // todo
-                this.updateBookmarks({ bookmark: searchResultToBeToggled, summary });
-
-                this.saveBookmarksToStorage();
-            },
-            resetSearch: function (close = false) { // todo
-                this.setSearchTerm('');
-
-                this.setSearchResult([]);
-
-                if (close) this.toggleSettings();
-            },
-            addToSelectedIssues: function (selectedTicket, fromSearchResults = true) { // todo
-                let __selection;
-
-                if (fromSearchResults) {
-                    __selection = _.cloneDeep(selectedTicket);
-                    __selection.uniqueId = _.now();
-                } else {
-                    __selection = {
-                        assignedToTicket: true,
-                        uniqueId: _.now(),
-                        key: selectedTicket.key,
-                        issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + selectedTicket.key,
-                        summary: selectedTicket.summary,
-                        comment: '',
-                        timeSpent: 0,
-                        startTime: '',
-                        endTime: '',
-                        booked: false
-                    };
-                }
-
-                this.addSelectedTask(__selection);
-
-                this.saveSelectedTasksToStorage();
-            }
+            })
         }
 	}
 </script>
