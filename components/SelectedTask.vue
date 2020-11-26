@@ -18,56 +18,7 @@
                         <save-icon v-else />
                         <span class="pl-1">{{ editingName ? 'Save' : 'Edit' }} Name</span>
                     </b-button>
-
-                    <b-button pill variant="light-grey" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg', 'mr-2': $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleTicketAssignment()">
-                        <plus-circle-icon />
-                        <span class="pl-1">Assign Ticket</span>
-                    </b-button>
-                    <b-modal :id="`ticket-assignment-${uniqueId}`" centered>
-                        <template v-slot:modal-header="{ close }">
-                            <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
-                                <h3 class="primary">Assign Ticket</h3>
-                                <span>
-                                <x-icon @click="toggleTicketAssignment(true)" />
-                            </span>
-                            </div>
-                        </template>
-                        <template v-slot:default>
-                            <div class="modal__main-container">
-                                <div class="select__container mb-3">
-                                    <b-form-select v-model="selectedProject" class="rounded-pill pl-4 pr-5">
-                                        <b-form-select-option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</b-form-select-option>
-                                        <b-form-select-option v-else disabled value="">Select a project</b-form-select-option>
-                                        <b-form-select-option
-                                            v-for="existingProject in allExistingProjects"
-                                            :value="existingProject.id"
-                                            :key="existingProject.id"
-                                        >{{ existingProject.name }}</b-form-select-option>
-                                    </b-form-select>
-                                    <chevron-down-icon class="select__icon" />
-                                </div>
-
-                                <div class="select__container mb-3">
-                                    <b-form-select  v-model="selectedTicket" :disabled="selectedProject === ''" class="rounded-pill pl-4 pr-5">
-                                        <b-form-select-option v-if="!relatedTickets.length && selectedProject !== ''" disabled value="">Loading Related Tickets...</b-form-select-option>
-                                        <b-form-select-option v-else disabled value="">Select a ticket</b-form-select-option>
-                                        <b-form-select-option
-                                            v-for="relatedTicket in relatedTickets"
-                                            :value="relatedTicket.key"
-                                            :key="relatedTicket.key"
-                                        >{{ relatedTicket.key }}: {{ relatedTicket.summary }}</b-form-select-option>
-                                    </b-form-select>
-                                    <chevron-down-icon class="select__icon" />
-                                </div>
-                            </div>
-                        </template>
-                        <template v-slot:modal-footer="{ ok, cancel }">
-                            <div class="d-flex justify-content-between w-100 modal__actions">
-                                <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="toggleTicketAssignment(true)">Cancel</b-button>
-                                <b-button pill variant="primary" class="font-weight-bold modal__save-btn" :disabled="selectedTicket === ''" @click.prevent="toggleTicketAssignment()">Save</b-button>
-                            </div>
-                        </template>
-                    </b-modal>
+                    <ticket-assignment :unique-id="uniqueId" />
                 </div>
 
 
@@ -174,10 +125,11 @@
 </template>
 
 <script>
-    import { mapState, mapMutations, mapActions } from 'vuex';
-    import { XIcon, Edit2Icon, SaveIcon, PlusCircleIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, ChevronDownIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
-    import { BFormSelect, BCollapse, BFormSelectOption } from 'bootstrap-vue';
     import _ from "lodash";
+    import { mapState, mapMutations, mapActions } from 'vuex';
+    import { XIcon, Edit2Icon, SaveIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
+    import { BCollapse } from 'bootstrap-vue';
+    import TicketAssignment from "~/components/TicketAssignment";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
     Vue.use(vClickOutside);
@@ -185,8 +137,8 @@
 
     export default {
         name: "SelectedTask",
-        components: { XIcon, SaveIcon, Edit2Icon, PlusCircleIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, ChevronDownIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon, BFormSelect, BCollapse, BFormSelectOption },
-        directives: { 'b-collapse': BCollapse, 'b-form-select': BFormSelect, 'b-form-select-option': BFormSelectOption },
+        components: { TicketAssignment, XIcon, SaveIcon, Edit2Icon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon, BCollapse },
+        directives: { 'b-collapse': BCollapse },
         props: {
             taskKey: {
                 required: true
@@ -228,11 +180,7 @@
                 runningTimer: '',
                 startTime: '',
                 endTime: '',
-                selectedProject: '',
-                selectedTicket: '',
-                lastSelectedTicket: '',
                 editingTrackedTime: false,
-                showSelection: false,
                 markedAsActive: false,
                 editingName: false,
                 localEditedName: '',
@@ -246,8 +194,6 @@
                 selectedTasks: state => state.moduleUser.selectedTasks,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket,
-                allExistingProjects: state => state.moduleUser.allExistingProjects,
-                relatedTickets: state => state.moduleUser.relatedTickets,
                 onABreak: state => state.moduleUser.onABreak,
                 lastTicket: state => state.moduleUser.lastTicket,
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
@@ -289,9 +235,6 @@
                 setActiveTicket: 'moduleUser/setActiveTicket',
                 saveTaskStartTime: 'moduleUser/saveTaskStartTime',
                 saveTaskEndTime: 'moduleUser/saveTaskEndTime',
-                setSelectedProject: 'moduleUser/setSelectedProject',
-                setRelatedTickets: 'moduleUser/setRelatedTickets',
-                assignToTicket: 'moduleUser/assignToTicket',
                 toggleBreakMutation: 'moduleUser/toggleBreak',
                 setLastTicket: 'moduleUser/setLastTicket',
                 assignNameToCustomTask: 'moduleUser/assignNameToCustomTask',
@@ -299,8 +242,6 @@
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
-                requestAllProjects: 'moduleUser/requestAllProjects',
-                requestRelatedTickets: 'moduleUser/requestRelatedTickets',
                 requestSavingSingleWorklog: 'moduleUser/requestSavingSingleWorklog',
                 resetState: 'moduleUser/resetState'
             }),
@@ -438,39 +379,6 @@
             saveEditedCustomTaskName: function (event) {
                 if (!_.isEmpty(event.target.value) && (this.localEditedName !== this.uniqueId)) this.localEditedName = event.target.value;
             },
-            toggleTicketAssignment: function (cancelAssignment = false) {
-                this.showSelection = !this.showSelection;
-
-                if (this.showSelection && this.allExistingProjects.length === 0) this.requestAllProjects(); // if search offCanvas was not opened yet allExistingProjects is empty
-                if (this.showSelection) {
-                    this.lastSelectedTicket = this.selectedTicket;
-                    this.$bvModal.show(`ticket-assignment-${this.uniqueId}`);
-                }
-
-                if (cancelAssignment) {
-                    this.selectedTicket = this.lastSelectedTicket;
-                    this.selectedProject = ''; // on cancel revert to initial state
-
-                    this.resetProjectAndRelatedTicketsInStore();
-
-                    this.$bvModal.hide(`ticket-assignment-${this.uniqueId}`);
-                }
-
-                // saving to vuex store/localStorage only needed if there was a change in the assigned ticket
-                // if cancelBtn was used: do not save
-                if (!this.showSelection && (cancelAssignment === false) && (this.lastSelectedTicket !== this.selectedTicket)) {
-                    // step 1: update vuex store
-                    this.assignToTicket({ uniqueId: this.uniqueId,  assignedTicketKey: this.selectedTicket }); // todo
-                    this.resetProjectAndRelatedTicketsInStore();
-
-                    // step 2: update localStorage
-                    this.saveSelectedTasksToStorage();
-                }
-            },
-            resetProjectAndRelatedTicketsInStore: function () {
-                this.setSelectedProject('');
-                this.setRelatedTickets([]);
-            },
             removeTicketFromSelectedTickets: function (ticketToRemoveFromSelectedTickets) {
                 this.removeSelectedTask(ticketToRemoveFromSelectedTickets);
 
@@ -561,14 +469,6 @@
                     this.stopTimer();
                     this.setLastTicket('');
                     this.setIsTimerActive();
-                }
-            },
-            selectedProject: function (newValue) {
-                if (newValue) {
-                    this.setSelectedProject(this.selectedProject);
-
-                    this.requestRelatedTickets()
-                        .catch((err) => { if (err.response.status === 401) this.$router.push('/customer/login') })
                 }
             }
         },
