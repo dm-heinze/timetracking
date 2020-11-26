@@ -34,32 +34,8 @@
                     <div class="col-xl-11 col-xxl-10">
                         <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
                             <div class="d-flex" :class="[flexDirection,  { 'pr-3': $mq === 'md' ||  $mq === 'lg' }]">
-                                <b-button pill variant="primary" type="button" class="login-content__sign-in-btn py-2" v-b-modal="'add-custom-task'" v-b-tooltip.hover title="Add Custom task" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'mb-2': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
-                                    <plus-circle-icon />
-                                    <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Add Custom task</span>
-                                    <b-modal :id="'add-custom-task'" centered>
-                                        <template v-slot:modal-header="{ close }">
-                                            <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
-                                                <h3 class="primary">Add Custom Task</h3>
-                                                <span>
-                                                <x-icon @click="resetAndCloseModal()" />
-                                            </span>
-                                            </div>
-                                        </template>
-                                        <template v-slot:default>
-                                            <div class="modal__main-container">
-                                                <div class="modal__main-container__main-text">Do you want to add a custom name? Otherwise a random name will be set. You can edit the name later regardless.</div>
-                                                <b-form-input class="form-control rounded-pill pt-4 pl-4 pb-4" type="text" v-model="customNameCustomTask" placeholder="Add Custom Name"></b-form-input>
-                                            </div>
-                                        </template>
-                                        <template v-slot:modal-footer="{ ok, cancel }">
-                                            <div class="d-flex justify-content-between w-100 modal__actions">
-                                                <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="resetAndCloseModal()">Cancel</b-button>
-                                                <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="startNewCustomTask()">Save</b-button>
-                                            </div>
-                                        </template>
-                                    </b-modal>
-                                </b-button>
+                                <add-custom-task />
+
                                 <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn py-2 mr-1" v-b-tooltip.hover title="Take a break" :class="{ 'mb-3': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
                                     <coffee-icon />
                                     <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Take a break</span>
@@ -112,19 +88,23 @@
 
 <script>
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon } from 'vue-feather-icons';
-    import SelectedTasks from "../components/SelectedTasks";
-    import TheSearch from "../components/TheSearch";
+    import { CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon } from 'vue-feather-icons';
+    import SelectedTasks from "~/components/SelectedTasks";
+    import TheSearch from "~/components/TheSearch";
+    import AddCustomTask from "~/components/AddCustomTask";
     import _ from "lodash";
-    import { BCollapse, BFormInput, BNavbarNav } from "bootstrap-vue";
+    import { BCollapse, BNavbarNav } from "bootstrap-vue";
 
     export default {
         name: 'Index',
-        components: { TheSearch, SelectedTasks, BCollapse, BFormInput, BNavbarNav, PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon, Settings: () => import('../components/Settings') },
-        directives: { 'b-collapse': BCollapse, 'b-form-input': BFormInput, 'b-navbar-nav': BNavbarNav },
+        components: {
+            AddCustomTask, TheSearch, SelectedTasks, Settings: () => import('../components/Settings'),
+            BCollapse, BNavbarNav,
+            CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon
+        },
+        directives: { 'b-collapse': BCollapse, 'b-navbar-nav': BNavbarNav },
         data () {
             return {
-                customNameCustomTask: '',
                 // break
                 timeRightNow: 0,
                 runningTimer: '',
@@ -136,7 +116,6 @@
         computed: {
             ...mapState({
                 selectedTasks: state => state.moduleUser.selectedTasks,
-                allExistingProjects: state => state.moduleUser.allExistingProjects,
                 // break
                 accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
                 onABreak: state => state.moduleUser.onABreak,
@@ -206,12 +185,10 @@
         methods: {
             ...mapActions({
                 requestAllProjects: 'moduleUser/requestAllProjects',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
                 requestSavingWorklogs: 'moduleUser/requestSavingWorklogs',
                 saveBreaksToStorage: 'moduleUser/saveBreaksToStorage',
             }),
             ...mapMutations({
-                addSelectedTask: 'moduleUser/addSelectedTask',
                 // break
                 toggleBreakMutation: 'moduleUser/toggleBreak',
                 updateTotalBreakTime: 'moduleUser/updateTotalBreakTime',
@@ -222,30 +199,6 @@
                 setSearchResult: 'moduleUser/setSearchResult',
                 toggleShowErrorMessages: 'moduleUser/toggleShowErrorMessages'
             }),
-            startNewCustomTask: function () {
-                const newCustomTask = {
-                    assignedToTicket: false,
-                    uniqueId: _.now(),
-                    key: this.customNameCustomTask ? this.customNameCustomTask : `New custom task ${_.now()}`, // todo
-                    issueLink: '',
-                    summary: '',
-                    comment: '',
-                    timeSpent: 0,
-                    startTime: '',
-                    endTime: '',
-                    booked: false // todo
-                };
-
-                this.addSelectedTask(newCustomTask);
-
-                this.customNameCustomTask = '';
-
-                this.resetAndCloseModal();
-
-                this.saveSelectedTasksToStorage();
-
-                if (this.allExistingProjects.length === 0) this.requestAllProjects(); // todo
-            },
             saveWorklogs: function () {
                 this.$bvModal.hide('confirm-push-time'); // any cancel event needed?
 
@@ -324,11 +277,6 @@
 
                 // save to localStorage
                 this.saveBreaksToStorage();
-            },
-            // modal
-            resetAndCloseModal: function () {
-                this.$bvModal.hide('add-custom-task');
-                this.customNameCustomTask = '';
             }
         },
         middleware ({ store, redirect }) {
