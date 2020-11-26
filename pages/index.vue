@@ -175,6 +175,9 @@
             noUnassignedCustomTasks () {
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.assignedToTicket).length === 0;
             },
+            noUntrackedTasks () {
+                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.timeSpent).length === 0;
+            },
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
             }
@@ -249,7 +252,7 @@
             saveWorklogs: function () {
                 this.$bvModal.hide('confirm-push-time'); // any cancel event needed?
 
-                if (this.selectedTasks.length===0 || this.everythingBookedAlready || !this.noMissingComments || !this.noUnassignedCustomTasks) {
+                if (this.selectedTasks.length===0 || this.everythingBookedAlready || !this.noMissingComments || !this.noUnassignedCustomTasks || !this.noUntrackedTasks) {
                     this.toggleShowErrorMessages({ show: true });
 
                     this.$bvModal.msgBoxOk('Tasks cannot be booked. Please check the error messages.', {
@@ -260,7 +263,7 @@
                         footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                     })
                 } else {
-                    if (this.showErrorMessages && this.selectedTasks.length!==0 && !this.everythingBookedAlready && this.noMissingComments && this.noUnassignedCustomTasks) this.toggleShowErrorMessages({ show: false });
+                    if (this.showErrorMessages && this.selectedTasks.length!==0 && !this.everythingBookedAlready && this.noMissingComments && this.noUnassignedCustomTasks && this.noUntrackedTasks) this.toggleShowErrorMessages({ show: false });
                     this.requestSavingWorklogs()
                         .then(() => {
                             this.$bvModal.msgBoxOk('Worklogs were successfully booked', {
