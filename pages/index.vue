@@ -16,14 +16,7 @@
                 <b-col cols="12" lg="4" class="container--left vh-100">
                     <div class="login-content__titles">
                         <transition name="toggle">
-                            <div v-if="!settingsOpen">
-                                <h3 class="sidebar__title">Ticket search</h3>
-                                <the-search />
-                                <div class="d-flex flex-row group--settings" :style="{ 'outline': 'none' }" @click="toggleSettings">
-                                    <settings-icon class="button--settings" />
-                                    <div class="pl-1 my-auto sidebar__option--settings">Settings</div>
-                                </div>
-                            </div>
+                            <search-sidebar v-if="!settingsOpen" />
                         </transition>
                         <transition name="toggle">
                             <settings v-if="settingsOpen" />
@@ -42,7 +35,7 @@
                                 </b-button>
                             </div>
                             <div class="d-flex" :class="[flexDirection, { 'align-items-center': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }]">
-                                <span v-if="totalTime" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'align-self-center': $mq === 'sm' }">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span> <!-- todo -->
+                                <span v-if="totalTime" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'align-self-center': $mq === 'sm' }">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span> <!-- todo: condition -->
 
                                 <push-total-time />
                             </div>
@@ -58,20 +51,21 @@
 <script>
     import _ from "lodash";
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { CoffeeIcon, PauseCircleIcon, SettingsIcon } from 'vue-feather-icons';
+    import { CoffeeIcon, PauseCircleIcon } from 'vue-feather-icons';
     import { BCollapse, BNavbarNav } from "bootstrap-vue";
     import SelectedTasks from "~/components/SelectedTasks";
-    import TheSearch from "~/components/TheSearch";
     import AddCustomTask from "~/components/AddCustomTask";
     import PushTotalTime from "~/components/PushTotalTime";
+    import SearchSidebar from "~/components/SearchSidebar";
 
     export default {
         name: 'Index',
         components: {
+            SearchSidebar,
             PushTotalTime,
-            AddCustomTask, TheSearch, SelectedTasks, Settings: () => import('../components/Settings'),
+            AddCustomTask, SelectedTasks, Settings: () => import('../components/Settings'),
             BCollapse, BNavbarNav,
-            CoffeeIcon, PauseCircleIcon, SettingsIcon
+            CoffeeIcon, PauseCircleIcon
         },
         directives: { 'b-collapse': BCollapse, 'b-navbar-nav': BNavbarNav },
         data () {
@@ -155,7 +149,6 @@
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
                 setLastTicket: 'moduleUser/setLastTicket',
                 addBreak: 'moduleUser/addBreak',
-                toggleSettings: 'moduleUser/toggleSettings',
                 setSearchResult: 'moduleUser/setSearchResult'
             }),
             // break

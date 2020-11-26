@@ -51,7 +51,6 @@
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.booked).length === 0; // todo
             },
             noMissingComments () {
-                console.log("selectedTasks has val: ", this.selectedTasks)
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.comment).length === 0; // todo
             },
             noUnassignedCustomTasks () {
