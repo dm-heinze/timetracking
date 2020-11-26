@@ -64,6 +64,9 @@
                                     <coffee-icon />
                                     <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Take a break</span>
                                 </b-button>
+                                <b-button pill variant="danger" @click.prevent="resetBreakTracker" class="button--resetBreakTracker ml-1 mr-2" v-b-tooltip.hover title="Reset Break Tracker" v-if="!onABreak && (accumulatedBreakTime != '00:00:00')">
+                                    <rotate-ccw-icon />
+                                </b-button>
                             </div>
                             <div class="d-flex" :class="[flexDirection, { 'align-items-center': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }]">
                                 <span v-if="totalTime" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'align-self-center': $mq === 'sm' }">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span>
@@ -112,7 +115,7 @@
 
 <script>
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon } from 'vue-feather-icons';
+    import { PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon, RotateCcwIcon } from 'vue-feather-icons';
     import SelectedTasks from "../components/SelectedTasks";
     import TheSearch from "../components/TheSearch";
     import _ from "lodash";
@@ -120,7 +123,7 @@
 
     export default {
         name: 'Index',
-        components: { TheSearch, SelectedTasks, BCollapse, BFormInput, BNavbarNav, PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon, Settings: () => import('../components/Settings') },
+        components: { TheSearch, SelectedTasks, BCollapse, BFormInput, BNavbarNav, PlusCircleIcon, CoffeeIcon, SendIcon, PauseCircleIcon, SettingsIcon, XIcon, RotateCcwIcon, Settings: () => import('../components/Settings') },
         directives: { 'b-collapse': BCollapse, 'b-form-input': BFormInput, 'b-navbar-nav': BNavbarNav },
         data () {
             return {
@@ -301,6 +304,13 @@
                 }
 
                 this.startTime = new Date();
+            },
+            resetBreakTracker: function () {
+                // update vuex store
+                this.updateTotalBreakTime({ totalBreakTime: '00:00:00' });
+
+                // update localStorage
+                this.saveBreaksToStorage();
             },
             currentTimeInSeconds: function () {
                 const __dateRightNow = new Date();
