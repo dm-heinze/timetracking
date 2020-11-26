@@ -66,30 +66,7 @@
                         </b-modal>
                     </button>
 
-                    <button v-b-modal="`confirm-deletion-modal-${uniqueId}`" class="px-2">
-                        <trash2-icon />
-                    </button>
-                    <b-modal :id="`confirm-deletion-modal-${uniqueId}`" centered>
-                        <template v-slot:modal-header="{ close }">
-                            <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
-                                <h3 class="primary">Delete Task?</h3>
-                                <span>
-                                    <x-icon @click="close()" />
-                                </span>
-                            </div>
-                        </template>
-                        <template v-slot:default>
-                            <div class="modal__main-container">
-                                <div class="modal__main-container__main-text">Delete tracker for {{ optionalTaskKey }} {{ taskSummary }}?</div>
-                            </div>
-                        </template>
-                        <template v-slot:modal-footer="{ ok, cancel }">
-                            <div class="d-flex justify-content-between w-100 modal__actions">
-                                <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
-                                <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="removeTicketFromSelectedTickets(uniqueId)">Delete</b-button>
-                            </div>
-                        </template>
-                    </b-modal>
+                    <ticket-deletion :unique-id="uniqueId" :task-summary="taskSummary" :task-key="taskKey" :assigned-to-ticket="assignedToTicket" />
 
                     <div class="selected-ticket__tracked-time d-flex align-items-center justify-content-between">
                         <div class="font-weight-bold pr-1">Total:</div>
@@ -127,9 +104,10 @@
 <script>
     import _ from "lodash";
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { XIcon, Edit2Icon, SaveIcon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
+    import { XIcon, Edit2Icon, SaveIcon, PlayCircleIcon, PauseCircleIcon, UploadCloudIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
     import { BCollapse } from 'bootstrap-vue';
     import TicketAssignment from "~/components/TicketAssignment";
+    import TicketDeletion from "~/components/TicketDeletion";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
     Vue.use(vClickOutside);
@@ -137,7 +115,7 @@
 
     export default {
         name: "SelectedTask",
-        components: { TicketAssignment, XIcon, SaveIcon, Edit2Icon, PlayCircleIcon, PauseCircleIcon, Trash2Icon, UploadCloudIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon, BCollapse },
+        components: { TicketDeletion, TicketAssignment, XIcon, SaveIcon, Edit2Icon, PlayCircleIcon, PauseCircleIcon, UploadCloudIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon, BCollapse },
         directives: { 'b-collapse': BCollapse },
         props: {
             taskKey: {
@@ -218,17 +196,12 @@
 
                 return dateFromTimeSpentValueTimeTimeString.slice(0, 8);
             },
-            optionalTaskKey () {
-                if (this.assignedToTicket) return `${this.taskKey}: `;
-                else return this.taskKey;
-            },
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
             }
         },
         methods: {
             ...mapMutations({
-                removeSelectedTask: 'moduleUser/removeSelectedTask',
                 saveTaskComment: 'moduleUser/saveTaskComment',
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
                 saveTimeSpentOnTask: 'moduleUser/saveTimeSpentOnTask',
@@ -378,11 +351,6 @@
             },
             saveEditedCustomTaskName: function (event) {
                 if (!_.isEmpty(event.target.value) && (this.localEditedName !== this.uniqueId)) this.localEditedName = event.target.value;
-            },
-            removeTicketFromSelectedTickets: function (ticketToRemoveFromSelectedTickets) {
-                this.removeSelectedTask(ticketToRemoveFromSelectedTickets);
-
-                this.saveSelectedTasksToStorage();
             },
             saveCommentToStore: function (event) {
                 this.updatedComment = event.target.value;
