@@ -156,7 +156,7 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex flex-row justify-content-between">
+        <div class="d-flex flex-row" :class="{ 'justify-content-between': (showErrorMessages && !assignedToTicket && !timeSpent) || (showErrorMessages && !assignedToTicket), 'justify-content-end': showErrorMessages && !timeSpent }">
             <div v-if="showErrorMessages && !assignedToTicket" class="message--error">Unassigned Custom Task</div>
             <div v-if="showErrorMessages && !timeSpent" class="message--error">No Tracked Time</div>
         </div>
