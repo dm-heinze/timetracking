@@ -8,7 +8,7 @@
                 :disabled="$nuxt.isOffline"
                 :class="{ 'disabled': $nuxt.isOffline }"
                 class="form-control rounded-pill pt-4 pl-4 pb-4"
-                @keyup.esc="resetSearch()"
+                @keyup.esc="resetSearch({ close: false })"
                 aria-label="search for tickets for bookmarking"
             />
             <button :disabled="searchTerm == '' && searchLoading" @click="resetSearch({ close: false })" :aria-label="searchFieldButtonAriaLabel">
@@ -18,34 +18,7 @@
             </button>
         </div>
 
-        <div v-if="searchLoading">Loading Search Results...</div>
-        <div v-if="searchResults.length !== 0" class="search-results--settings">
-            <b-list-group>
-                <b-list-group-item
-                    v-for="searchResult in searchResults"
-                    :key="searchResult.key"
-                    class="d-flex justify-content-between"
-                >
-                    <div class="ticket__info col-10">
-                        <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
-                        <div class="ticket__info__summary text-truncate">{{ searchResult.summary }}</div>
-                    </div>
-                    <div class="ticket__actions">
-                        <bookmark-icon
-                            v-if="bookmarked.find((marked) => marked.key === searchResult.key)"
-                            class="ticket__icon align-self-center ticket__icon--bookmarked"
-                            @click="toggleBookmarked({ searchResultToBeToggled: searchResult.key, summary: searchResult.summary })"
-                        />
-                        <bookmark-icon
-                            v-else
-                            class="ticket__icon align-self-center ticket__icon--not-bookmarked"
-                            @click="toggleBookmarked({ searchResultToBeToggled: searchResult.key, summary: searchResult.summary })"
-                        />
-                        <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues({ selectedTicket: searchResult, fromSearchResults: true })" />
-                    </div>
-                </b-list-group-item>
-            </b-list-group>
-        </div>
+        <autocompleted-search-results />
     </div>
 </template>
 
@@ -53,22 +26,22 @@
     import { mapState, mapActions, mapMutations } from 'vuex';
     import _ from "lodash";
     import { regexForTicketKeys } from "~/utility/constants";
-    import { BFormInput, BListGroup, BListGroupItem } from "bootstrap-vue";
-    import { BookmarkIcon, PlusCircleIcon, SearchIcon, XIcon } from "vue-feather-icons";
+    import { BFormInput } from "bootstrap-vue";
+    import { SearchIcon, XIcon } from "vue-feather-icons";
     import { searchAriaLabelMixin } from "~/utility/mixins";
+    import AutocompletedSearchResults from "~/components/settings/AutocompletedSearchResults";
 
 	export default {
 		name: "Search",
         components: {
-            XIcon, SearchIcon, BookmarkIcon, PlusCircleIcon,
-		    BListGroup, BListGroupItem, BFormInput
+            AutocompletedSearchResults,
+            XIcon, SearchIcon,
+            BFormInput
         },
-        directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem, 'b-form-input': BFormInput },
+        directives: { 'b-form-input': BFormInput },
         mixins: [searchAriaLabelMixin],
         computed: {
             ...mapState({
-                searchResults: state => state.moduleUser.searchResults,
-                bookmarked: state => state.moduleUser.bookmarked,
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
                 searchTerm: state => state.moduleUser.searchTerm,
                 searchLoading: state => state.moduleUser.searchLoading
@@ -83,8 +56,6 @@
             }),
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
-                toggleBookmarked: 'moduleUser/toggleBookmarked',
-                addToSelectedIssues: 'moduleUser/addToSelectedIssues',
                 resetSearch: 'moduleUser/resetSearch'
             }),
             requestSearch: _.debounce(function (value) {
