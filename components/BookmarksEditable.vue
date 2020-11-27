@@ -11,26 +11,23 @@
             </div>
             <div class="ticket__actions">
                 <bookmark-icon class="ticket__icon align-self-center ticket__icon--bookmarked" @click="toggleBookmarked({ searchResultToBeToggled: bookmarkedTicket.key })" />
-                <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues(bookmarkedTicket, false)" />
+                <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues({ selectedTicket: bookmarkedTicket, fromSearchResults: false })" />
             </div>
         </b-list-group-item>
     </b-list-group>
 </template>
 
 <script>
-    import _ from "lodash"; // todo
-    import { mapState, mapActions, mapMutations } from 'vuex';
+    import { mapState, mapActions } from 'vuex';
     import { BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
     import { BListGroup, BListGroupItem } from 'bootstrap-vue';
-    import { addTaskMixin } from "~/utility/mixins";
 
 	export default {
 		name: "BookmarksEditable",
         components: {
             BookmarkIcon, PlusCircleIcon,
-            BListGroup, BListGroupItem,
+            BListGroup, BListGroupItem
         },
-        mixins: [addTaskMixin], // todo: move to comp or to store
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
@@ -39,11 +36,8 @@
         },
         methods: {
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
-                toggleBookmarked: 'moduleUser/toggleBookmarked'
-            }),
-            ...mapMutations({
-                addSelectedTask: 'moduleUser/addSelectedTask'
+                toggleBookmarked: 'moduleUser/toggleBookmarked',
+                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
             })
         }
 	}

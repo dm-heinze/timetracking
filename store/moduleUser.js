@@ -252,6 +252,33 @@ export const actions = {
             dispatch('saveBookmarksToStorage').then(() => resolve()).catch(() => reject());
         })
     },
+    addToSelectedIssues: function ({ state, commit, dispatch }, payload) {
+        return new Promise(async (resolve, reject) => {
+            let __selection;
+
+            if (payload.fromSearchResults) {
+                __selection = _.cloneDeep(payload.selectedTicket);
+                __selection.uniqueId = _.now();
+            } else {
+                __selection = {
+                    assignedToTicket: true,
+                    uniqueId: _.now(),
+                    key: payload.selectedTicket.key,
+                    issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + payload.selectedTicket.key,
+                    summary: payload.selectedTicket.summary,
+                    comment: '',
+                    timeSpent: 0,
+                    startTime: '',
+                    endTime: '',
+                    booked: false
+                };
+            }
+
+            commit('addSelectedTask', __selection);
+
+            dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
+        })
+    },
     requestSavingSingleWorklog: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
             axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})

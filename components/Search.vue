@@ -41,7 +41,7 @@
                             class="ticket__icon align-self-center ticket__icon--not-bookmarked"
                             @click="toggleBookmarked({ searchResultToBeToggled: searchResult.key, summary: searchResult.summary })"
                         />
-                        <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues(searchResult)" />
+                        <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues({ selectedTicket: searchResult, fromSearchResults: true })" />
                     </div>
                 </b-list-group-item>
             </b-list-group>
@@ -55,7 +55,7 @@
     import { regexForTicketKeys } from "~/utility/constants";
     import { BFormInput, BListGroup, BListGroupItem } from "bootstrap-vue";
     import { BookmarkIcon, PlusCircleIcon, SearchIcon, XIcon } from "vue-feather-icons";
-    import { searchAriaLabelMixin, addTaskMixin, resetSearchMixin } from "~/utility/mixins";
+    import { searchAriaLabelMixin, resetSearchMixin } from "~/utility/mixins";
 
 	export default {
 		name: "Search",
@@ -64,7 +64,7 @@
 		    BListGroup, BListGroupItem, BFormInput
         },
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem, 'b-form-input': BFormInput },
-        mixins: [searchAriaLabelMixin, addTaskMixin, resetSearchMixin],
+        mixins: [searchAriaLabelMixin, resetSearchMixin],
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
@@ -77,15 +77,14 @@
         methods: {
 		    ...mapMutations({
                 setSearchTerm: 'moduleUser/setSearchTerm',
-                addSelectedTask: 'moduleUser/addSelectedTask',
                 toggleSettings: 'moduleUser/toggleSettings',
                 setSearchResult: 'moduleUser/setSearchResult',
                 setSearchLoading: 'moduleUser/setSearchLoading'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
                 getIssue: 'moduleUser/getIssue',
-                toggleBookmarked: 'moduleUser/toggleBookmarked'
+                toggleBookmarked: 'moduleUser/toggleBookmarked',
+                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
             }),
             requestSearch: _.debounce(function (value) {
                 if (!_.isEmpty(value)) {
