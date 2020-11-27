@@ -25,6 +25,20 @@
             }
         }
     }
+    .button--resetBreakTracker {
+        background: transparent;
+        color: $primary;
+        border: none;
+        border-radius: $border-radius;
+        outline: none;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+            color: white;
+            background: $danger;
+            @include box-shadow; //
+        }
+    }
 
     h3, h5 { //
         color: $primary;

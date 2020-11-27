@@ -64,9 +64,11 @@
                                     <coffee-icon />
                                     <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Take a break</span>
                                 </b-button>
-                                <b-button pill variant="danger" @click.prevent="resetBreakTracker" class="button--resetBreakTracker ml-1 mr-2" v-b-tooltip.hover title="Reset Break Tracker" v-if="!onABreak && (accumulatedBreakTime != '00:00:00')">
-                                    <rotate-ccw-icon />
-                                </b-button>
+                                <client-only>
+                                    <button  @click.prevent="resetBreakTracker" class="button--resetBreakTracker ml-1 mr-2 px-3" v-b-tooltip.hover title="Reset Break Tracker" v-if="!onABreak && (accumulatedBreakTime != '00:00:00')">
+                                        <rotate-ccw-icon />
+                                    </button>
+                                </client-only>
                             </div>
                             <div class="d-flex" :class="[flexDirection, { 'align-items-center': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }]">
                                 <span v-if="totalTime" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'align-self-center': $mq === 'sm' }">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span>
@@ -309,8 +311,26 @@
                 // update vuex store
                 this.updateTotalBreakTime({ totalBreakTime: '00:00:00' });
 
-                // update localStorage
-                this.saveBreaksToStorage();
+                // update localStorage & show feedback
+                this.saveBreaksToStorage()
+                    .then(() => {
+                        this.$bvModal.msgBoxOk('Break Tracker was successfully reset to 00:00:00.', {
+                            centered: true,
+                            okVariant: 'success rounded-pill',
+                            okTitle: 'Okay',
+                            bodyClass: 'modal__main-container',
+                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                        })
+                    })
+                    .catch(() => {
+                        this.$bvModal.msgBoxOk('There has been an error. Break Tracker could not be reset.', {
+                            centered: true,
+                            okVariant: 'danger rounded-pill',
+                            okTitle: 'Okay',
+                            bodyClass: 'modal__main-container',
+                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                        })
+                    });
             },
             currentTimeInSeconds: function () {
                 const __dateRightNow = new Date();
