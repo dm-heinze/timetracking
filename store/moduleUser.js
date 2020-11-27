@@ -315,7 +315,7 @@ export const actions = {
             axios.delete('/api/logout', { params: { value: state.sessionObject.value } })
                 .then((_response) => {
                     if (_response.data.status === 204) {
-                        dispatch('resetState')
+                        dispatch('resetState') // todo
                             .then(() => resolve())
                             .catch(() => reject())
                     } else {
@@ -323,7 +323,18 @@ export const actions = {
                         reject()
                     }
                 })
-                .catch((err) => console.log("err occurred: ", err))
+                .catch((err) => {
+                    if (err.response) {
+                        if (err.response.status === 401) {
+                            // the session has already expired or sessionId unavailable
+                            dispatch('resetState') // todo
+                                .then(() => resolve()) // todo
+                                .catch(() => reject()) // todo
+                        }
+                        else reject("An error occurred");
+                    }
+                    else reject("An error occurred");
+                })
         })
     },
     createApiObject: function({ commit, state, dispatch }, payload) {

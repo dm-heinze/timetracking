@@ -15,7 +15,10 @@ const response = function (request, response) {
         headers: headers,
     })
         .then((__response) => response.end(JSON.stringify({ status: __response.status }))) // todo
-        .catch((err) => response.end(JSON.stringify(err.response.status)))
+        .catch((err) => {
+            response.writeHead(err.response.status);
+            response.end(JSON.stringify(err.response.status))
+        })
 }
 
 export default {
