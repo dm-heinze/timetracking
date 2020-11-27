@@ -148,6 +148,8 @@
                         </div>
                         <button v-if="!booked"
                                 class="btn--edit"
+                                :class="{ 'disabled': (isTimerActive && (activeTicket === uniqueId)) }"
+                                :disabled="(isTimerActive && (activeTicket === uniqueId))"
                                 @click.prevent="activateEditModeForTrackedTime">
                             <edit2-icon v-if="!editingTrackedTime" />
                             <check-icon v-else />
