@@ -482,6 +482,7 @@ export const actions = {
                 axios({
                     method: 'GET',
                     url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'issue/picker',
+                    params: { showSubTasks: true },
                     headers: getters.getHeader(state),
                 })
                     .then((__response) => {

@@ -14,12 +14,13 @@ const response = function (request, response) {
         axios({
             method: 'GET',
             url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'issue/picker',
+            params: { showSubTasks: true },
             headers: parsedDataObject.headers,
         })
             .then((__response) => {
                 response.end(JSON.stringify(__response.data));
             })
-            .catch((err) =>{
+            .catch((err) => {
                 response.end(JSON.stringify(err));
             })
     })
