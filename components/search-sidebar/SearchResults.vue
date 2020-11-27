@@ -19,9 +19,9 @@
 <script>
     import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
     import _ from "lodash";
-    import Suggestions from "~/components/Suggestions"; // todo: dynamically import if visibility configurable
-    import AssignedTickets from "~/components/AssignedTickets"; // todo: dynamically import
-    import BookmarksSelectable from "~/components/BookmarksSelectable"; // todo
+    import Suggestions from "~/components/search-sidebar/Suggestions"; // todo: dynamically import if visibility configurable
+    import AssignedTickets from "~/components/search-sidebar/AssignedTickets"; // todo: dynamically import
+    import BookmarksSelectable from "~/components/search-sidebar/BookmarksSelectable"; // todo
 
     export default {
         name: "SearchResults",

@@ -20,7 +20,7 @@
 <script>
     import { mapState, mapMutations, mapActions } from 'vuex';
 	import _ from "lodash";
-    import { BListGroup, BListGroupItem} from "bootstrap-vue";
+    import { BListGroup, BListGroupItem } from "bootstrap-vue";
     import { PlusCircleIcon } from "vue-feather-icons";
 
     export default {

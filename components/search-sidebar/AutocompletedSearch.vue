@@ -36,7 +36,7 @@
 
     export default {
         name: "AutocompletedSearch",
-        components: { SearchIcon, XIcon, BFormInput, AutocompletedSearchResults: () => import('./AutocompletedSearchResults') },
+        components: { SearchIcon, XIcon, BFormInput, AutocompletedSearchResults: () => import('~/components/search-sidebar/AutocompletedSearchResults') },
         directives: { 'b-form-input': BFormInput },
         mixins: [searchAriaLabelMixin],
         data() {

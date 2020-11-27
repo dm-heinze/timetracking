@@ -79,9 +79,9 @@
     import { mapState, mapMutations, mapActions } from 'vuex';
     import { Edit2Icon, SaveIcon, PlayCircleIcon, PauseCircleIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
     import { BCollapse } from 'bootstrap-vue';
-    import TicketAssignment from "~/components/TicketAssignment";
-    import TicketDeletion from "~/components/TicketDeletion";
-    import PushSingleTask from "~/components/PushSingleTask";
+    import TicketAssignment from "~/components/main/tasks/task/TicketAssignment";
+    import TicketDeletion from "~/components/main/tasks/task/TicketDeletion";
+    import PushSingleTask from "~/components/main/tasks/task/PushSingleTask";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
     Vue.use(vClickOutside);

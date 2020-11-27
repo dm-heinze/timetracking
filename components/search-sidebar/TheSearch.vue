@@ -13,9 +13,9 @@
 </template>
 
 <script>
-    import AutocompletedSearch from "~/components/AutocompletedSearch";
-    import ProjectBasedSearch from "~/components/ProjectBasedSearch";
-    import SearchResults from "~/components/SearchResults";
+    import AutocompletedSearch from "~/components/search-sidebar/AutocompletedSearch";
+    import ProjectBasedSearch from "~/components/search-sidebar/ProjectBasedSearch";
+    import SearchResults from "~/components/search-sidebar/SearchResults";
 
     export default {
         name: "TheSearch",

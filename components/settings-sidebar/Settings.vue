@@ -20,15 +20,15 @@
 <script>
     import { mapState, mapActions } from 'vuex';
     import { XCircleIcon } from 'vue-feather-icons';
-    import Logout from '~/components/Logout';
-    import Search from "~/components/Search";
+    import Logout from '~/components/settings-sidebar/Logout';
+    import Search from "~/components/settings-sidebar/Search";
 
 	export default {
 		name: "Settings",
         components: {
             XCircleIcon,
             Search,
-            BookmarksEditable: () => import('~/components/BookmarksEditable'),
+            BookmarksEditable: () => import('~/components/settings-sidebar/BookmarksEditable'),
             Logout
         },
         computed: {

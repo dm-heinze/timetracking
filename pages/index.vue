@@ -53,17 +53,17 @@
     import { mapState, mapActions, mapMutations } from 'vuex';
     import { CoffeeIcon, PauseCircleIcon } from 'vue-feather-icons';
     import { BCollapse, BNavbarNav } from "bootstrap-vue";
-    import SelectedTasks from "~/components/SelectedTasks";
-    import AddCustomTask from "~/components/AddCustomTask";
-    import PushTotalTime from "~/components/PushTotalTime";
-    import SearchSidebar from "~/components/SearchSidebar";
+    import SelectedTasks from "~/components/main/tasks/SelectedTasks";
+    import AddCustomTask from "~/components/main/tasks/AddCustomTask";
+    import PushTotalTime from "~/components/main/tasks/PushTotalTime";
+    import SearchSidebar from "~/components/search-sidebar/SearchSidebar";
 
     export default {
         name: 'Index',
         components: {
             SearchSidebar,
             PushTotalTime,
-            AddCustomTask, SelectedTasks, Settings: () => import('../components/Settings'),
+            AddCustomTask, SelectedTasks, Settings: () => import('~/components/settings-sidebar/Settings'),
             BCollapse, BNavbarNav,
             CoffeeIcon, PauseCircleIcon
         },

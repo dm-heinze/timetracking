@@ -33,7 +33,7 @@
     export default {
         name: "SelectedTasks",
         components: {
-            SelectedTask: () => import('./SelectedTask')
+            SelectedTask: () => import('~/components/main/tasks/task/SelectedTask')
         },
         computed: {
             ...mapState({

@@ -29,7 +29,7 @@
     import { BFormInput } from "bootstrap-vue";
     import { SearchIcon, XIcon } from "vue-feather-icons";
     import { searchAriaLabelMixin } from "~/utility/mixins";
-    import AutocompletedSearchResults from "~/components/settings/AutocompletedSearchResults";
+    import AutocompletedSearchResults from "~/components/settings-sidebar/AutocompletedSearchResults";
 
 	export default {
 		name: "Search",

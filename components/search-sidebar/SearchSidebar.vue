@@ -11,7 +11,7 @@
 
 <script>
     import { mapMutations } from 'vuex';
-    import TheSearch from "~/components/TheSearch";
+    import TheSearch from "~/components/search-sidebar/TheSearch";
     import { SettingsIcon } from 'vue-feather-icons';
 
 	export default {
