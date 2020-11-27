@@ -10,7 +10,7 @@
                 <div class="ticket__info__summary text-truncate">{{ bookmarkedTicket.summary }}</div>
             </div>
             <div class="ticket__actions">
-                <bookmark-icon class="ticket__icon align-self-center ticket__icon--bookmarked" @click="toggleBookmarked(bookmarkedTicket.key)" />
+                <bookmark-icon class="ticket__icon align-self-center ticket__icon--bookmarked" @click="toggleBookmarked({ searchResultToBeToggled: bookmarkedTicket.key })" />
                 <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues(bookmarkedTicket, false)" />
             </div>
         </b-list-group-item>
@@ -22,7 +22,7 @@
     import { mapState, mapActions, mapMutations } from 'vuex';
     import { BookmarkIcon, PlusCircleIcon } from 'vue-feather-icons';
     import { BListGroup, BListGroupItem } from 'bootstrap-vue';
-    import { addTaskMixin, toggleBookmarkedMixin } from "~/utility/mixins";
+    import { addTaskMixin } from "~/utility/mixins";
 
 	export default {
 		name: "BookmarksEditable",
@@ -30,7 +30,7 @@
             BookmarkIcon, PlusCircleIcon,
             BListGroup, BListGroupItem,
         },
-        mixins: [addTaskMixin, toggleBookmarkedMixin], // todo: move to comp or to store
+        mixins: [addTaskMixin], // todo: move to comp or to store
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
@@ -39,11 +39,10 @@
         },
         methods: {
             ...mapActions({
-                saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
+                toggleBookmarked: 'moduleUser/toggleBookmarked'
             }),
             ...mapMutations({
-                updateBookmarks: 'moduleUser/updateBookmarks',
                 addSelectedTask: 'moduleUser/addSelectedTask'
             })
         }

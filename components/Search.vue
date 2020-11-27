@@ -34,12 +34,12 @@
                         <bookmark-icon
                             v-if="bookmarked.find((marked) => marked.key === searchResult.key)"
                             class="ticket__icon align-self-center ticket__icon--bookmarked"
-                            @click="toggleBookmarked(searchResult.key, searchResult.summary)"
+                            @click="toggleBookmarked({ searchResultToBeToggled: searchResult.key, summary: searchResult.summary })"
                         />
                         <bookmark-icon
                             v-else
                             class="ticket__icon align-self-center ticket__icon--not-bookmarked"
-                            @click="toggleBookmarked(searchResult.key, searchResult.summary)"
+                            @click="toggleBookmarked({ searchResultToBeToggled: searchResult.key, summary: searchResult.summary })"
                         />
                         <plus-circle-icon  class="ticket__icon align-self-center ticket__icon--selectable" @click="addToSelectedIssues(searchResult)" />
                     </div>
@@ -55,7 +55,7 @@
     import { regexForTicketKeys } from "~/utility/constants";
     import { BFormInput, BListGroup, BListGroupItem } from "bootstrap-vue";
     import { BookmarkIcon, PlusCircleIcon, SearchIcon, XIcon } from "vue-feather-icons";
-    import { searchAriaLabelMixin, addTaskMixin, toggleBookmarkedMixin, resetSearchMixin } from "~/utility/mixins";
+    import { searchAriaLabelMixin, addTaskMixin, resetSearchMixin } from "~/utility/mixins";
 
 	export default {
 		name: "Search",
@@ -64,7 +64,7 @@
 		    BListGroup, BListGroupItem, BFormInput
         },
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem, 'b-form-input': BFormInput },
-        mixins: [searchAriaLabelMixin, addTaskMixin, toggleBookmarkedMixin, resetSearchMixin],
+        mixins: [searchAriaLabelMixin, addTaskMixin, resetSearchMixin],
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
@@ -77,16 +77,15 @@
         methods: {
 		    ...mapMutations({
                 setSearchTerm: 'moduleUser/setSearchTerm',
-                updateBookmarks: 'moduleUser/updateBookmarks',
                 addSelectedTask: 'moduleUser/addSelectedTask',
                 toggleSettings: 'moduleUser/toggleSettings',
                 setSearchResult: 'moduleUser/setSearchResult',
                 setSearchLoading: 'moduleUser/setSearchLoading'
             }),
             ...mapActions({
-                saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
                 getIssue: 'moduleUser/getIssue',
+                toggleBookmarked: 'moduleUser/toggleBookmarked'
             }),
             requestSearch: _.debounce(function (value) {
                 if (!_.isEmpty(value)) {

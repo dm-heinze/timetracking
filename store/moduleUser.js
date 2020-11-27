@@ -244,6 +244,14 @@ export const actions = {
             })
         })
     },
+    toggleBookmarked: function ({ state, commit, dispatch }, payload) {
+        return new Promise(async (resolve, reject) => {
+            // summary default==='' -> no val may be passed in
+            commit('updateBookmarks', { bookmark: payload.searchResultToBeToggled, summary: payload.summary ? payload.summary : '' });
+
+            dispatch('saveBookmarksToStorage').then(() => resolve()).catch(() => reject());
+        })
+    },
     requestSavingSingleWorklog: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
             axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
