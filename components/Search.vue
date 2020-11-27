@@ -11,7 +11,7 @@
                 @keyup.esc="resetSearch()"
                 aria-label="search for tickets for bookmarking"
             />
-            <button :disabled="searchTerm == '' && searchLoading" @click="resetSearch()" :aria-label="searchFieldButtonAriaLabel">
+            <button :disabled="searchTerm == '' && searchLoading" @click="resetSearch({ close: false })" :aria-label="searchFieldButtonAriaLabel">
                 <search-icon v-if="!searchLoading && searchTerm == ''" />
                 <x-icon v-if="!searchLoading && searchTerm != ''" class="button--close" />
                 <b-spinner variant="primary" small v-show="searchLoading"></b-spinner>
@@ -55,7 +55,7 @@
     import { regexForTicketKeys } from "~/utility/constants";
     import { BFormInput, BListGroup, BListGroupItem } from "bootstrap-vue";
     import { BookmarkIcon, PlusCircleIcon, SearchIcon, XIcon } from "vue-feather-icons";
-    import { searchAriaLabelMixin, resetSearchMixin } from "~/utility/mixins";
+    import { searchAriaLabelMixin } from "~/utility/mixins";
 
 	export default {
 		name: "Search",
@@ -64,7 +64,7 @@
 		    BListGroup, BListGroupItem, BFormInput
         },
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem, 'b-form-input': BFormInput },
-        mixins: [searchAriaLabelMixin, resetSearchMixin],
+        mixins: [searchAriaLabelMixin],
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
@@ -84,7 +84,8 @@
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
                 toggleBookmarked: 'moduleUser/toggleBookmarked',
-                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+                addToSelectedIssues: 'moduleUser/addToSelectedIssues',
+                resetSearch: 'moduleUser/resetSearch'
             }),
             requestSearch: _.debounce(function (value) {
                 if (!_.isEmpty(value)) {

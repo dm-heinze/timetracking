@@ -7,15 +7,3 @@ export const searchAriaLabelMixin = {
         }
     }
 }
-
-export const resetSearchMixin = { // todo
-    methods: {
-        resetSearch: function (close = false) {
-            this.setSearchTerm('');
-
-            this.setSearchResult([]);
-
-            if (close) this.toggleSettings();
-        }
-    }
-}

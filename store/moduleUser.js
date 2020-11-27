@@ -341,6 +341,11 @@ export const actions = {
             resolve();
         })
     },
+    resetSearch: function({ commit, state }, payload) {
+        commit('setSearchTerm', '');
+        commit('setSearchResult', []);
+        if (payload.close) commit('toggleSettings');
+    },
     resetState: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             commit('setSessionObject', {});
