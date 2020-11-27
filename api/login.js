@@ -27,7 +27,10 @@ const response = function (request, response) {
 
                 response.end(JSON.stringify(sessionObject));
             })
-            .catch((err) => response.end(JSON.stringify(err.response.status)))
+            .catch((err) => {
+                response.writeHead(err.response.status);
+                response.end(JSON.stringify(err));
+            })
     })
 }
 

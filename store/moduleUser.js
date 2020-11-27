@@ -332,30 +332,29 @@ export const actions = {
             axios.post('/api/login', { username: payload.data.name, password: payload.data.pass })
                 .then(async (response) => {
                     if (response.data) { // todo
-                        if (response.data === 401) reject("Your credentials are not valid."); // todo
-                        if (response.data === 403) reject("Try again later.");
+                        commit('setSessionObject', response.data);
 
-                        if (response.data !== 401 && response.data !== 403) {
-                            commit('setSessionObject', response.data);
+                        await Promise.all([
+                            await dispatch('saveSessionIdToCookies'),
+                            await dispatch('retrieveSelectedTasksFromStorage'),
+                            await dispatch('retrieveBreaksFromStorage'),
+                            await dispatch('retrieveBookmarksFromStorage'),
+                        ])
+                            .then(() => resolve())
+                            .catch(() => {
+                                console.log("err occurred while saving/retrieving to/from localForage");
+                                reject(); // todo
+                            })
 
-                            await Promise.all([
-                                await dispatch('saveSessionIdToCookies'),
-                                await dispatch('retrieveSelectedTasksFromStorage'),
-                                await dispatch('retrieveBreaksFromStorage'),
-                                await dispatch('retrieveBookmarksFromStorage'),
-                            ])
-                                .then(() => resolve())
-                                .catch(() => {
-                                    console.log("err occurred while saving/retrieving to/from localForage");
-                                    reject();
-                                })
-                        }
                     } else {
-                        resolve();
+                        resolve(); // todo
                     }
                 })
                 .catch((err) => {
-                    reject();
+                    if (err.response) {
+                        if (err.response.status === 401) reject("Your credentials are not valid.");
+                        if (err.response.status === 403) reject("Try again later.");
+                    } else reject("An error occurred");
                 })
         })
     },
