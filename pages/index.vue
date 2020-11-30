@@ -257,10 +257,8 @@
             saveWorklogs: function () {
                 this.$bvModal.hide('confirm-push-time'); // any cancel event needed?
 
-                if (this.selectedTasks.length===0 || this.everythingBookedAlready || !this.noMissingComments || !this.noUnassignedCustomTasks || !this.noUntrackedTasks) {
-                    this.toggleShowErrorMessages({ show: true });
-
-                    this.$bvModal.msgBoxOk('Tasks cannot be booked. Please check the error messages.', {
+                if (this.isTimerActive) {
+                    this.$bvModal.msgBoxOk('Tasks cannot be booked while there are active task trackers.', {
                         centered: true,
                         okVariant: 'danger rounded-pill',
                         okTitle: 'Okay',
@@ -268,26 +266,38 @@
                         footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                     })
                 } else {
-                    if (this.showErrorMessages && this.selectedTasks.length!==0 && !this.everythingBookedAlready && this.noMissingComments && this.noUnassignedCustomTasks && this.noUntrackedTasks) this.toggleShowErrorMessages({ show: false });
-                    this.requestSavingWorklogs()
-                        .then(() => {
-                            this.$bvModal.msgBoxOk('Worklogs were successfully booked', {
-                                centered: true,
-                                okVariant: 'success rounded-pill',
-                                okTitle: 'Okay',
-                                bodyClass: 'modal__main-container',
-                                footerClass: 'modal__main-container modal__actions modal__feedback__footer'
-                            })
+                    if (this.selectedTasks.length===0 || this.everythingBookedAlready || !this.noMissingComments || !this.noUnassignedCustomTasks || !this.noUntrackedTasks) {
+                        this.toggleShowErrorMessages({ show: true });
+
+                        this.$bvModal.msgBoxOk('Tasks cannot be booked. Please check the error messages.', {
+                            centered: true,
+                            okVariant: 'danger rounded-pill',
+                            okTitle: 'Okay',
+                            bodyClass: 'modal__main-container',
+                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                         })
-                        .catch((__res) => {
-                            this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
-                                centered: true,
-                                okVariant: 'danger rounded-pill',
-                                okTitle: 'Okay',
-                                bodyClass: 'modal__main-container',
-                                footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                    } else {
+                        if (this.showErrorMessages && this.selectedTasks.length!==0 && !this.everythingBookedAlready && this.noMissingComments && this.noUnassignedCustomTasks && this.noUntrackedTasks) this.toggleShowErrorMessages({ show: false });
+                        this.requestSavingWorklogs()
+                            .then(() => {
+                                this.$bvModal.msgBoxOk('Worklogs were successfully booked', {
+                                    centered: true,
+                                    okVariant: 'success rounded-pill',
+                                    okTitle: 'Okay',
+                                    bodyClass: 'modal__main-container',
+                                    footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                                })
                             })
-                        });
+                            .catch((__res) => {
+                                this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
+                                    centered: true,
+                                    okVariant: 'danger rounded-pill',
+                                    okTitle: 'Okay',
+                                    bodyClass: 'modal__main-container',
+                                    footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                                })
+                            });
+                    }
                 }
             },
             // break

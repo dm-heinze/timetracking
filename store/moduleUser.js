@@ -266,7 +266,13 @@ export const actions = {
                             .catch(() => reject()); // todo
                     } catch (err) {
                         console.log("err occurred in requestSavingWorklogs");
-                        reject(err);
+                        if (err.response) {
+                            if (err.response.status === 401) {
+                                // todo?
+
+                                reject(err);
+                            } else reject(err);
+                        } else reject(err);
                     }
                 }
             } else {
@@ -425,15 +431,28 @@ export const actions = {
                     }
                 })
                 .catch((err) => {
-                    if(state.onABreak) commit('toggleBreak');
+                    if (err.response) {
+                        if (err.response.status === 401) {
+                            // stop any running trackers before logout step
+                            if(state.onABreak) commit('toggleBreak');
 
-                    if (state.isTimerActive) {
-                        commit('setLastTicket', state.activeTicket);
+                            if (state.isTimerActive) {
+                                commit('logoutStarted', true);
 
-                        commit('setIsTimerActive');
-                    }
+                                commit('setLastTicket', state.activeTicket);
 
-                    reject(err);
+                                commit('setActiveTicket', '');
+
+                                commit('setIsTimerActive');
+                            }
+
+                            /*if (state.isTimerActive) commit('logoutStarted', true);
+                           dispatch('stopTrackers'); */
+
+                            reject(err.response.status);
+                        }
+                        else reject(err); // todo: status code?
+                    } else reject(err);
                 })
         })
     },

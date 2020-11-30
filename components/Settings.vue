@@ -23,6 +23,7 @@
         </div>
 
         <div v-if="searchLoading">Loading Search Results...</div>
+        <div v-if="errorOccurred" class="error-message--inline">An error occurred</div>
         <div v-if="searchResults.length !== 0" class="search-results--settings">
             <b-list-group>
                 <b-list-group-item
@@ -95,7 +96,8 @@
         data () {
             return {
                 searchTerm: '',
-                searchLoading: false
+                searchLoading: false,
+                errorOccurred: false
             }
         },
         computed: {
@@ -140,7 +142,21 @@
                     if (isAlreadyInSuggestions !== 0) this.setSearchResult(filteredSearchSuggestions);
                     if (isAlreadyInSuggestions === 0) {
                         this.searchLoading = true;
-                        this.getIssue({ searchTerm: this.searchTerm }).then(() => this.searchLoading = false);
+
+                        this.getIssue({ searchTerm: this.searchTerm })
+                            .then(() => this.searchLoading = false)
+                            .catch((err) => {
+                                this.searchLoading = false;
+
+                                if (err === 401) {
+                                    this.toggleSettings();
+
+                                    this.resetState()
+                                        .then(() => this.$router.push('/customer/login')) // todo
+                                } else {
+                                    this.errorOccurred = true;
+                                }
+                            });
                     }
                 }
             }, 1100),
