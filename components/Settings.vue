@@ -110,7 +110,8 @@
                 requestSessionRemoval: 'moduleUser/requestSessionRemoval',
                 saveBookmarksToStorage: 'moduleUser/saveBookmarksToStorage',
                 getIssue: 'moduleUser/getIssue',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
+                resetState: 'moduleUser/resetState'
             }),
             ...mapMutations({
                 updateBookmarks: 'moduleUser/updateBookmarks',
@@ -122,7 +123,10 @@
                 this.toggleSettings();
 
                 this.requestSessionRemoval()
-                    .then(() => this.$router.push('/customer/login'))
+                    .then(() => {
+                        this.resetState()
+                            .then(() => this.$router.push('/customer/login')) // todo
+                    })
                     .catch(() => console.log("err occurred"));
             },
             requestSearch: _.debounce(function () {

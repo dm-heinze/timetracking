@@ -253,7 +253,8 @@
                 onABreak: state => state.moduleUser.onABreak,
                 lastTicket: state => state.moduleUser.lastTicket,
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
-                editingCustomTask: state => state.moduleUser.editingCustomTask
+                editingCustomTask: state => state.moduleUser.editingCustomTask,
+                logoutInProgress: state => state.moduleUser.logoutInProgress
             }),
             parsedStartTime () {
                 if (this.startTime !== '') return this.startTime.toTimeString().slice(0, 8);
@@ -553,7 +554,7 @@
                 if (this.uniqueId === this.lastTicket) {
                     this.stopTimer();
                     this.setLastTicket('');
-                    this.setIsTimerActive();
+                    if (!this.logoutInProgress) this.setIsTimerActive();
                 }
             },
             selectedProject: function (newValue) {

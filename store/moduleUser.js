@@ -20,7 +20,8 @@ export const state = () => ({
     bookmarked: [],
     settingsOpen: false,
     showErrorMessages: false,
-    editingCustomTask: ''
+    editingCustomTask: '',
+    logoutInProgress: false
 });
 
 export const getters = {
@@ -33,6 +34,9 @@ export const getters = {
 }
 
 export const mutations = {
+    logoutStarted: (state, payload) => {
+        state.logoutInProgress = payload;
+    },
     updateEditingCustomTask: (state, payload) => {
         state.editingCustomTask = payload.activeTaskId;
     },
@@ -291,6 +295,22 @@ export const actions = {
             resolve();
         })
     },
+    stopTrackers: function({ commit, state, dispatch }, payload) {
+        return new Promise((resolve, reject) => { // todo
+            // check if any break or task trackers are active
+            if (state.onABreak) commit('toggleBreak');
+
+            if (state.isTimerActive) {
+                commit('setLastTicket', state.activeTicket);
+
+                commit('setActiveTicket', '');
+
+                commit('setIsTimerActive');
+            }
+
+            resolve();
+        })
+    },
     resetState: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             commit('setSessionObject', {});
@@ -301,6 +321,7 @@ export const actions = {
             commit('setBookmarks', []);
             commit('setSelectedTasks', []);
             commit('updateTotalBreakTime', { totalBreakTime: '00:00:00' });
+            commit('logoutStarted', false);
 
             dispatch('removeFromCookies', 'JSESSIONID')
                 .then(() => resolve())
@@ -315,9 +336,9 @@ export const actions = {
             axios.delete('/api/logout', { params: { value: state.sessionObject.value } })
                 .then((_response) => {
                     if (_response.data.status === 204) {
-                        dispatch('resetState') // todo
-                            .then(() => resolve())
-                            .catch(() => reject())
+                        commit('logoutStarted', true);
+
+                        dispatch('stopTrackers').then(() => resolve()).catch(() => reject()) // todo
                     } else {
                         // todo
                         reject()
@@ -325,11 +346,10 @@ export const actions = {
                 })
                 .catch((err) => {
                     if (err.response) {
-                        if (err.response.status === 401) {
-                            // the session has already expired or sessionId unavailable
-                            dispatch('resetState') // todo
-                                .then(() => resolve()) // todo
-                                .catch(() => reject()) // todo
+                        if (err.response.status === 401) { // the session has already expired or sessionId unavailable
+                            commit('logoutStarted', true);
+
+                            dispatch('stopTrackers').then(() => resolve()).catch(() => reject()) // todo
                         }
                         else reject("An error occurred");
                     }
