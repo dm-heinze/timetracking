@@ -24,6 +24,8 @@ const response = function (request, response) {
                 response.end(JSON.stringify(__response.data));
             })
             .catch((err) =>{
+                response.writeHead(err.response.status);
+
                 response.end(JSON.stringify(err));
             })
     })

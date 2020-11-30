@@ -539,11 +539,14 @@ export const actions = {
 
                         resolve(JSON.parse(stringifiedResponse));
                     })
-                    .catch((err) => reject(err))
+                    .catch((err) => {
+                        if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired
+                        else reject(err);
+                    })
             } else {
                axios.post('/api/getSmartPickedIssues', { headers: getters.getHeader(state) })
                     .then((__res) => resolve(__res.data))
-                    .catch((err) => reject(err))
+                    .catch((err) => reject(err)) // todo
             }
         })
     },
@@ -564,14 +567,13 @@ export const actions = {
                         resolve(JSON.parse(stringifiedResponse));
                     })
                     .catch((err) => {
-                        if (err.response.status === 401) console.log("no valid sessionId");
-
-                        reject(err);
+                        if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired
+                        else reject(err);
                     })
             } else {
                 axios.post('/api/getAssignedTickets', { headers: getters.getHeader(state) })
                     .then((__res) => resolve(__res.data))
-                    .catch((err) => reject(err))
+                    .catch((err) => reject(err)) // todo
             }
         })
     },
@@ -624,7 +626,7 @@ export const actions = {
 
                 resolve();
             } catch (err) {
-                if (err.response.status === 401) {
+                if (err === 401) {
                     commit('setSessionObject', {}); // todo
 
                     dispatch('removeFromCookies', 'JSESSIONID') // todo
