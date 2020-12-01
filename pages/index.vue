@@ -65,7 +65,7 @@
                                     <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Take a break</span>
                                 </b-button>
                                 <client-only>
-                                    <button  @click.prevent="resetBreakTracker" class="button--resetBreakTracker ml-1 mr-2 px-3" v-b-tooltip.hover title="Reset Break Tracker" v-if="!onABreak && (accumulatedBreakTime != '00:00:00')">
+                                    <button  @click.prevent="resetBreakTracker" class="button--resetBreakTracker ml-1 mr-2 px-3" v-b-tooltip.hover title="Reset Break Tracker" ref="resetBreakButton" id="resetTrackedBreakTime" v-if="!onABreak && (accumulatedBreakTime != '00:00:00')">
                                         <rotate-ccw-icon />
                                     </button>
                                 </client-only>
@@ -209,6 +209,8 @@
             $mq: function (newValue) {
                 if (newValue === 'lg' || newValue === 'sm') this.$root.$emit('bv::disable::tooltip');
                 else this.$root.$emit('bv::enable::tooltip');
+
+                if (this.$refs.resetBreakButton) this.$root.$emit('bv::enable::tooltip', 'resetTrackedBreakTime'); // todo
             }
         },
         methods: {
@@ -390,6 +392,8 @@
             // wait for rendering
             this.$nextTick(function () {
                 if (this.$mq === 'lg' || this.$mq === 'sm') this.$root.$emit('bv::disable::tooltip');
+
+                if (this.$refs.resetBreakButton) this.$root.$emit('bv::enable::tooltip', 'resetTrackedBreakTime'); // todo
             })
         }
     }
