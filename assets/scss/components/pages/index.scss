@@ -1,6 +1,10 @@
-.message--error {
+.message--error, .message--network-error {
     color: $danger;
     font-weight: bold;
+}
+
+.message--network-error {
+    font-weight: normal;
 }
 
 .overview {

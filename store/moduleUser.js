@@ -324,6 +324,8 @@ export const actions = {
             commit('setSearchResult', []);
             commit('resetPrefilledSearchSuggestions');
             commit('setExistingProjects', []);
+            if (state.selectedProject) commit('setSelectedProject', '');
+            if (state.relatedTickets) commit('setRelatedTickets', []); // todo
             commit('setBookmarks', []);
             commit('setSelectedTasks', []);
             commit('updateTotalBreakTime', { totalBreakTime: '00:00:00' });
@@ -506,8 +508,22 @@ export const actions = {
                     resolve();
                 })
                 .catch((err) => {
-                    // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
-                    dispatch('resetState').then(() => reject(err)).catch(() => reject(err));
+                    if (err.response) {
+                        if (err.response.status === 401) {
+                            commit('logoutStarted', true);
+
+                            dispatch('stopTrackers')
+                                .then(() => {
+                                    // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                                    dispatch('resetState')
+                                        .then(() => reject(err))
+                                        .catch(() => reject(err));
+                                })
+                                .catch(() => reject(err)) // todo
+                        } else reject(err); // todo
+                    } else {
+                        reject(err); // todo
+                    }
                 })
         })
     },

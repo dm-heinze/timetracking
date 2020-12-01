@@ -2,7 +2,7 @@
     <div>
         <autocompleted-search class="mb-2" />
         <div class="select__container mb-2">
-            <b-form-select v-model="selectedProject" class="rounded-pill pl-4 pr-5" aria-label="search by project">
+            <b-form-select v-model="selectedProject" class="rounded-pill pl-4 pr-5" aria-label="search by project" :disabled="$nuxt.isOffline">
                 <b-form-select-option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</b-form-select-option>
                 <b-form-select-option v-else disabled value="">{{ selectedProject !== '' ? 'Select a project' : 'Get All Tickets by Project' }}</b-form-select-option>
                 <b-form-select-option
@@ -15,8 +15,8 @@
         </div>
         <div v-show="selectedProject !== ''">
             <div class="select__container mb-3">
-                <b-form-select v-model="selectedTicket" class="rounded-pill pl-4 pr-5" aria-label="tickets related to selected project">
-                    <b-form-select-option v-if="!relatedTickets.length" disabled value="">Loading Related Tickets...</b-form-select-option>
+                <b-form-select v-model="selectedTicket" class="rounded-pill pl-4 pr-5" aria-label="tickets related to selected project" :disabled="$nuxt.isOffline && !selectedProject">
+                    <b-form-select-option v-if="!relatedTickets.length && selectedProject !== '' && !($nuxt.isOffline)" disabled value="">Loading Related Tickets...</b-form-select-option>
                     <b-form-select-option v-else disabled value="">Select a ticket</b-form-select-option>
                     <b-form-select-option
                         v-for="relatedTicket in relatedTickets"
@@ -27,6 +27,7 @@
                 <chevron-down-icon class="select__icon" />
             </div>
         </div>
+        <div v-if="$nuxt.isOffline" class="message--network-error">No network connection. Most recent related tickets may not be available right now.</div>
         <div class="select__container__actions d-flex justify-content-between">
             <b-button v-if="selectedProject !== ''" pill class="font-weight-bold" @click.prevent="toggleProjectSelection()">Cancel</b-button>
             <div v-if="selectedProject !== '' && selectedTicket !== ''">
@@ -81,8 +82,20 @@
                     // remove selectedTicket so selectBtn disappears until a ticket from new project gets selected
                     this.selectedTicket = '';
 
-                    this.requestRelatedTickets()
-                        .catch((err) => { if (err.response.status === 401) this.$router.push('/customer/login') })
+                    // todo
+                    if (!($nuxt.isOffline)) {
+                        this.requestRelatedTickets()
+                            .catch((err) => {
+                                if (err.response) {
+                                    if (err.response.status === 401) this.$router.push('/customer/login');
+                                    else console.log("err occurred w/ status code: ", err.response.status);
+                                } else if (err.message) {
+                                    console.log("err.message: ", err.message);
+                                } else {
+                                    console.log("err occurred: ", err);
+                                }
+                            })
+                    }
                 }
             }
         },
