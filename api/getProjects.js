@@ -22,6 +22,9 @@ const response = function (request, response) {
             })
             .catch((err) =>{
                 console.log("err occurred");
+
+                response.writeHead(err.response.status);
+
                 response.end(JSON.stringify(err));
             })
     })

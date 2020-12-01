@@ -113,4 +113,8 @@
             stroke: $primary;
         }
     }
+
+    .error-message--inline {
+        color: $danger;
+    }
 }

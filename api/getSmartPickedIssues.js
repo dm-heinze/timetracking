@@ -15,12 +15,15 @@ const response = function (request, response) {
             method: 'GET',
             baseURL: process.env.BASE_DOMAIN,
             url: process.env.ENDPOINT_REST + 'issue/picker',
+            params: { showSubTasks: true },
             headers: parsedDataObject.headers,
         })
             .then((__response) => {
                 response.end(JSON.stringify(__response.data));
             })
-            .catch((err) =>{
+            .catch((err) => {
+                response.writeHead(err.response.status);
+
                 response.end(JSON.stringify(err));
             })
     })

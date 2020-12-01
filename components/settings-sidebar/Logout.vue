@@ -17,13 +17,17 @@
                 toggleSettings: 'moduleUser/toggleSettings'
             }),
             ...mapActions({
-                requestSessionRemoval: 'moduleUser/requestSessionRemoval'
+                requestSessionRemoval: 'moduleUser/requestSessionRemoval',
+                resetState: 'moduleUser/resetState'
             }),
             removeCurrentSession: function () {
                 this.toggleSettings();
 
                 this.requestSessionRemoval()
-                    .then(() => this.$router.push('/customer/login'))
+                    .then(() => {
+                        this.resetState()
+                            .then(() => this.$router.push('/customer/login'))
+                    })
                     .catch(() => console.log("err occurred"));
             }
         }

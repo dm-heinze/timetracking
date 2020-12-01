@@ -1,6 +1,7 @@
 <template>
 	<div>
         <div v-if="searchLoading">Loading Search Results...</div>
+        <div v-if="errorOccurred" class="error-message--inline">An error occurred</div>
         <div v-if="searchResults.length !== 0" class="search-results--settings">
             <b-list-group>
                 <b-list-group-item
@@ -47,7 +48,8 @@
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
                 bookmarked: state => state.moduleUser.bookmarked,
-                searchLoading: state => state.moduleUser.searchLoading
+                searchLoading: state => state.moduleUser.searchLoading,
+                errorOccurred: state => state.moduleUser.errorOccurred
             })
         },
         methods: {

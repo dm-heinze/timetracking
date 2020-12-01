@@ -25,6 +25,12 @@
         width: 16px;
         height: 16px;
     }
+
+    &:disabled {
+        &:hover {
+            cursor: not-allowed;
+        }
+    }
 }
 
 .selected-ticket__heading__assignments {

@@ -23,7 +23,9 @@ export const state = () => ({
     bookmarked: [],
     settingsOpen: false,
     showErrorMessages: false,
-    editingCustomTask: ''
+    errorOccurred: false, // todo
+    editingCustomTask: '',
+    logoutInProgress: false
 });
 
 export const getters = {
@@ -42,6 +44,12 @@ export const getters = {
 }
 
 export const mutations = {
+    updateErrorOccurred: (state, payload) => {
+        state.errorOccurred = payload;
+    },
+    logoutStarted: (state, payload) => {
+        state.logoutInProgress = payload;
+    },
     updateEditingCustomTask: (state, payload) => {
         state.editingCustomTask = payload.activeTaskId;
     },
@@ -312,7 +320,13 @@ export const actions = {
                             .catch(() => reject()); // todo
                     } catch (err) {
                         console.log("err occurred in requestSavingWorklogs");
-                        reject(err);
+                        if (err.response) {
+                            if (err.response.status === 401) {
+                                // todo?
+
+                                reject(err);
+                            } else reject(err);
+                        } else reject(err);
                     }
                 }
             } else {
@@ -346,6 +360,22 @@ export const actions = {
         commit('setSearchResult', []);
         if (payload.close) commit('toggleSettings');
     },
+    stopTrackers: function({ commit, state, dispatch }, payload) {
+        return new Promise((resolve, reject) => { // todo
+            // check if any break or task trackers are active
+            if (state.onABreak) commit('toggleBreak');
+
+            if (state.isTimerActive) {
+                commit('setLastTicket', state.activeTicket);
+
+                commit('setActiveTicket', '');
+
+                commit('setIsTimerActive');
+            }
+
+            resolve();
+        })
+    },
     resetState: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             commit('setSessionObject', {});
@@ -353,11 +383,12 @@ export const actions = {
             commit('setSearchResult', []);
             commit('resetPrefilledSearchSuggestions');
             commit('setExistingProjects', []);
-            commit('setSelectedProject', '');
-            commit('setRelatedTickets', []);
+            if (state.selectedProject) commit('setSelectedProject', '');
+            if (state.relatedTickets) commit('setRelatedTickets', []); // todo
             commit('setBookmarks', []);
             commit('setSelectedTasks', []);
             commit('updateTotalBreakTime', { totalBreakTime: '00:00:00' });
+            commit('logoutStarted', false);
 
             dispatch('removeFromCookies', 'JSESSIONID')
                 .then(() => resolve())
@@ -372,15 +403,25 @@ export const actions = {
             axios({ method: 'delete', baseURL: __base_url, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
                 .then((_response) => {
                     if (_response.data.status === 204) {
-                        dispatch('resetState')
-                            .then(() => resolve())
-                            .catch(() => reject())
+                        commit('logoutStarted', true);
+
+                        dispatch('stopTrackers').then(() => resolve()).catch(() => reject()) // todo
                     } else {
                         // todo
                         reject()
                     }
                 })
-                .catch((err) => console.log("err occurred: ", err))
+                .catch((err) => {
+                    if (err.response) {
+                        if (err.response.status === 401) { // the session has already expired or sessionId unavailable
+                            commit('logoutStarted', true);
+
+                            dispatch('stopTrackers').then(() => resolve()).catch(() => reject()) // todo
+                        }
+                        else reject("An error occurred");
+                    }
+                    else reject("An error occurred");
+                })
         })
     },
     createApiObject: function({ commit, state, dispatch }, payload) {
@@ -390,30 +431,29 @@ export const actions = {
             axios({ method: 'post', baseURL: __base_url, url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
                 .then(async (response) => {
                     if (response.data) { // todo
-                        if (response.data === 401) reject("Your credentials are not valid."); // todo
-                        if (response.data === 403) reject("Try again later.");
+                        commit('setSessionObject', response.data);
 
-                        if (response.data !== 401 && response.data !== 403) {
-                            commit('setSessionObject', response.data);
+                        await Promise.all([
+                            await dispatch('saveSessionIdToCookies'),
+                            await dispatch('retrieveSelectedTasksFromStorage'),
+                            await dispatch('retrieveBreaksFromStorage'),
+                            await dispatch('retrieveBookmarksFromStorage'),
+                        ])
+                            .then(() => resolve())
+                            .catch(() => {
+                                console.log("err occurred while saving/retrieving to/from localForage");
+                                reject(); // todo
+                            })
 
-                            await Promise.all([
-                                await dispatch('saveSessionIdToCookies'),
-                                await dispatch('retrieveSelectedTasksFromStorage'),
-                                await dispatch('retrieveBreaksFromStorage'),
-                                await dispatch('retrieveBookmarksFromStorage'),
-                            ])
-                                .then(() => resolve())
-                                .catch(() => {
-                                    console.log("err occurred while saving/retrieving to/from localForage");
-                                    reject();
-                                })
-                        }
                     } else {
-                        resolve();
+                        resolve(); // todo
                     }
                 })
                 .catch((err) => {
-                    reject();
+                    if (err.response) {
+                        if (err.response.status === 401) reject("Your credentials are not valid.");
+                        if (err.response.status === 403) reject("Try again later.");
+                    } else reject("An error occurred");
                 })
         })
     },
@@ -452,15 +492,28 @@ export const actions = {
                     }
                 })
                 .catch((err) => {
-                    if(state.onABreak) commit('toggleBreak');
+                    if (err.response) {
+                        if (err.response.status === 401) {
+                            // stop any running trackers before logout step
+                            if(state.onABreak) commit('toggleBreak');
 
-                    if (state.isTimerActive) {
-                        commit('setLastTicket', state.activeTicket);
+                            if (state.isTimerActive) {
+                                commit('logoutStarted', true);
 
-                        commit('setIsTimerActive');
-                    }
+                                commit('setLastTicket', state.activeTicket);
 
-                    reject(err);
+                                commit('setActiveTicket', '');
+
+                                commit('setIsTimerActive');
+                            }
+
+                            /*if (state.isTimerActive) commit('logoutStarted', true);
+                           dispatch('stopTrackers'); */
+
+                            reject(err.response.status);
+                        }
+                        else reject(err); // todo: status code?
+                    } else reject(err);
                 })
         })
     },
@@ -496,8 +549,22 @@ export const actions = {
                     resolve();
                 })
                 .catch((err) => {
-                    // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
-                    dispatch('resetState').then(() => reject(err)).catch(() => reject(err));
+                    if (err.response) {
+                        if (err.response.status === 401) {
+                            commit('logoutStarted', true);
+
+                            dispatch('stopTrackers')
+                                .then(() => {
+                                    // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                                    dispatch('resetState')
+                                        .then(() => reject(err))
+                                        .catch(() => reject(err));
+                                })
+                                .catch(() => reject(err)) // todo
+                        } else reject(err); // todo
+                    } else {
+                        reject(err); // todo
+                    }
                 })
         })
     },
@@ -518,15 +585,20 @@ export const actions = {
         return new Promise((resolve, reject) => {
             axios({ method: 'post', baseURL: __base_url, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
-                .catch((err) => reject(err))
+                .catch((err) => {
+                    if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
+                    else reject(err);
+                })
         })
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
             axios({ method: 'post', baseURL: __base_url, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
                 .then((__res) => resolve(__res.data))
-                .catch((err) => reject(err))
-
+                .catch((err) => {
+                    if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
+                    else reject(err);
+                })
         })
     },
     requestPrefill: function ({ commit, dispatch }) {
@@ -578,7 +650,7 @@ export const actions = {
 
                 resolve();
             } catch (err) {
-                if (err.response.status === 401) {
+                if (err === 401) {
                     commit('setSessionObject', {}); // todo
 
                     dispatch('removeFromCookies', 'JSESSIONID') // todo

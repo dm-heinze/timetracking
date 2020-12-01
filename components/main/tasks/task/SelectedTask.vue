@@ -49,6 +49,8 @@
                         </div>
                         <button v-if="!booked"
                                 class="btn--edit"
+                                :class="{ 'disabled': (isTimerActive && (activeTicket === uniqueId)) }"
+                                :disabled="(isTimerActive && (activeTicket === uniqueId))"
                                 @click.prevent="activateEditModeForTrackedTime">
                             <edit2-icon v-if="!editingTrackedTime" />
                             <check-icon v-else />
@@ -57,7 +59,7 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex flex-row" :class="{ 'justify-content-between': (showErrorMessages && !assignedToTicket && !timeSpent) || (showErrorMessages && !assignedToTicket), 'justify-content-end': showErrorMessages && !timeSpent }">
+        <div class="d-flex flex-row" :class="{ 'justify-content-between': (showErrorMessages && !assignedToTicket && !timeSpent) || (showErrorMessages && !assignedToTicket), 'justify-content-end': showErrorMessages && !timeSpent && assignedToTicket }">
             <div v-if="showErrorMessages && !assignedToTicket" class="message--error">Unassigned Custom Task</div>
             <div v-if="showErrorMessages && !timeSpent" class="message--error">No Tracked Time</div>
         </div>
@@ -153,7 +155,8 @@
                 onABreak: state => state.moduleUser.onABreak,
                 lastTicket: state => state.moduleUser.lastTicket,
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
-                editingCustomTask: state => state.moduleUser.editingCustomTask
+                editingCustomTask: state => state.moduleUser.editingCustomTask,
+                logoutInProgress: state => state.moduleUser.logoutInProgress
             }),
             parsedStartTime () {
                 if (this.startTime !== '') return this.startTime.toTimeString().slice(0, 8);
@@ -376,7 +379,7 @@
                 if (this.uniqueId === this.lastTicket) {
                     this.stopTimer();
                     this.setLastTicket('');
-                    this.setIsTimerActive();
+                    if (!this.logoutInProgress) this.setIsTimerActive();
                 }
             }
         },

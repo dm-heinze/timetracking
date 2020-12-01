@@ -17,7 +17,7 @@
             <template v-slot:default>
                 <div class="modal__main-container">
                     <div class="select__container mb-3">
-                        <b-form-select v-model="selectedProject" class="rounded-pill pl-4 pr-5">
+                        <b-form-select v-model="selectedProject" class="rounded-pill pl-4 pr-5" :disabled="$nuxt.isOffline">
                             <b-form-select-option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</b-form-select-option>
                             <b-form-select-option v-else disabled value="">Select a project</b-form-select-option>
                             <b-form-select-option
@@ -41,6 +41,8 @@
                         </b-form-select>
                         <chevron-down-icon class="select__icon" />
                     </div>
+
+                    <div v-if="$nuxt.isOffline" class="message--network-error">No network connection. Most recent related tickets may not be available right now.</div>
                 </div>
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
@@ -135,8 +137,20 @@
                 if (newValue) {
                     this.setSelectedProject(this.selectedProject);
 
-                    this.requestRelatedTickets()
-                        .catch((err) => { if (err.response.status === 401) this.$router.push('/customer/login') })
+                    // todo
+                    if (!($nuxt.isOffline)) {
+                        this.requestRelatedTickets()
+                            .catch((err) => {
+                                if (err.response) {
+                                    if (err.response.status === 401) this.$router.push('/customer/login');
+                                    else console.log("err occurred w/ status code: ", err.response.status);
+                                } else if (err.message) {
+                                    console.log("err.message: ", err.message);
+                                } else {
+                                    console.log("err occurred: ", err);
+                                }
+                            })
+                    }
                 }
             }
         }

@@ -67,29 +67,24 @@
                 if (this.alreadyExists) this.onUpdateAlreadyExists(false);
                 this.setSearchResult([]);
             },
-            requestSearch: _.debounce(function () {
+            requestSearch: _.debounce(function () { // todo
                 if (!_.isEmpty(this.searchTerm)) {
                     let isAlreadyInSuggestions = 0;
                     if(this.searchTerm.match(regexForTicketKeys)) isAlreadyInSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase()).length;
                     if (isAlreadyInSuggestions === 0) {
-                        this.searchLoading = true;
+                        this.searchLoading = true; // todo
 
                         this.getIssue({ searchTerm: this.searchTerm })
-                            .then(() => this.searchLoading = false)
+                            .then(() => this.searchLoading = false) // todo
                             .catch((err) => {
-                                if (err.response.status === 401) { // todo
+                                this.searchLoading = false; // todo
+
+                                if (err === 401) {
                                     this.resetState()
-                                        .then(() => {
-                                            this.searchLoading = false;
-
-                                            if (this.isTimerActive) { // todo
-                                                this.setActiveTicket('');
-
-                                                this.setIsTimerActive();
-                                            }
-
-                                            this.$router.push('/customer/login');
-                                        })
+                                        .then(() => this.$router.push('/customer/login')) // todo
+                                } else {
+                                    // todo
+                                    console.log("error occurred");
                                 }
                             })
                     } else {

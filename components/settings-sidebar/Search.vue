@@ -52,11 +52,13 @@
                 setSearchTerm: 'moduleUser/setSearchTerm',
                 toggleSettings: 'moduleUser/toggleSettings',
                 setSearchResult: 'moduleUser/setSearchResult',
-                setSearchLoading: 'moduleUser/setSearchLoading'
+                setSearchLoading: 'moduleUser/setSearchLoading',
+                updateErrorOccurred: 'moduleUser/updateErrorOccurred'
             }),
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
-                resetSearch: 'moduleUser/resetSearch'
+                resetSearch: 'moduleUser/resetSearch',
+                resetState: 'moduleUser/resetState' // todo
             }),
             requestSearch: _.debounce(function (value) {
                 if (!_.isEmpty(value)) {
@@ -71,7 +73,21 @@
                     if (isAlreadyInSuggestions !== 0) this.setSearchResult(filteredSearchSuggestions);
                     if (isAlreadyInSuggestions === 0) {
                         this.setSearchLoading(true);
-                        this.getIssue({ searchTerm: this.searchTerm }).then(() => this.setSearchLoading(false));
+
+                        this.getIssue({ searchTerm: this.searchTerm })
+                            .then(() => this.setSearchLoading(false))
+                            .catch((err) => {
+                                this.setSearchLoading(false);
+
+                                if (err === 401) {
+                                    this.toggleSettings();
+
+                                    this.resetState()
+                                        .then(() => this.$router.push('/customer/login')) // todo
+                                } else {
+                                    this.updateErrorOccurred(true); // todo
+                                }
+                            });
                     }
                 }
             }, 1100)

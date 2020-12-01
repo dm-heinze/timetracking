@@ -1,6 +1,10 @@
-.message--error {
+.message--error, .message--network-error {
     color: $danger;
     font-weight: bold;
+}
+
+.message--network-error {
+    font-weight: normal;
 }
 
 .overview {
@@ -23,6 +27,20 @@
             & span {
                 vertical-align: middle;
             }
+        }
+    }
+    .button--resetBreakTracker {
+        background: transparent;
+        color: $primary;
+        border: none;
+        border-radius: $border-radius;
+        outline: none;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+            color: white;
+            background: $danger;
+            @include box-shadow; //
         }
     }
 
