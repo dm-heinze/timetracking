@@ -89,8 +89,7 @@
                                 bodyClass: 'modal__main-container',
                                 footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                             }).then(() => {
-                                this.resetState().then(() => this.$router.push('/customer/login')).catch(() => console.log("error occurred")) // todo
-
+                                this.$router.push('/customer/login')
                             })
                         } else {
                             this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
