@@ -241,7 +241,21 @@ export const actions = {
 
                     dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                 })
-                .catch((err) => reject(err));
+                .catch((err) => {
+                    if (err.response) {
+                        if (err.response.status === 401) {
+                            if (state.isTimerActive) commit('logoutStarted', true);
+                            dispatch('stopTrackers')
+                                .then(() => {
+                                    // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                                    dispatch('resetState')
+                                        .then(() => reject(err))
+                                        .catch(() => reject(err));
+                                })
+                                .catch(() => reject(err)) // todo
+                        } else reject(err);
+                    } else reject(err);
+                });
         })
     },
     requestSavingWorklogs: function ({ state, commit, dispatch }) {
@@ -273,6 +287,23 @@ export const actions = {
                                 reject(err);
                             } else reject(err);
                         } else reject(err);
+
+                        // todo: differentiate between 401 & other errors -> needs adjustment in caller component
+                        /* if (err.response) {
+                            if (err.response.status === 401) {
+                                if (state.isTimerActive) commit('logoutStarted', true);
+                                dispatch('stopTrackers')
+                                    .then(() => {
+                                        // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                                        dispatch('resetState')
+                                            .then(() => reject(err))
+                                            .catch(() => reject(err));
+                                    })
+                                    .catch(() => reject(err)) // todo
+
+                                reject(err.response.status);
+                            } else reject(err);
+                        } else reject(err);*/
                     }
                 }
             } else {
