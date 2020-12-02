@@ -50,6 +50,7 @@
                     __selection = _.cloneDeep(selectedTicket);
                     __selection.uniqueId = _.now();
                 } else {
+                    // bc saved bookmark data consists only of the key & the summary
                     __selection = {
                         assignedToTicket: true,
                         uniqueId: _.now(),

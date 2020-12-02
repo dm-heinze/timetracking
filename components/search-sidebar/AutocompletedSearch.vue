@@ -71,7 +71,7 @@
                 if (!_.isEmpty(this.searchTerm)) {
                     let isAlreadyInSuggestions = 0;
                     if(this.searchTerm.match(regexForTicketKeys)) isAlreadyInSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase()).length;
-                    if (isAlreadyInSuggestions === 0) {
+                    if (isAlreadyInSuggestions === 0) { // only make request if its a ticketId that does not exist in prefill already or if not a ticketId
                         this.searchLoading = true; // todo
 
                         this.getIssue({ searchTerm: this.searchTerm })

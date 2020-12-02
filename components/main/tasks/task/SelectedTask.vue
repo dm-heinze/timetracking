@@ -158,12 +158,12 @@
                 editingCustomTask: state => state.moduleUser.editingCustomTask,
                 logoutInProgress: state => state.moduleUser.logoutInProgress
             }),
-            parsedStartTime () {
+            parsedStartTime () { // currently not part of the UI
                 if (this.startTime !== '') return this.startTime.toTimeString().slice(0, 8);
                 else if (this.startedAt !== '') return this.startedAt.slice(0, 8);
                 else return '00:00:00';
             },
-            parsedEndTime () {
+            parsedEndTime () { // currently not part of the UI
                 if (this.activeTicket === this.uniqueId && this.isTimerActive) return 'ongoing...';
                 else if (this.endTime !== '') return this.endTime.toTimeString().slice(0, 8);
                 else if (this.endedAt !== '') return this.endedAt.slice(0, 8);
@@ -171,10 +171,14 @@
             },
             parsedTimeSpent () {
                 const helperDate = new Date();
+
+                // timeSpent is saved in milliseconds to the localStorage
+                // Date object used to automatically get the correct calculation for the hh:mm:ss representation of milliseconds value
                 const dateFromTimeSpentValue = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), 0, 0,0, this.timeSpent);
 
                 const dateFromTimeSpentValueTimeTimeString =  dateFromTimeSpentValue.toTimeString();
 
+                // remove the date portion
                 return dateFromTimeSpentValueTimeTimeString.slice(0, 8);
             },
             flexDirection () {
@@ -200,7 +204,7 @@
             toggleChevronsIcon() {
                 this.chevronsUp = !this.chevronsUp;
             },
-            saveEditedStartTime: _.debounce(function (event) {
+            saveEditedStartTime: _.debounce(function (event) { // as parsedStartTime & parsedEndTime are currently not part of the UI this method is currently not used
                 const editedStartTime = event.target.value;
                 const editedStartTimeTimeStringArray = editedStartTime.split(":");
                 const endTimeTimeStringArray = this.parsedEndTime.split(":");
@@ -219,7 +223,7 @@
                 this.saveTaskStartTime({ uniqueId: this.uniqueId, startTime: editedStartTimeAsDate.toTimeString() });
                 this.saveSelectedTasksToStorage();
             }, 1000),
-            saveEditedEndTime: _.debounce(function (event) {
+            saveEditedEndTime: _.debounce(function (event) { // as parsedStartTime & parsedEndTime are currently not part of the UI this method is currently not used
                 const editedEndTime = event.target.value;
                 const editedEndTimeTimeStringArray = editedEndTime.split(":");
                 const startTimeTimeStringArray = this.parsedStartTime.split(":");
@@ -236,13 +240,14 @@
                 this.saveSelectedTasksToStorage();
             }, 1000),
             saveEditedWorklogTimeSpent: _.debounce(function (event) {
-                const editedTimeSpent = event.target.value;
+                const editedTimeSpent = event.target.value; // received val may be string of shape hh:mm or hh:mm:ss
 
                 let editedTimeSpentTimeStringArray = editedTimeSpent.split(":");
                 let startTimeTimeStringArray = this.parsedStartTime.split(":");
 
                 const helperDate = new Date();
 
+                // if milliseconds === 00, then the received event.target.value is of shape hh:mm only
                 editedTimeSpentTimeStringArray[2] = Number(editedTimeSpentTimeStringArray[2]) ? Number(editedTimeSpentTimeStringArray[2]) : Number('00');
                 startTimeTimeStringArray[2] = startTimeTimeStringArray[2] ? startTimeTimeStringArray[2] : Number('00');
 
@@ -281,6 +286,7 @@
                     this.updateEditingCustomTask({ activeTaskId: '' });
                 }
             },
+            // any click outside the input field & outside the save button should reset any changes
             toggleNameEditing: function (event) {
                 if (this.editingCustomTask === this.uniqueId) {
                     if (!this.editingName) this.editingName = !this.editingName;
@@ -297,8 +303,8 @@
             },
             saveCommentToStore: function (event) {
                 this.updatedComment = event.target.value;
-                this.saveTaskComment({ uniqueId: this.uniqueId, comment: event.target.value });
-                this.saveSelectedTasksToStorage();
+                this.saveTaskComment({ uniqueId: this.uniqueId, comment: event.target.value }); // update vuex store
+                this.saveSelectedTasksToStorage(); // update localStorage
             },
             currentTimeInSeconds: function () {
                 this.timeRightNow = new Date();
@@ -310,23 +316,23 @@
                 // todo
                 if (this.timeSpent !== 0 || this.timeSpent !== '') __timeSpent = this.initialTimeSpent + calculatedDifference;
 
-                this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: __timeSpent });
+                this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: __timeSpent }); // update vuex store
 
-                this.saveTaskComment({ uniqueId: this.uniqueId, comment: this.updatedComment });
+                this.saveTaskComment({ uniqueId: this.uniqueId, comment: this.updatedComment }); // update vuex store
 
-                this.saveSelectedTasksToStorage();
+                this.saveSelectedTasksToStorage(); // update localStorage
             },
             startTimer: function () {
                 // mark the current activeTicket
                 this.markedAsActive = true;
 
-                this.initialTimeSpent = this.timeSpent;
+                this.initialTimeSpent = this.timeSpent; // needed for sum calculation if tracker is restarted
 
                 this.startTime = new Date();
 
-                this.saveTaskStartTime({ uniqueId: this.uniqueId, startTime: this.startTime.toTimeString() });
+                this.saveTaskStartTime({ uniqueId: this.uniqueId, startTime: this.startTime.toTimeString() }); // update vuex store
 
-                this.runningTimer = setInterval(() => this.currentTimeInSeconds(), 1000);
+                this.runningTimer = setInterval(() => this.currentTimeInSeconds(), 1000); // calls function that saves current tracked time to vuex store & localStorage every second
             },
             stopTimer: function () {
                 this.markedAsActive = false;
@@ -337,11 +343,11 @@
 
                 // this.setActiveTicket('');
 
-                this.saveTaskEndTime({ uniqueId: this.uniqueId, endTime: this.endTime.toTimeString() });
+                this.saveTaskEndTime({ uniqueId: this.uniqueId, endTime: this.endTime.toTimeString() }); // update vuex store
 
-                this.saveSelectedTasksToStorage();
+                this.saveSelectedTasksToStorage(); // update localStorage
             },
-
+            // used for play & pause buttons - param: uniqueId of the task
             updateIsTimerActiveState: function (keyOfTicket) {
                 // stop break timer if active
                 if (this.onABreak) {

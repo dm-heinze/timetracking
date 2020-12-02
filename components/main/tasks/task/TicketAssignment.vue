@@ -78,7 +78,7 @@
                 selectedProject: '',
                 selectedTicket: '',
                 lastSelectedTicket: '',
-                showSelection: false
+                showSelection: false // todo!
             }
         },
         computed: {
@@ -138,7 +138,7 @@
                     this.setSelectedProject(this.selectedProject);
 
                     // todo
-                    if (!($nuxt.isOffline)) {
+                    if (!($nuxt.isOffline)) { // only make API request if network available
                         this.requestRelatedTickets()
                             .catch((err) => {
                                 if (err.response) {

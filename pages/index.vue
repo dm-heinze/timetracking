@@ -110,9 +110,10 @@
                     }
                 }
 
+                // sumOfWorkedTime added as milliseconds bc timeSpent val was saved as milliseconds
                 const dateFromTotalWorkTime = new Date(0, 0, 0, 0, 0,0, sumOfWorkedTime);  // todo
 
-                return dateFromTotalWorkTime.toTimeString().slice(0, 8);
+                return dateFromTotalWorkTime.toTimeString().slice(0, 8); // remove any non-time related information
             },
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
@@ -141,6 +142,7 @@
                 if (newValue === 'lg' || newValue === 'sm') this.$root.$emit('bv::disable::tooltip');
                 else this.$root.$emit('bv::enable::tooltip');
 
+                // tooltip for resetBreakButton should always be visible on hover bc no other visible text available for it
                 if (this.$refs.resetBreakButton) this.$root.$emit('bv::enable::tooltip', 'resetTrackedBreakTime'); // todo
             }
         },
@@ -209,13 +211,13 @@
 
                 let breakTimeAsDate = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, calculatedDifference);
 
-
+                // add previous tracked break time into calculation
                 if (this.accumulatedBreakTime != '00:00:00') {
                     const initialBreakInArrayFormat = this.initialLoggedBreak.split(":");
 
                     const currentBreakTimeInArrayFormat = breakTimeAsDate.toTimeString().slice(0, 8).split(":");
 
-                    const summedUpInitialAndNewBreak = _.zipWith(initialBreakInArrayFormat, currentBreakTimeInArrayFormat, (a, b) => Number(a) + Number(b));
+                    const summedUpInitialAndNewBreak = _.zipWith(initialBreakInArrayFormat, currentBreakTimeInArrayFormat, (a, b) => Number(a) + Number(b)); // values need to be numbers not strings for correct calculation
 
                     breakTimeAsDate = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), summedUpInitialAndNewBreak[0], summedUpInitialAndNewBreak[1], summedUpInitialAndNewBreak[2], 0);
                 }
@@ -232,18 +234,20 @@
                 store.dispatch('moduleUser/requestPrefill')
                     .then(() => resolve())
                     .catch((err) => {
-                        redirect('/customer/login');
+                        redirect('/customer/login'); // if page requested on reload/initial request: if sessionId invalid requestPrefill will result in this catch block
                         reject();
                     })
             })
         },
         mounted() {
-            this.requestAllProjects();
+            this.requestAllProjects(); // moved here (from originally vuex store) to client-side to allow page rendering as requested project data will be behind select forms & not immediately apparent if not available
 
             // wait for rendering
             this.$nextTick(function () {
+                // do not show any tooltip for these screens as text visible & not icon-only
                 if (this.$mq === 'lg' || this.$mq === 'sm') this.$root.$emit('bv::disable::tooltip');
 
+                // show tooltip on all viewports as always icon-only
                 if (this.$refs.resetBreakButton) this.$root.$emit('bv::enable::tooltip', 'resetTrackedBreakTime'); // todo
             })
         }

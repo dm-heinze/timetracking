@@ -70,6 +70,8 @@
                         filteredSearchSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase());
                         isAlreadyInSuggestions = filteredSearchSuggestions.length;
                     }
+
+                    // if searchTerm is a ticketId & can be found in prefill -> there is no API request
                     if (isAlreadyInSuggestions !== 0) this.setSearchResult(filteredSearchSuggestions);
                     if (isAlreadyInSuggestions === 0) {
                         this.setSearchLoading(true);

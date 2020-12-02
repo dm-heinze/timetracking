@@ -638,7 +638,7 @@ export const actions = {
 
 
                 // assignedTickets
-                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name });
+                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name }); // used to filter for assignedTickets without the need for an extra array
 
                 const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => {
                     return {

@@ -23,8 +23,10 @@
             removeCurrentSession: function () {
                 this.toggleSettings();
 
+                // invalidates sessionId & stops any active trackers
                 this.requestSessionRemoval()
                     .then(() => {
+                        // remove all vuex store state on logout
                         this.resetState()
                             .then(() => this.$router.push('/customer/login'))
                     })
