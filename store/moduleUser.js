@@ -25,7 +25,8 @@ export const state = () => ({
     showErrorMessages: false,
     errorOccurred: false, // todo
     editingCustomTask: '',
-    logoutInProgress: false
+    logoutInProgress: false,
+    lastRequestForProjects: '' // todo
 });
 
 export const getters = {
@@ -44,6 +45,9 @@ export const getters = {
 }
 
 export const mutations = {
+    setLastRequestForProjects: (state, payload) => {
+        state.lastRequestForProjects = payload;
+    },
     updateErrorOccurred: (state, payload) => {
         state.errorOccurred = payload;
     },
@@ -103,14 +107,12 @@ export const mutations = {
         state.isTimerActive = !(state.isTimerActive);
     },
     setExistingProjects: (state, value) => {
-        if (value.length === 0) state.allExistingProjects = value;
+        if (value.length === 0) state.allExistingProjects = value; // todo
         else {
             state.allExistingProjects = value.map((__project) => {
                 return {
                     id: __project.id,
-                    key: __project.key,
                     name: __project.name,
-                    avatar: __project.avatarUrls['16x16']
                 }
             });
         }
@@ -224,6 +226,31 @@ export const actions = {
             this.$localForage.setItem('BREAKS', state.accumulatedBreakTime)
                 .then(() => resolve())
                 .catch(() => reject())
+        })
+    },
+    saveProjectsToStorage: function ({ state }) {
+        return new Promise((resolve, reject) => {
+            this.$localForage.setItem('PROJECTS', state.allExistingProjects)
+                .then(() => resolve())
+                .catch(() => reject())
+        })
+    },
+    retrieveProjectsFromStorage: function({ commit }) {
+        return new Promise((resolve, reject) => {
+            this.$localForage.getItem('PROJECTS').then((__result) => {
+                if (!_.isEmpty(__result)) {
+                    commit('setExistingProjects', __result);
+
+                    resolve();
+                } else {
+                    resolve();
+                }
+            })
+        })
+    },
+    removeProjectsFromStorage: function({ commit }) {
+        return new Promise((resolve, reject) => {
+            this.$localForage.removeItem('PROJECTS').then(() => resolve()).catch((err) => reject(err))
         })
     },
     retrieveBreaksFromStorage: function({ commit }) {
@@ -380,6 +407,14 @@ export const actions = {
             resolve();
         })
     },
+    saveLastRequestForProjectsToCookies: function({commit, state}, payload) {
+        return new Promise((resolve, reject) => {
+            // todo: expiration temporarily set to 1.2 minutes === 72000 milliseconds
+            this.$cookies.set('lastRequestForProjects', payload.requestedAt, { expires: new Date(payload.requestedAt.getTime() + (72000)) });
+
+            resolve();
+        })
+    },
     resetSearch: function({ commit, state }, payload) {
         commit('setSearchTerm', '');
         commit('setSearchResult', []);
@@ -416,7 +451,16 @@ export const actions = {
             commit('logoutStarted', false);
 
             dispatch('removeFromCookies', 'JSESSIONID')
-                .then(() => resolve())
+                .then(() => {
+                    // if cookie has expired remove projects from localStorage on logout
+                    const __lastRequestValid = this.$cookies.get('lastRequestForProjects');
+
+                    if (!__lastRequestValid) {
+                        dispatch('removeProjectsFromStorage').then(() => resolve()).catch(() => reject())
+                    } else {
+                        resolve();
+                    }
+                })
                 .catch(() => {
                     console.log("err occurred while removing entry from storage");
                     reject();
@@ -544,15 +588,31 @@ export const actions = {
     },
     requestAllProjects: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            // only re-fetch projects on initial load & reload/refresh
-            if (state.allExistingProjects.length === 0) {
-                axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
-                    .then((__res) => {
-                        commit('setExistingProjects', __res.data);
+            // check if value already exists in store
+            if (state.lastRequestForProjects) {
+                dispatch('retrieveProjectsFromStorage').then(() => resolve()).catch(() => reject())
+            } else {
+                // only re-fetch projects on initial load & reload/refresh // todo
+                if (state.allExistingProjects.length === 0) {
+                    axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
+                        .then(async (__res) => {
+                            commit('setExistingProjects', __res.data);
 
-                        resolve();
-                    })
-                    .catch((err) => reject(err))
+                            const __requestTime = new Date();
+
+                            commit('setLastRequestForProjects', __requestTime);
+
+                            try {
+                                await Promise.all([
+                                    await dispatch('saveProjectsToStorage'),
+                                    await dispatch('saveLastRequestForProjectsToCookies', { requestedAt: __requestTime })
+                                ]).then(() => resolve())
+                            } catch (err) {
+                                console.log("err occurred in requestAllProjects: ", err);
+                            }
+                        })
+                        .catch((err) => reject(err))
+                }
             }
         })
     },
