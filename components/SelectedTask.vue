@@ -325,7 +325,7 @@
                         })
                     })
                     .catch((err) => {
-                        if (err.response.status === 401) {
+                        if (err.response && (err.response.status === 401)) {
                             this.$bvModal.msgBoxOk('The session has expired. Booking was not successful!', {
                                 centered: true,
                                 okVariant: 'danger rounded-pill',
