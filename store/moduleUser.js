@@ -331,32 +331,27 @@ export const actions = {
 
                                 dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                             })
-                            .catch(() => reject()); // todo
+                            .catch((err) => {
+                                console.log("err occurred: ", err);
+
+                                if (err.response) {
+                                    if (err.response.status === 401) {
+                                        if (state.isTimerActive) commit('logoutStarted', true);
+                                        dispatch('stopTrackers')
+                                            .then(() => {
+                                                // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                                                dispatch('resetState')
+                                                    .then(() => reject(err))
+                                                    .catch(() => reject(err));
+                                            })
+                                            .catch(() => reject(err)) // todo
+                                    } else reject(err);
+                                } else reject(err);
+                            });
                     } catch (err) {
-                        console.log("err occurred in requestSavingWorklogs");
-                        if (err.response) {
-                            if (err.response.status === 401) {
-                                // todo?
+                        console.log("err occurred in requestSavingWorklogs: ", err);
 
-                                reject(err);
-                            } else reject(err);
-                        } else reject(err);
-
-                        // todo: differentiate between 401 & other errors -> needs adjustment in caller component
-                        /* if (err.response) {
-                            if (err.response.status === 401) {
-                                if (state.isTimerActive) commit('logoutStarted', true);
-                                dispatch('stopTrackers')
-                                    .then(() => {
-                                        // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
-                                        dispatch('resetState')
-                                            .then(() => reject(err))
-                                            .catch(() => reject(err));
-                                    })
-                                    .catch(() => reject(err)) // todo
-                                reject(err.response.status);
-                            } else reject(err);
-                        } else reject(err);*/
+                        reject(err); // todo
                     }
                 }
             } else {

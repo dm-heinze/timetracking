@@ -108,14 +108,26 @@
                                     footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                                 })
                             })
-                            .catch((__res) => {
-                                this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
-                                    centered: true,
-                                    okVariant: 'danger rounded-pill',
-                                    okTitle: 'Okay',
-                                    bodyClass: 'modal__main-container',
-                                    footerClass: 'modal__main-container modal__actions modal__feedback__footer'
-                                })
+                            .catch((err) => {
+                                if (err.response && (err.response.status === 401)) {
+                                    this.$bvModal.msgBoxOk('The session has expired. Booking was not successful!', {
+                                        centered: true,
+                                        okVariant: 'danger rounded-pill',
+                                        okTitle: 'Okay',
+                                        bodyClass: 'modal__main-container',
+                                        footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                                    }).then(() => {
+                                        this.$router.push('/customer/login')
+                                    })
+                                } else {
+                                    this.$bvModal.msgBoxOk('There has been an error. Booking was not successful!', {
+                                        centered: true,
+                                        okVariant: 'danger rounded-pill',
+                                        okTitle: 'Okay',
+                                        bodyClass: 'modal__main-container',
+                                        footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                                    })
+                                }
                             });
                     }
                 }
