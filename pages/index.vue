@@ -10,7 +10,7 @@
                             <search-sidebar v-if="!settingsOpen" />
                         </transition>
                         <transition name="toggle">
-                            <settings v-if="settingsOpen" />
+                            <settings-sidebar v-if="settingsOpen" />
                         </transition>
                     </div>
                 </b-col>
@@ -57,7 +57,7 @@
             PushTotalTime,
             AddCustomTask,
             SelectedTasks,
-            Settings: () => import('~/components/settings-sidebar/Settings')
+            SettingsSidebar: () => import('~/components/settings-sidebar/SettingsSidebar')
         },
         mixins: [mainButtonsFlexDirectionMixin],
         computed: {

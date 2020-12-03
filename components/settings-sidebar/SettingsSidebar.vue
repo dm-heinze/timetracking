@@ -24,7 +24,7 @@
     import AutocompletedSearch from "~/components/settings-sidebar/AutocompletedSearch";
 
 	export default {
-		name: "Settings",
+		name: "SettingsSidebar",
         components: {
             AutocompletedSearch,
             XCircleIcon,

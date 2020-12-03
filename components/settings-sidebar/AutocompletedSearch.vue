@@ -32,7 +32,7 @@
     import AutocompletedSearchResults from "~/components/settings-sidebar/AutocompletedSearchResults";
 
 	export default {
-		name: "Search",
+		name: "AutocompletedSearch",
         components: {
             AutocompletedSearchResults,
             XIcon, SearchIcon,
