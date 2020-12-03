@@ -243,7 +243,7 @@ export const actions = {
 
                     resolve();
                 } else {
-                    resolve();
+                    reject();
                 }
             })
         })
@@ -449,11 +449,12 @@ export const actions = {
             commit('setSelectedTasks', []);
             commit('updateTotalBreakTime', { totalBreakTime: '00:00:00' });
             commit('logoutStarted', false);
+            commit('setLastRequestForProjects', '');
 
             dispatch('removeFromCookies', 'JSESSIONID')
                 .then(() => {
                     // if cookie has expired remove projects from localStorage on logout
-                    const __lastRequestValid = this.$cookies.get('lastRequestForProjects');
+                    const __lastRequestValid = this.$cookies.get('lastRequestForProjects'); // todo
 
                     if (!__lastRequestValid) {
                         dispatch('removeProjectsFromStorage').then(() => resolve()).catch(() => reject())
@@ -588,32 +589,47 @@ export const actions = {
     },
     requestAllProjects: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            // check if value already exists in store
-            if (state.lastRequestForProjects) {
-                dispatch('retrieveProjectsFromStorage').then(() => resolve()).catch(() => reject())
+            let __validCookie;
+            // right-side of OR will only be evaluated if no cookie info in state
+            // either bc the cookie expired/was never set & therefore could not be set on server-side
+            // or no page reload that led to server-side rendering happened after a logout which led to a reset of the store state
+            if (state.lastRequestForProjects || (__validCookie = this.$cookies.get('lastRequestForProjects'))) { // todo
+                // as the right-side only will be evaluated if the store state was not set,
+                // the store state needs to be set if it does get evaluated & retrieves a value
+                if (__validCookie) commit('setLastRequestForProjects', __validCookie);
+
+                dispatch('retrieveProjectsFromStorage')
+                    .then(() => resolve())
+                    .catch(() => {
+                        // if projects have been removed from localStorage for any reason -> API request necessary
+                        dispatch('fetchProjectsFromAPI').then(() => resolve()).catch(() => reject())
+                    })
             } else {
-                // only re-fetch projects on initial load & reload/refresh // todo
-                if (state.allExistingProjects.length === 0) {
-                    axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
-                        .then(async (__res) => {
-                            commit('setExistingProjects', __res.data);
-
-                            const __requestTime = new Date();
-
-                            commit('setLastRequestForProjects', __requestTime);
-
-                            try {
-                                await Promise.all([
-                                    await dispatch('saveProjectsToStorage'),
-                                    await dispatch('saveLastRequestForProjectsToCookies', { requestedAt: __requestTime })
-                                ]).then(() => resolve())
-                            } catch (err) {
-                                console.log("err occurred in requestAllProjects: ", err);
-                            }
-                        })
-                        .catch((err) => reject(err))
-                }
+                // only re-fetch projects on initial load & reload/refresh if the cookie has expired/was never set
+                dispatch('fetchProjectsFromAPI').then(() => resolve()).catch(() => reject()) // todo
             }
+        })
+    },
+    fetchProjectsFromAPI: function ({commit, state, dispatch}, payload) {
+        return new Promise((resolve, reject) => {
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
+                .then(async (__res) => {
+                    commit('setExistingProjects', __res.data);
+
+                    const __requestTime = new Date();
+
+                    commit('setLastRequestForProjects', __requestTime);
+
+                    try {
+                        await Promise.all([
+                            await dispatch('saveProjectsToStorage'),
+                            await dispatch('saveLastRequestForProjectsToCookies', { requestedAt: __requestTime })
+                        ]).then(() => resolve())
+                    } catch (err) {
+                        console.log("err occurred in requestAllProjects: ", err);
+                    }
+                })
+                .catch((err) => reject(err))
         })
     },
     requestRelatedTickets: function ({commit, state, dispatch}, payload) {
