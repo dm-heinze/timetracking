@@ -5,7 +5,7 @@
             <button @click.prevent="resetSearch({ close: true })" class="button--close"><x-circle-icon /></button>
         </div>
 
-        <search />
+        <autocompleted-search />
 
         <h3 class="sidebar__title sidebar__title--bookmarks">Bookmarks</h3>
         <div v-if="bookmarked.length !== 0">
@@ -21,13 +21,13 @@
     import { mapState, mapActions } from 'vuex';
     import { XCircleIcon } from 'vue-feather-icons';
     import Logout from '~/components/settings-sidebar/Logout';
-    import Search from "~/components/settings-sidebar/Search";
+    import AutocompletedSearch from "~/components/settings-sidebar/AutocompletedSearch";
 
 	export default {
 		name: "Settings",
         components: {
+            AutocompletedSearch,
             XCircleIcon,
-            Search,
             BookmarksEditable: () => import('~/components/settings-sidebar/BookmarksEditable'),
             Logout
         },
