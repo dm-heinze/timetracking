@@ -1,18 +1,9 @@
 <template>
     <div class="overview" :class="{ 'container': $mq === 'sm' }">
         <div class="w-100">
-            <b-collapse is-nav id="breakTracker">
-                <b-navbar-nav class="d-flex flex-row justify-content-center align-items-center stickyBreakTracker">
-                    <coffee-icon class="mr-2" />
-                    You are currently on a break for
-                    <span class="font-weight-bold mr-3 ml-1" :style="{ width: '80px' }">{{ accumulatedBreakTime }}</span>
-                    <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-1">
-                        <pause-circle-icon />
-                        <span class="pl-1">Stop break</span>
-                    </b-button>
-                </b-navbar-nav>
-            </b-collapse>
-           <b-row align-v="stretch" class="no-gutters">
+            <active-break />
+
+            <b-row align-v="stretch" class="no-gutters">
                 <b-col cols="12" lg="4" class="container--left vh-100">
                     <div class="login-content__titles">
                         <transition name="toggle">
@@ -48,31 +39,29 @@
 <script>
     import _ from "lodash";
     import { mapState, mapActions, mapMutations } from 'vuex';
-    import { CoffeeIcon, PauseCircleIcon } from 'vue-feather-icons';
-    import { BCollapse, BNavbarNav } from "bootstrap-vue";
     import SelectedTasks from "~/components/main/tasks/SelectedTasks";
     import AddCustomTask from "~/components/main/tasks/AddCustomTask";
     import PushTotalTime from "~/components/main/tasks/PushTotalTime";
     import SearchSidebar from "~/components/search-sidebar/SearchSidebar";
     import Break from "~/components/main/Break";
     import { mainButtonsFlexDirectionMixin } from "~/utility/mixins";
+    import ActiveBreak from "~/components/main/ActiveBreak";
 
     export default {
         name: 'Index',
         components: {
+            ActiveBreak,
             Break,
             SearchSidebar,
             PushTotalTime,
-            AddCustomTask, SelectedTasks, Settings: () => import('~/components/settings-sidebar/Settings'),
-            BCollapse, BNavbarNav,
-            CoffeeIcon, PauseCircleIcon
+            AddCustomTask,
+            SelectedTasks,
+            Settings: () => import('~/components/settings-sidebar/Settings')
         },
         mixins: [mainButtonsFlexDirectionMixin],
-        directives: { 'b-collapse': BCollapse, 'b-navbar-nav': BNavbarNav },
         computed: {
             ...mapState({
                 selectedTasks: state => state.moduleUser.selectedTasks, // totalTime
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime, // break
                 settingsOpen: state => state.moduleUser.settingsOpen,
                 searchResults: state => state.moduleUser.searchResults
             }),
@@ -112,15 +101,8 @@
                 requestAllProjects: 'moduleUser/requestAllProjects'
             }),
             ...mapMutations({
-                toggleBreakMutation: 'moduleUser/toggleBreak', // break
                 setSearchResult: 'moduleUser/setSearchResult'
-            }),
-            // break
-            toggleBreak: function () {
-                // start a break immediately
-                // -> step 1) set onABreak to true
-                this.toggleBreakMutation();
-            }
+            })
         },
         middleware ({ store, redirect }) {
             return new Promise((resolve, reject) => {
