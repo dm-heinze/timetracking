@@ -23,7 +23,7 @@
                                 <break />
                             </div>
                             <div class="d-flex" :class="[flexDirection, { 'align-items-center': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }]">
-                                <span v-if="totalTime" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'align-self-center': $mq === 'sm' }">worked so far: <span class="font-weight-bold">{{ totalTime }}</span></span> <!-- todo: condition -->
+                                <total-time />
 
                                 <push-total-time />
                             </div>
@@ -37,19 +37,20 @@
 </template>
 
 <script>
-    import _ from "lodash";
     import { mapState, mapActions, mapMutations } from 'vuex';
     import SelectedTasks from "~/components/main/tasks/SelectedTasks";
     import AddCustomTask from "~/components/main/tasks/AddCustomTask";
     import PushTotalTime from "~/components/main/tasks/PushTotalTime";
+    import TotalTime from "~/components/main/tasks/TotalTime";
     import SearchSidebar from "~/components/search-sidebar/SearchSidebar";
+    import ActiveBreak from "~/components/main/ActiveBreak";
     import Break from "~/components/main/Break";
     import { mainButtonsFlexDirectionMixin } from "~/utility/mixins";
-    import ActiveBreak from "~/components/main/ActiveBreak";
 
     export default {
         name: 'Index',
         components: {
+            TotalTime,
             ActiveBreak,
             Break,
             SearchSidebar,
@@ -61,7 +62,6 @@
         mixins: [mainButtonsFlexDirectionMixin],
         computed: {
             ...mapState({
-                selectedTasks: state => state.moduleUser.selectedTasks, // totalTime
                 settingsOpen: state => state.moduleUser.settingsOpen,
                 searchResults: state => state.moduleUser.searchResults
             }),
@@ -70,22 +70,6 @@
                 if (this.$mq === 'lg') return { marginBottom: '180px' }
                 else return { marginBottom: '90px' }
             },
-            totalTime() { // todo
-                let sumOfWorkedTime = 0;
-                if (this.selectedTasks.length !== 0) {
-                    const __selectedTasks = _.cloneDeep(this.selectedTasks);
-                    const allSelectedTasksTimes = __selectedTasks.filter((__selected) => !__selected.booked).filter((__nonBooked) => __nonBooked.timeSpent !== '0' && __nonBooked.timeSpent !== '').map((__selectedTask) => Number.parseInt(__selectedTask.timeSpent))
-
-                    for (let timeSpentOnIndividualSelectedTask of allSelectedTasksTimes) {
-                        sumOfWorkedTime += timeSpentOnIndividualSelectedTask
-                    }
-                }
-
-                // sumOfWorkedTime added as milliseconds bc timeSpent val was saved as milliseconds
-                const dateFromTotalWorkTime = new Date(0, 0, 0, 0, 0,0, sumOfWorkedTime);  // todo
-
-                return dateFromTotalWorkTime.toTimeString().slice(0, 8); // remove any non-time related information
-            }
         },
         watch: {
             settingsOpen: function(newValue) {
