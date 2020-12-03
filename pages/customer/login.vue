@@ -17,7 +17,7 @@
                             class="form-control rounded-pill pt-4 pl-4 pb-4"
                             placeholder="Username"
                             v-model="userObj.name"
-                            @keyup.enter.prevent="setUser()"
+                            @keyup.enter.prevent="submitLoginForm()"
                             aria-label="username"
                         />
                     </div>
@@ -28,7 +28,7 @@
                             class="form-control rounded-pill pt-4 pl-4 pb-4"
                             placeholder="Password"
                             v-model="userObj.pass"
-                            @keyup.enter.prevent="setUser()"
+                            @keyup.enter.prevent="submitLoginForm()"
                             aria-label="user password"
                         />
                         <template v-if="userObj.pass">
@@ -41,7 +41,7 @@
                         <div :class="{ 'mr-3': $mq === 'lg' }"><a :href="directLinkPasswordReset">Forgot password?</a></div>
                     </div>
                     <div class="row">
-                        <b-button pill variant="primary" @click.prevent="setUser()" type="button" class="mt-4 col-12 login-content__sign-in-btn pt-2 pb-2" :disabled="loading">
+                        <b-button pill variant="primary" @click.prevent="submitLoginForm()" type="button" class="mt-4 col-12 login-content__sign-in-btn pt-2 pb-2" :disabled="loading">
                             <b-icon v-if="loading" icon="three-dots" animation="cylon" font-scale="1"></b-icon>
                             <span v-else>Sign In</span>
                         </b-button>
@@ -80,6 +80,7 @@
             }
         },
         computed: {
+            // todo
             directLinkPasswordReset () {
                 return '#'
             },
@@ -94,12 +95,13 @@
             ...mapActions({
                 createApiObject: 'moduleUser/createApiObject',
             }),
-            setUser: function () {
+            submitLoginForm: function () {
                 if (_.isEmpty(this.userObj.name) || _.isEmpty(this.userObj.pass)) {
                     this.errorMessage = "Please enter both username and password."
                 } else {
                     this.loading = true;
 
+                    // todo
                     this.createApiObject({ data: this.userObj })
                         .then(() => this.$router.push('/', () => this.loading = false))
                         .catch((__errorMessage) => {
