@@ -27,7 +27,7 @@
         data () {
             return {
                 timeRightNow: 0,
-                runningTimer: '',
+                runningBreakTimer: '',
                 startTime: '',
                 endTime: '',
                 initialLoggedBreak: ''
@@ -46,12 +46,12 @@
                 if (newValue) {
                     this.initialLoggedBreak = this.accumulatedBreakTime;
 
-                    this.runningTimer = setInterval(() => this.currentTimeInSeconds(), 1000);
+                    this.runningBreakTimer = setInterval(() => this.currentTimeInSeconds(), 1000);
                 } else {
                     // stop interval when onABreak is set to false
                     this.endTime = new Date();
 
-                    clearInterval(this.runningTimer);
+                    clearInterval(this.runningBreakTimer);
 
                     // save to localStorage
                     this.saveBreaksToStorage();
@@ -118,23 +118,32 @@
 
                 this.timeRightNow = __dateRightNow;
 
-                const calculatedDifference = this.timeRightNow.getTime() - this.startTime.getTime();
+                const calculatedDifference = this.timeRightNow.getTime() - this.startTime.getTime(); // calling .getTime() on Date object results in milliseconds
 
+                // using Date object bc passed values get formatted/calculated automatically into the correct time format
                 let breakTimeAsDate = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, calculatedDifference);
 
                 // add previous tracked break time into calculation
-                if (this.accumulatedBreakTime != '00:00:00') {
+                if (this.accumulatedBreakTime != '00:00:00') { // todo
+                    // split string of shape hh:mm:ss into array of shape [ 'hh', 'mm', 'ss' ]
                     const initialBreakInArrayFormat = this.initialLoggedBreak.split(":");
 
+                    // remove the date portion & also split this string into array of shape [ 'hh', 'mm', 'ss' ]
                     const currentBreakTimeInArrayFormat = breakTimeAsDate.toTimeString().slice(0, 8).split(":");
 
-                    const summedUpInitialAndNewBreak = _.zipWith(initialBreakInArrayFormat, currentBreakTimeInArrayFormat, (a, b) => Number(a) + Number(b)); // values need to be numbers not strings for correct calculation
+                    // sum the respective positions of both arrays by casting them from type string to number
+                    // values need to be numbers not strings for correct calculation
+                    const summedUpInitialAndNewBreak = _.zipWith(initialBreakInArrayFormat, currentBreakTimeInArrayFormat, (a, b) => Number(a) + Number(b));
 
+                    //  passing resulting sum of the respective position for hh & mm & ss into Date object
+                    //  => time values get formatted/calculated automatically into the correct time format
+                    //  example: passing 00 (hours), 00 (minutes), 90 (seconds) will result in => 00:01:30 (hh:mm:ss)
                     breakTimeAsDate = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), summedUpInitialAndNewBreak[0], summedUpInitialAndNewBreak[1], summedUpInitialAndNewBreak[2], 0);
                 }
 
                 // update vuex store with totalBreakTime
-                this.updateTotalBreakTime({totalBreakTime: breakTimeAsDate.toTimeString().slice(0, 8)});
+                // remove the date portion => resulting string has shape "hh:mm:ss"
+                this.updateTotalBreakTime({ totalBreakTime: breakTimeAsDate.toTimeString().slice(0, 8) });
 
                 // save to localStorage
                 this.saveBreaksToStorage();
