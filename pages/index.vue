@@ -17,7 +17,7 @@
                 <b-col cols="12" lg="8" class="container--right vh-100">
                     <div class="col-xl-11 col-xxl-10">
                         <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
-                            <div class="d-flex" :class="[flexDirection,  { 'pr-3': $mq === 'md' ||  $mq === 'lg' }]">
+                            <div class="d-flex" :class="[flexDirection, { 'pr-3': $mq === 'md' ||  $mq === 'lg' }]">
                                 <add-custom-task />
 
                                 <break />
@@ -109,19 +109,3 @@
         }
     }
 </script>
-
-<style lang="scss">
-    .toggle-enter-active, .toggle-leave-active {
-        transition: all .3s ease-in-out;
-    }
-
-    .toggle-enter, .toggle-leave-to {
-        opacity: 0;
-        left: -100%;
-    }
-
-    .toggle-enter-to, .toggle-leave {
-        opacity: 1;
-        left: 0;
-    }
-</style>
