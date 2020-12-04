@@ -144,17 +144,6 @@
                 editingCustomTask: state => state.moduleUser.editingCustomTask,
                 logoutInProgress: state => state.moduleUser.logoutInProgress
             }),
-            parsedStartTime () { // currently not part of the UI
-                if (this.startTime !== '') return this.startTime.toTimeString().slice(0, 8);
-                else if (this.startedAt !== '') return this.startedAt.slice(0, 8);
-                else return '00:00:00';
-            },
-            parsedEndTime () { // currently not part of the UI
-                if (this.activeTicket === this.uniqueId && this.isTimerActive) return 'ongoing...';
-                else if (this.endTime !== '') return this.endTime.toTimeString().slice(0, 8);
-                else if (this.endedAt !== '') return this.endedAt.slice(0, 8);
-                else if (this.endTime === '') return '00:00:00';
-            },
             parsedTimeSpent () {
                 const helperDate = new Date();
 
@@ -186,66 +175,22 @@
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
             }),
-            saveEditedStartTime: _.debounce(function (event) { // as parsedStartTime & parsedEndTime are currently not part of the UI this method is currently not used
-                const editedStartTime = event.target.value;
-                const editedStartTimeTimeStringArray = editedStartTime.split(":");
-                const endTimeTimeStringArray = this.parsedEndTime.split(":");
-
-                const helperDate = new Date();
-                const endTimeTimeAsDate = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), Number(endTimeTimeStringArray[0]), Number(endTimeTimeStringArray[1]), Number(endTimeTimeStringArray[2]) ? Number(endTimeTimeStringArray[2]) : '00', 0);
-                const editedStartTimeAsDate = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), Number(editedStartTimeTimeStringArray[0]), Number(editedStartTimeTimeStringArray[1]), Number(editedStartTimeTimeStringArray[2]) ? Number(editedStartTimeTimeStringArray[2]) : '00', 0);
-
-                // do not update endTime & timeSpent if endTime does not have a tracked value
-                if (this.parsedEndTime !== '00:00:00') {
-                    const updatedTimeDifference = endTimeTimeAsDate.getTime() - editedStartTimeAsDate.getTime();
-                    this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: updatedTimeDifference });
-                }
-
-                this.startTime = editedStartTimeAsDate;
-                this.saveTaskStartTime({ uniqueId: this.uniqueId, startTime: editedStartTimeAsDate.toTimeString() });
-                this.saveSelectedTasksToStorage();
-            }, 1000),
-            saveEditedEndTime: _.debounce(function (event) { // as parsedStartTime & parsedEndTime are currently not part of the UI this method is currently not used
-                const editedEndTime = event.target.value;
-                const editedEndTimeTimeStringArray = editedEndTime.split(":");
-                const startTimeTimeStringArray = this.parsedStartTime.split(":");
-
-                const helperDate = new Date();
-                const editedNewEndTimeAsDate = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), Number(editedEndTimeTimeStringArray[0]), Number(editedEndTimeTimeStringArray[1]), Number(editedEndTimeTimeStringArray[2] ? startTimeTimeStringArray[2] : '00'), 0);
-                const startTimeAsDate = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), Number(startTimeTimeStringArray[0]), Number(startTimeTimeStringArray[1]), Number(startTimeTimeStringArray[2] ? startTimeTimeStringArray[2] : '00'), 0);
-
-                const updatedTimeDifference = editedNewEndTimeAsDate.getTime() - startTimeAsDate.getTime();
-
-                this.endTime = editedNewEndTimeAsDate;
-                this.saveTaskEndTime({ uniqueId: this.uniqueId, endTime: editedNewEndTimeAsDate.toTimeString() });
-                this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: updatedTimeDifference });
-                this.saveSelectedTasksToStorage();
-            }, 1000),
             saveEditedWorklogTimeSpent: _.debounce(function (event) {
                 const editedTimeSpent = event.target.value; // received val may be string of shape hh:mm or hh:mm:ss
 
                 let editedTimeSpentTimeStringArray = editedTimeSpent.split(":");
-                let startTimeTimeStringArray = this.parsedStartTime.split(":");
 
                 const helperDate = new Date();
 
                 // if milliseconds === 00, then the received event.target.value is of shape hh:mm only
-                editedTimeSpentTimeStringArray[2] = Number(editedTimeSpentTimeStringArray[2]) ? Number(editedTimeSpentTimeStringArray[2]) : Number('00');
-                startTimeTimeStringArray[2] = startTimeTimeStringArray[2] ? startTimeTimeStringArray[2] : Number('00');
+                editedTimeSpentTimeStringArray[2] = Number(editedTimeSpentTimeStringArray[2]) ? Number(editedTimeSpentTimeStringArray[2]) : 0;
 
-                const dateFromParsedStartTime = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), Number(startTimeTimeStringArray[0]), Number(startTimeTimeStringArray[1]), Number(startTimeTimeStringArray[2]), 0);
+                const dateFromParsedStartTime = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), 0, 0, 0, 0); // todo: rename dateFromParsedStartTime
 
-                const summedUpTimeSpentAndStartTime = _.zipWith(editedTimeSpentTimeStringArray, startTimeTimeStringArray, (a, b) => Number(a) + Number(b));
-
-                const dateFromSummedUpArrayAndHelper = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), summedUpTimeSpentAndStartTime[0], summedUpTimeSpentAndStartTime[1], summedUpTimeSpentAndStartTime[2], 0);
+                const dateFromEditedTimeSpentTimeStringArray = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), editedTimeSpentTimeStringArray[0], editedTimeSpentTimeStringArray[1], editedTimeSpentTimeStringArray[2], 0);
 
                 // update state & vuex store & localStorage
-                // endTime should not be 'updated'/set when there was no startTime
-                if (!(this.parsedStartTime === '00:00:00')) {
-                    this.endTime = dateFromSummedUpArrayAndHelper;
-                    this.saveTaskEndTime({ uniqueId: this.uniqueId, endTime: dateFromSummedUpArrayAndHelper.toTimeString() });
-                }
-                this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: dateFromSummedUpArrayAndHelper.getTime() - dateFromParsedStartTime.getTime() });
+                this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: dateFromEditedTimeSpentTimeStringArray.getTime() - dateFromParsedStartTime.getTime() }); // todo: rename dateFromParsedStartTime
                 this.saveSelectedTasksToStorage();
             }, 1000),
             activateEditModeForTrackedTime: function () {
