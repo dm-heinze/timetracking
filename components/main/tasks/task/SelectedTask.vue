@@ -59,10 +59,8 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex flex-row" :class="{ 'justify-content-between': (showErrorMessages && !assignedToTicket && !timeSpent) || (showErrorMessages && !assignedToTicket), 'justify-content-end': showErrorMessages && !timeSpent && assignedToTicket }">
-            <div v-if="showErrorMessages && !assignedToTicket" class="message--error">Unassigned Custom Task</div>
-            <div v-if="showErrorMessages && !timeSpent" class="message--error">No Tracked Time</div>
-        </div>
+
+        <ticket-error-messages :unique-id="uniqueId" :task-key="taskKey" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" />
 
         <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
     </div>
@@ -75,6 +73,7 @@
     import TicketAssignment from "~/components/main/tasks/task/TicketAssignment";
     import TicketDeletion from "~/components/main/tasks/task/TicketDeletion";
     import TicketComment from "~/components/main/tasks/task/TicketComment";
+    import TicketErrorMessages from "~/components/main/tasks/task/TicketErrorMessages";
     import PushSingleTask from "~/components/main/tasks/task/PushSingleTask";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
@@ -84,8 +83,7 @@
     export default {
         name: "SelectedTask",
         components: {
-            TicketComment,
-            PushSingleTask, TicketDeletion, TicketAssignment,
+            TicketErrorMessages, TicketComment, TicketDeletion, TicketAssignment, PushSingleTask,
             SaveIcon, Edit2Icon, PlayCircleIcon, PauseCircleIcon, CheckIcon
         },
         props: {
@@ -143,7 +141,6 @@
                 activeTicket: state => state.moduleUser.activeTicket,
                 onABreak: state => state.moduleUser.onABreak,
                 lastTicket: state => state.moduleUser.lastTicket,
-                showErrorMessages: state => state.moduleUser.showErrorMessages,
                 editingCustomTask: state => state.moduleUser.editingCustomTask,
                 logoutInProgress: state => state.moduleUser.logoutInProgress
             }),
