@@ -63,26 +63,18 @@
             <div v-if="showErrorMessages && !assignedToTicket" class="message--error">Unassigned Custom Task</div>
             <div v-if="showErrorMessages && !timeSpent" class="message--error">No Tracked Time</div>
         </div>
-        <b-collapse :id="`selected-task-${uniqueId}`" visible class="selected-ticket__content">
-            <textarea rows="4" :value="taskWorklogComment" @input="saveCommentToStore" :disabled="booked"></textarea>
-            <div v-if="showErrorMessages && !taskWorklogComment " class="message--error">No Comment</div>
-        </b-collapse>
-        <div class="d-flex justify-content-center selected-ticket__toggle-btn">
-            <button v-b-toggle="`selected-task-${uniqueId}`" @click="toggleChevronsIcon()">
-                <chevrons-down-icon v-if="!chevronsUp"/>
-                <chevrons-up-icon v-else />
-            </button>
-        </div>
+
+        <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
     </div>
 </template>
 
 <script>
     import _ from "lodash";
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { Edit2Icon, SaveIcon, PlayCircleIcon, PauseCircleIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
-    import { BCollapse } from 'bootstrap-vue';
+    import { Edit2Icon, SaveIcon, PlayCircleIcon, PauseCircleIcon, CheckIcon } from 'vue-feather-icons';
     import TicketAssignment from "~/components/main/tasks/task/TicketAssignment";
     import TicketDeletion from "~/components/main/tasks/task/TicketDeletion";
+    import TicketComment from "~/components/main/tasks/task/TicketComment";
     import PushSingleTask from "~/components/main/tasks/task/PushSingleTask";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
@@ -92,11 +84,10 @@
     export default {
         name: "SelectedTask",
         components: {
+            TicketComment,
             PushSingleTask, TicketDeletion, TicketAssignment,
-            SaveIcon, Edit2Icon, PlayCircleIcon, PauseCircleIcon, CheckIcon, ChevronsDownIcon, ChevronsUpIcon,
-            BCollapse
+            SaveIcon, Edit2Icon, PlayCircleIcon, PauseCircleIcon, CheckIcon
         },
-        directives: { 'b-collapse': BCollapse },
         props: {
             taskKey: {
                 required: true
@@ -142,9 +133,7 @@
                 markedAsActive: false,
                 editingName: false,
                 localEditedName: '',
-                initialTimeSpent: 0,
-                updatedComment: '',
-                chevronsUp: true
+                initialTimeSpent: 0
             };
         },
         computed: {
@@ -187,7 +176,6 @@
         },
         methods: {
             ...mapMutations({
-                saveTaskComment: 'moduleUser/saveTaskComment',
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
                 saveTimeSpentOnTask: 'moduleUser/saveTimeSpentOnTask',
                 setActiveTicket: 'moduleUser/setActiveTicket',
@@ -201,9 +189,6 @@
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
             }),
-            toggleChevronsIcon() {
-                this.chevronsUp = !this.chevronsUp;
-            },
             saveEditedStartTime: _.debounce(function (event) { // as parsedStartTime & parsedEndTime are currently not part of the UI this method is currently not used
                 const editedStartTime = event.target.value;
                 const editedStartTimeTimeStringArray = editedStartTime.split(":");
@@ -301,11 +286,6 @@
             saveEditedCustomTaskName: function (event) {
                 if (!_.isEmpty(event.target.value) && (this.localEditedName !== this.uniqueId)) this.localEditedName = event.target.value;
             },
-            saveCommentToStore: function (event) {
-                this.updatedComment = event.target.value;
-                this.saveTaskComment({ uniqueId: this.uniqueId, comment: event.target.value }); // update vuex store
-                this.saveSelectedTasksToStorage(); // update localStorage
-            },
             currentTimeInSeconds: function () {
                 this.timeRightNow = new Date();
 
@@ -318,7 +298,7 @@
 
                 this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: __timeSpent }); // update vuex store
 
-                this.saveTaskComment({ uniqueId: this.uniqueId, comment: this.updatedComment }); // update vuex store
+                // note: function to save the comment removed from this line as it has its own method - now moved to the TicketComment component
 
                 this.saveSelectedTasksToStorage(); // update localStorage
             },
@@ -388,9 +368,6 @@
                     if (!this.logoutInProgress) this.setIsTimerActive();
                 }
             }
-        },
-        created () {
-            this.updatedComment = this.taskWorklogComment;
         }
     }
 </script>
