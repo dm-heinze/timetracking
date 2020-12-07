@@ -8,7 +8,7 @@
                         v-for="bookmarkedTicket in bookmarked"
                         :key="bookmarkedTicket.key"
                         class="d-flex justify-content-between"
-                        @click="addToSelectedIssues(bookmarkedTicket, false)"
+                        @click="addToSelectedIssues({ selectedTicket: bookmarkedTicket, fromSearchResults: false })"
                     >
                         <div class="ticket__info col-11">
                             <div class="ticket__info__key font-weight-bold">{{ bookmarkedTicket.key }}</div>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapActions } from 'vuex';
     import { PlusCircleIcon } from "vue-feather-icons";
     import { BListGroup, BListGroupItem } from "bootstrap-vue";
 
@@ -38,9 +38,9 @@
             })
         },
         methods: {
-            addToSelectedIssues: function (assignedTicket, fromSearchResults) { // todo
-                this.$emit('updateSelectedIssues', assignedTicket, false)
-            }
+            ...mapActions({
+                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+            })
         }
 	}
 </script>

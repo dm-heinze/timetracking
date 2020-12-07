@@ -3,12 +3,12 @@
         <b-list-group-item
             v-for="searchResult in smartPickedSuggestions"
             :key="searchResult.key"
-            @click="addToSelectedIssues(searchResult)"
+            @click="addToSelectedIssues({ selectedTicket: searchResult, fromSearchResults: true })"
             class="d-flex justify-content-between"
         >
             <div class="ticket__info col-11">
                 <div class="ticket__info__key font-weight-bold">{{ searchResult.key }}</div>
-                <div class="ticket__info__summary text-truncate">{{ searchResult.summary }}</div>
+                <div class="ticket__info__summary text-truncate">{{ searchResult.summary }}</div> <!-- todo -->
             </div>
 
             <plus-circle-icon class="ticket__icon align-self-center" />
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
     import { PlusCircleIcon } from "vue-feather-icons";
     import { BListGroup, BListGroupItem } from "bootstrap-vue";
 
@@ -31,9 +31,9 @@
             })
         },
         methods: {
-            addToSelectedIssues: function (searchResult) { // todo
-                this.$emit('updateSelectedIssues', searchResult)
-            }
+            ...mapActions({
+                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+            })
         }
 	}
 </script>

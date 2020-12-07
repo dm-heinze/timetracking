@@ -5,7 +5,7 @@
             <b-list-group-item
                 v-for="assignedTicket in assignedTickets"
                 :key="assignedTicket.uniqueId"
-                @click="addToSelectedIssues(assignedTicket)"
+                @click="addToSelectedIssues({ selectedTicket: assignedTicket, fromSearchResults: true })"
                 class="d-flex justify-content-between"
             >
                 <div class="ticket__info col-11">
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
 	import { PlusCircleIcon } from "vue-feather-icons";
     import { BListGroup, BListGroupItem } from "bootstrap-vue";
 
@@ -34,9 +34,9 @@
             })
         },
         methods: {
-            addToSelectedIssues: function (assignedTicket) { // todo
-                this.$emit('updateSelectedIssues', assignedTicket)
-            }
+		    ...mapActions({
+                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+            })
         }
 	}
 </script>

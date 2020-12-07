@@ -658,6 +658,7 @@ export const actions = {
                     return {
                         key: issue.key,
                         summary: issue.summary,
+                        // summaryText: issue.summaryText, // todo: available field for data received from this endpoint
                         assignee: '',
                         issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + issue.key,
                         comment: '',

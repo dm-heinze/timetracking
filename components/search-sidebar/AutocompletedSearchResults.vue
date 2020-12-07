@@ -82,7 +82,7 @@
 
                 // this.searchTerm = ''; // toggles visibility of search results // searchTerm now a prop
 
-                this.$emit('updateAlreadyExists', false)
+                this.$emit('updateAlreadyExists', false) // todo
             }
         }
 	}
