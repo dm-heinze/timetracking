@@ -31,16 +31,13 @@
             searchTerm: {
                 type: String,
                 required: true
-            },
-            alreadyExists: {
-                type: Boolean,
-                required: true
             }
         },
         computed: {
             ...mapState({
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
                 searchResults: state => state.moduleUser.searchResults,
+                alreadyExists: state => state.moduleUser.alreadyExists
             }),
             searchResultList () {
                 if (!this.alreadyExists) {
@@ -68,6 +65,7 @@
         methods: {
 		    ...mapMutations({
                 addSelectedTask: 'moduleUser/addSelectedTask',
+                setAlreadyExists: 'moduleUser/setAlreadyExists'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
@@ -82,7 +80,7 @@
 
                 // this.searchTerm = ''; // toggles visibility of search results // searchTerm now a prop
 
-                this.$emit('updateAlreadyExists', false) // todo
+                this.setAlreadyExists(false);
             }
         }
 	}

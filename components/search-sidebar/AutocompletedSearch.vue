@@ -20,7 +20,7 @@
         </div>
 
         <div v-if="!searchLoading && (searchTerm !== '')" class="autocompleted-search__results">
-            <autocompleted-search-results :search-term="searchTerm" :already-exists="alreadyExists" @updateAlreadyExists="onUpdateAlreadyExists" />
+            <autocompleted-search-results :search-term="searchTerm" />
         </div>
         <div v-if="$nuxt.isOffline">No network connection available. You can track your time with a custom task instead.</div>
     </div>
@@ -41,22 +41,23 @@
         mixins: [searchAriaLabelMixin],
         data() {
             return {
-                searchTerm: '',
-                searchLoading: false,
-                alreadyExists: false
+                searchTerm: '', // todo
+                searchLoading: false, // todo
             }
         },
         computed: {
             ...mapState({
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
-                isTimerActive: state => state.moduleUser.isTimerActive
+                isTimerActive: state => state.moduleUser.isTimerActive,
+                alreadyExists: state => state.moduleUser.alreadyExists
             })
         },
         methods: {
             ...mapMutations({
                 setSearchResult: 'moduleUser/setSearchResult', // todo
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
-                setActiveTicket: 'moduleUser/setActiveTicket'
+                setActiveTicket: 'moduleUser/setActiveTicket',
+                setAlreadyExists: 'moduleUser/setAlreadyExists'
             }),
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
@@ -64,7 +65,7 @@
             }),
             resetSearch: function () { // todo
                 this.searchTerm = '';
-                if (this.alreadyExists) this.onUpdateAlreadyExists(false);
+                if (this.alreadyExists) this.setAlreadyExists(false);
                 this.setSearchResult([]);
             },
             requestSearch: _.debounce(function () { // todo
@@ -88,13 +89,10 @@
                                 }
                             })
                     } else {
-                        this.onUpdateAlreadyExists(true);
+                        this.setAlreadyExists(true);
                     }
                 }
-            }, 1100),
-            onUpdateAlreadyExists: function (exists) {
-                this.alreadyExists = exists;
-            }
+            }, 1100)
         }
     }
 </script>

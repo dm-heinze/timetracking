@@ -9,6 +9,7 @@ export const state = () => ({
     searchResults: [],
     searchTerm: '',
     searchLoading: false,
+    alreadyExists: false, // searchTerm matches ticketId pattern & searchTerm already in state.prefilledSearchSuggestions
     isTimerActive: false,
     allExistingProjects: [],
     selectedProject: '',
@@ -44,6 +45,9 @@ export const getters = {
 }
 
 export const mutations = {
+    setAlreadyExists: (state, payload) => {
+        state.alreadyExists = payload; // payload of type bool
+    },
     updateErrorOccurred: (state, payload) => {
         state.errorOccurred = payload;
     },
