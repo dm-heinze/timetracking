@@ -41,21 +41,7 @@
 
                     <ticket-deletion :unique-id="uniqueId" :task-summary="taskSummary" :task-key="taskKey" :assigned-to-ticket="assignedToTicket" />
 
-                    <div class="selected-ticket__tracked-time d-flex align-items-center justify-content-between">
-                        <div class="font-weight-bold pr-1">Total:</div>
-                        <div v-if="!editingTrackedTime" class="selected-ticket__tracked-time__displayed">{{ parsedTimeSpent }}</div>
-                        <div v-else class="selected-ticket__tracked-time__editing pl-2">
-                            <input type="time" step="1" :value="parsedTimeSpent" @input="saveEditedWorklogTimeSpent" @keyup.enter.prevent="activateEditModeForTrackedTime">
-                        </div>
-                        <button v-if="!booked"
-                                class="btn--edit"
-                                :class="{ 'disabled': (isTimerActive && (activeTicket === uniqueId)) }"
-                                :disabled="(isTimerActive && (activeTicket === uniqueId))"
-                                @click.prevent="activateEditModeForTrackedTime">
-                            <edit2-icon v-if="!editingTrackedTime" />
-                            <check-icon v-else />
-                        </button>
-                    </div>
+                    <ticket-time-spent :time-spent="timeSpent" :unique-id="uniqueId" :booked="booked" />
                 </div>
             </div>
         </div>
@@ -69,12 +55,13 @@
 <script>
     import _ from "lodash";
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { Edit2Icon, SaveIcon, PlayCircleIcon, PauseCircleIcon, CheckIcon } from 'vue-feather-icons';
+    import { Edit2Icon, SaveIcon, PlayCircleIcon, PauseCircleIcon } from 'vue-feather-icons';
     import TicketAssignment from "~/components/main/tasks/task/TicketAssignment";
     import TicketDeletion from "~/components/main/tasks/task/TicketDeletion";
     import TicketComment from "~/components/main/tasks/task/TicketComment";
     import TicketErrorMessages from "~/components/main/tasks/task/TicketErrorMessages";
     import PushSingleTask from "~/components/main/tasks/task/PushSingleTask";
+    import TicketTimeSpent from "~/components/main/tasks/task/TicketTimeSpent";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
     Vue.use(vClickOutside);
@@ -83,8 +70,8 @@
     export default {
         name: "SelectedTask",
         components: {
-            TicketErrorMessages, TicketComment, TicketDeletion, TicketAssignment, PushSingleTask,
-            SaveIcon, Edit2Icon, PlayCircleIcon, PauseCircleIcon, CheckIcon
+            TicketTimeSpent, TicketErrorMessages, TicketComment, TicketDeletion, TicketAssignment, PushSingleTask,
+            SaveIcon, Edit2Icon, PlayCircleIcon, PauseCircleIcon
         },
         props: {
             taskKey: {
@@ -127,7 +114,6 @@
                 runningTimer: '',
                 startTime: '',
                 endTime: '',
-                editingTrackedTime: false,
                 markedAsActive: false,
                 editingName: false,
                 localEditedName: '',
@@ -144,18 +130,6 @@
                 editingCustomTask: state => state.moduleUser.editingCustomTask,
                 logoutInProgress: state => state.moduleUser.logoutInProgress
             }),
-            parsedTimeSpent () {
-                const helperDate = new Date();
-
-                // timeSpent is saved in milliseconds to the localStorage
-                // Date object used to automatically get the correct calculation for the hh:mm:ss representation of milliseconds value
-                const dateFromTimeSpentValue = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), 0, 0,0, this.timeSpent);
-
-                const dateFromTimeSpentValueTimeTimeString =  dateFromTimeSpentValue.toTimeString();
-
-                // remove the date portion
-                return dateFromTimeSpentValueTimeTimeString.slice(0, 8);
-            },
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
             }
@@ -175,27 +149,6 @@
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
             }),
-            saveEditedWorklogTimeSpent: _.debounce(function (event) {
-                const editedTimeSpent = event.target.value; // received val may be string of shape hh:mm or hh:mm:ss
-
-                let editedTimeSpentTimeStringArray = editedTimeSpent.split(":");
-
-                const helperDate = new Date();
-
-                // if milliseconds === 00, then the received event.target.value is of shape hh:mm only
-                editedTimeSpentTimeStringArray[2] = Number(editedTimeSpentTimeStringArray[2]) ? Number(editedTimeSpentTimeStringArray[2]) : 0;
-
-                const dateFromParsedStartTime = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), 0, 0, 0, 0); // todo: rename dateFromParsedStartTime
-
-                const dateFromEditedTimeSpentTimeStringArray = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), editedTimeSpentTimeStringArray[0], editedTimeSpentTimeStringArray[1], editedTimeSpentTimeStringArray[2], 0);
-
-                // update state & vuex store & localStorage
-                this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: dateFromEditedTimeSpentTimeStringArray.getTime() - dateFromParsedStartTime.getTime() }); // todo: rename dateFromParsedStartTime
-                this.saveSelectedTasksToStorage();
-            }, 1000),
-            activateEditModeForTrackedTime: function () {
-                this.editingTrackedTime = !this.editingTrackedTime;
-            },
             toggleNameEditingClassic: function (cancelEdit = false) {
                 if (cancelEdit === false) this.updateEditingCustomTask({ activeTaskId: this.uniqueId });
 
