@@ -45,6 +45,12 @@ export const getters = {
 }
 
 export const mutations = {
+    setBookedAt: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.taskToSetBookedAt) __selectedTask.bookedAt = _.now();
+            return __selectedTask;
+        })
+    },
     setAlreadyExists: (state, payload) => {
         state.alreadyExists = payload; // payload of type bool
     },
@@ -297,6 +303,8 @@ export const actions = {
                 .then(() => {
                     commit('markTaskAsBooked', { taskToMarkAsBooked: payload.uniqueId });
 
+                    commit('setBookedAt', { taskToSetBookedAt: payload.uniqueId }); // previously booked items won't have this field set in this step! (previous as in previous implementation)
+
                     dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                 })
                 .catch((err) => {
@@ -331,7 +339,12 @@ export const actions = {
                             if (!__selectedTask.booked) await axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
                         }))
                             .then(() => {
-                                state.selectedTasks.forEach((__bookedTask) => commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId }));
+                                // note: previously booked items won't have the field 'bookedAt' set in this step!
+                                // (previous as in previous implementation)
+                                state.selectedTasks.forEach((__bookedTask) => {
+                                    commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId })
+                                    commit('setBookedAt', { taskToSetBookedAt: __bookedTask.uniqueId })
+                                });
 
                                 dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                             })
@@ -595,13 +608,29 @@ export const actions = {
                 })
         })
     },
-    retrieveSelectedTasksFromStorage: function({ commit }) {
+    retrieveSelectedTasksFromStorage: function({ commit, dispatch }) { // todo
         return new Promise((resolve, reject) => {
             this.$localForage.getItem('SELECTEDTASKS').then((__result) => {
                 if (!_.isEmpty(__result)) {
-                    commit('setSelectedTasks', __result);
+                    // const expirationDuration = 5 * 24 * 60 * 60 * 1000; // 5 days in milliseconds - bc val of 'bookedAt' is in milliseconds // todo: actual val to be used in prod
+                    const expirationDuration = 72000; // 1.2 minutes in milliseconds // todo: val for testing purposes
 
-                    resolve();
+                    // important: previously booked items won't have the field 'bookedAt' set!
+                    // -> delete silently if the field does not exist for booked tasks
+                    // general note: only SOME TASKS will have the 'bookedAt' field: when being booked the field 'bookedAt' gets added
+                    // if the item is either not booked yet or booked but not expired yet leave in list
+                    // - everything else will be deleted from localStorage & never sent to vuex store
+                    const __removedExpiredBookedTasks = __result.filter((__task) =>
+                        // using hasOwnProperty in condition will delete previously booked items (previous as in previous implementation)
+                        (__task.booked && __task.hasOwnProperty('bookedAt') && ((__task.bookedAt + expirationDuration) > _.now())) || !__task.booked
+                    )
+
+                    // set vuex store state
+                    commit('setSelectedTasks', __removedExpiredBookedTasks);
+
+                    // save vuex store state to localStorage
+                    // anything (booked && expired) will now be completely removed from selectedTasks list:
+                    dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                 } else {
                     resolve();
                 }
