@@ -50,6 +50,9 @@ export const mutations = {
     toggleSuggestions: (state, value) => {
         state.showSuggestions = !state.showSuggestions;
     },
+    setShowSuggestions: (state, value) => {
+        state.showSuggestions = value;
+    },
     setBookedAt: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
             if (__selectedTask.uniqueId === value.taskToSetBookedAt) __selectedTask.bookedAt = _.now();
@@ -244,6 +247,30 @@ export const mutations = {
 };
 
 export const actions = {
+    updateSelectionForSuggestions: function ({ state, commit }) {
+        return new Promise((resolve, reject) => {
+            commit('toggleSuggestions');
+
+            // save to storage // todo: extract in separate action
+            this.$localForage.setItem('VISIBILITY_SUGGESTIONS', state.showSuggestions)
+                .then(() => resolve())
+                .catch(() => reject())
+        })
+    },
+    retrieveSelectionForSuggestionsFromStorage: function({ state, commit }) {
+        return new Promise((resolve) => {
+            this.$localForage.getItem('VISIBILITY_SUGGESTIONS').then((__result) => {
+                if (__result !== undefined) { // todo!
+                    commit('setShowSuggestions', __result);
+
+                    resolve();
+                } else {
+                    commit('setShowSuggestions', true); // todo!
+                    resolve();
+                }
+            })
+        })
+    },
     saveBookmarksToStorage: function ({ state }) {
         return new Promise((resolve, reject) => {
             this.$localForage.setItem('BOOKMARKS', state.bookmarked)

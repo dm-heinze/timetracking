@@ -7,15 +7,15 @@
                 <div class="ticket__info__key font-weight-bold">Suggestions</div>
             </div>
             <div class="toggle-listing">
-                <toggle-right-icon class="ticket__icon align-self-center toggle-listing--show" @click="toggleSuggestions" v-if="showSuggestions" />
-                <toggle-left-icon class="ticket__icon align-self-center toggle-listing--hide" @click="toggleSuggestions" v-else />
+                <toggle-right-icon class="ticket__icon align-self-center toggle-listing--show" @click="updateSelectionForSuggestions" v-if="showSuggestions" />
+                <toggle-left-icon class="ticket__icon align-self-center toggle-listing--hide" @click="updateSelectionForSuggestions" v-else />
             </div>
         </b-list-group-item>
     </div>
 </template>
 
 <script>
-    import { mapState, mapMutations } from 'vuex';
+    import { mapState, mapActions } from 'vuex';
     import { ToggleLeftIcon, ToggleRightIcon } from 'vue-feather-icons';
     import { BListGroupItem } from "bootstrap-vue";
 
@@ -32,8 +32,8 @@
             })
         },
         methods: {
-            ...mapMutations({
-                toggleSuggestions: 'moduleUser/toggleSuggestions'
+            ...mapActions({
+                updateSelectionForSuggestions: 'moduleUser/updateSelectionForSuggestions'
             })
         }
     }
