@@ -5,11 +5,10 @@
         </div>
 
 
-        <h3 class="sidebar__title">Suggestions</h3>
-        <div v-if="smartPickedSuggestions.length !== 0"> <!-- todo: update condition if visibility configurable -->
+        <div v-if="showSuggestions && smartPickedSuggestions.length !== 0">
             <suggestions />
         </div>
-        <div v-else>No Search Results for This Query</div>
+        <div v-if="showSuggestions && smartPickedSuggestions.length === 0">No Search Results for This Query</div>
 
 
         <bookmarks-selectable />
@@ -18,17 +17,21 @@
 
 <script>
     import { mapState, mapGetters } from 'vuex';
-    import Suggestions from "~/components/search-sidebar/Suggestions"; // todo: dynamically import if visibility configurable
     import AssignedTickets from "~/components/search-sidebar/AssignedTickets"; // todo: dynamically import
     import BookmarksSelectable from "~/components/search-sidebar/BookmarksSelectable"; // todo
 
     export default {
         name: "SearchResults",
-        components: { AssignedTickets, Suggestions, BookmarksSelectable },
+        components: {
+            AssignedTickets,
+            Suggestions: () => import(/* webpackPrefetch: true */ '~/components/search-sidebar/Suggestions'), // pre-fetch when idle - todo
+            BookmarksSelectable
+        },
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
-                selectedTasks: state => state.moduleUser.selectedTasks
+                selectedTasks: state => state.moduleUser.selectedTasks,
+                showSuggestions: state => state.moduleUser.showSuggestions
             }),
             ...mapGetters({
                 assignedTickets: 'moduleUser/getAssignedTickets',

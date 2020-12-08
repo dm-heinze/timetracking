@@ -24,6 +24,7 @@ export const state = () => ({
     lastTicket: '',
     bookmarked: [],
     settingsOpen: false,
+    showSuggestions: true,
     showErrorMessages: false,
     errorOccurred: false, // todo
     editingCustomTask: '',
@@ -46,6 +47,9 @@ export const getters = {
 }
 
 export const mutations = {
+    toggleSuggestions: (state, value) => {
+        state.showSuggestions = !state.showSuggestions;
+    },
     setBookedAt: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
             if (__selectedTask.uniqueId === value.taskToSetBookedAt) __selectedTask.bookedAt = _.now();

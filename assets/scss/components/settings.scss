@@ -1,4 +1,22 @@
 #sidebar-settings {
+    .toggle-listing {
+        text-transform: uppercase;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        & circle {
+            fill: $primary;
+        }
+
+        &--show {
+            fill: $success !important; // added !important flag bc otherwise styles change on hover which hides current state
+        }
+        &--hide {
+            fill: $light-grey !important; // added !important flag bc otherwise styles change on hover which hides current state
+        }
+    }
 
     .autocompleted-search__container {
         padding-bottom: $sidebar-gap-small / 3;

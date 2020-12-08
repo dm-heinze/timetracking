@@ -13,6 +13,8 @@
         </div>
         <div v-else class="sidebar__title sidebar__title--no-bookmarks">No Bookmarks Saved.</div>
 
+        <toggle-optionals />
+
         <logout />
     </div>
 </template>
@@ -22,14 +24,14 @@
     import { XCircleIcon } from 'vue-feather-icons';
     import Logout from '~/components/settings-sidebar/Logout';
     import AutocompletedSearch from "~/components/settings-sidebar/AutocompletedSearch";
+    import ToggleOptionals from "~/components/settings-sidebar/ToggleOptionals";
 
 	export default {
 		name: "SettingsSidebar",
         components: {
-            AutocompletedSearch,
+            ToggleOptionals, AutocompletedSearch, Logout,
             XCircleIcon,
             BookmarksEditable: () => import('~/components/settings-sidebar/BookmarksEditable'),
-            Logout
         },
         computed: {
             ...mapState({
