@@ -1,3 +1,31 @@
+/* ------ todo -------- */
+.refresh--assignedTickets {
+    border: none;
+    background: transparent;
+    transition: all 0.3s ease-in-out;
+    outline: none;
+    color: $primary;
+    margin-top: $sidebar-gap-large; // todo!
+    padding-bottom: 10px; // todo!
+
+    &.disabled {
+        color: $light-grey;
+    }
+
+    &:hover {
+        color: $secondary;
+
+        &.disabled {
+            cursor: not-allowed;
+        }
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+/* ------ todo: endOfTodo -------- */
+
 /*===  SelectedTasks.vue  ===*/
 .selected-tickets__container {
     ul {

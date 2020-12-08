@@ -1,6 +1,11 @@
 <template>
     <div>
-        <h3 class="sidebar__title">Assigned Tickets</h3>
+        <div class="d-flex justify-content-between">
+            <h3 class="sidebar__title">Assigned Tickets</h3>
+            <button @click="refreshAssignedTickets" class="refresh--assignedTickets pl-2"> <!-- todo? v-b-tooltip.hover title="Get Latest" -->
+                <download-cloud-icon />
+            </button>
+        </div>
         <b-list-group>
             <b-list-group-item
                 v-for="assignedTicket in assignedTickets"
@@ -20,22 +25,31 @@
 </template>
 
 <script>
-    import { mapGetters, mapActions } from 'vuex';
-	import { PlusCircleIcon } from "vue-feather-icons";
+    import { mapState, mapGetters, mapActions } from 'vuex';
+	import { PlusCircleIcon, DownloadCloudIcon } from "vue-feather-icons";
     import { BListGroup, BListGroupItem } from "bootstrap-vue";
 
     export default {
 		name: "AssignedTickets",
-        components: { PlusCircleIcon, BListGroupItem, BListGroup },
+        components: {
+		    PlusCircleIcon, DownloadCloudIcon,
+            BListGroupItem, BListGroup
+        },
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
+		    ...mapState({
+                assignedTickets: state => state.moduleUser.assignedTickets
+            }),
             ...mapGetters({
-                assignedTickets: 'moduleUser/getAssignedTickets'
+                // todo: flagged for possible deprecation
+                // filtered from aggregated search & request results
+                getAssignedTickets: 'moduleUser/getAssignedTickets'
             })
         },
         methods: {
 		    ...mapActions({
-                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+                addToSelectedIssues: 'moduleUser/addToSelectedIssues',
+                refreshAssignedTickets: 'moduleUser/refreshAssignedTickets'
             })
         }
 	}

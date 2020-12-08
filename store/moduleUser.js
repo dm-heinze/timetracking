@@ -20,6 +20,7 @@ export const state = () => ({
     accumulatedBreakTime: '00:00:00',
     selectedTasks: [],
     prefilledSearchSuggestions: [],
+    assignedTickets: [],
     lastTicket: '',
     bookmarked: [],
     settingsOpen: false,
@@ -39,7 +40,7 @@ export const getters = {
     getSmartPickedSuggestions: (state) => {
         return _.slice(state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee !== state.currentUser.name), 0, 5) // end excluded
     },
-    getAssignedTickets: (state) => {
+    getAssignedTickets: (state) => { // todo: flagged for possible deprecation
         return state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee === state.currentUser.name)
     }
 }
@@ -147,6 +148,30 @@ export const mutations = {
         // check needed to prevent duplication from aggregated search results for assigned & picked issues
         const isAlreadyInSuggestions = state.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === value.key).length !== 0;
         if (!isAlreadyInSuggestions) state.prefilledSearchSuggestions.push(value);
+    },
+    // needed bc if on refreshing assignedTickets, a ticket previously part of suggestions, may need to get removed from that listing
+    updatePrefilledSearchSuggestions: (state, value) => {
+        // for every assignedTicket check if included in prefilledSearchSuggestions array
+        // if included check if the assignee field == currentUser
+        // if not - set it to the currentUser
+        // bc -> assignee may be empty but should be currentUser.name:
+        // if key already in prefilledSearchSuggestion the updated object will not be added to it by mutation addToPrefilledSearchSuggestions
+        // bc -> the endpoint for smartPickedIssues does not return the assignee field for found issues
+        state.assignedTickets.forEach((__assignedTicket) => {
+            const __indexToUpdate = state.prefilledSearchSuggestions.findIndex((__searchSuggestion) => __searchSuggestion.key === __assignedTicket.key);
+
+            if (state.prefilledSearchSuggestions[__indexToUpdate].assignee !== state.currentUser.name) {
+                state.prefilledSearchSuggestions[__indexToUpdate].assignee = state.currentUser.name;
+            }
+
+            // bc summary field may have changed between being viewed & being displayed as a smart picked search suggestion and being assigned as a ticket
+            if (state.prefilledSearchSuggestions[__indexToUpdate].summary !== __assignedTicket.summary) {
+                state.prefilledSearchSuggestions[__indexToUpdate].summary =  __assignedTicket.summary;
+            }
+        })
+    },
+    setAssignedTickets : (state, value) => {
+        state.assignedTickets = value;
     },
     updateOrderSearchSuggestions: (state) => {
         state.prefilledSearchSuggestions = _.reverse(state.prefilledSearchSuggestions);
@@ -637,6 +662,39 @@ export const actions = {
             })
         })
     },
+    refreshAssignedTickets: function ({commit, state, dispatch}, payload) {
+        return new Promise((resolve, reject) => {
+            dispatch('requestAssignedTickets')
+                .then((__res) => {
+                    const __parsedAssignedIssues = __res.issues.map((__issue, index) => { // todo
+                        return {
+                            key: __issue.key,
+                            id: __issue.id,
+                            summary: __issue.fields.summary, // todo
+                            assignee: __issue.fields.assignee.name,
+                            // avatarUrl: __issue.fields.project.avatarUrls['16x16']
+                            issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + __issue.key,
+                            comment: '',
+                            timeSpent: 0,
+                            startTime: '',
+                            endTime: '',
+                            assignedToTicket: true,
+                            booked: false,
+                            uniqueId: _.now() + index // todo
+                        }
+                    });
+                    __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
+
+                    commit('setAssignedTickets', __parsedAssignedIssues);
+
+                    commit('updatePrefilledSearchSuggestions');
+                })
+                .catch((err) => {
+                    console.log("An err occurred");
+                    reject(err);
+                })
+        })
+    },
     requestSmartPickedIssues: function ({ state }) {
         return new Promise((resolve, reject) => {
             axios({ method: 'post', baseURL: __base_url, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
@@ -657,16 +715,16 @@ export const actions = {
                 })
         })
     },
-    requestPrefill: function ({ commit, dispatch }) {
+    requestPrefill: function ({ state, commit, dispatch }) {
         return new Promise(async (resolve, reject) => {
             try {
                 const [ assignedTickets, smartPickedIssues ] = await Promise.all([ dispatch('requestAssignedTickets'), dispatch('requestSmartPickedIssues') ]);
 
 
                 // assignedTickets
-                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name }); // used to filter for assignedTickets without the need for an extra array
+                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name }); // used to filter for assignedTickets without the need for an extra array // todo
 
-                const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => {
+                const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => { // todo
                     return {
                         key: __issue.key,
                         id: __issue.id,
@@ -683,7 +741,10 @@ export const actions = {
                         uniqueId: _.now() + index // todo
                     }
                 });
-                __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue));
+
+                __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
+
+                commit('setAssignedTickets', __parsedAssignedIssues);
 
 
                 // smartPickedIssues
@@ -703,7 +764,9 @@ export const actions = {
                         uniqueId: _.now() + index // todo
                     }
                 })
+
                 __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue));
+
 
                 resolve();
             } catch (err) {
