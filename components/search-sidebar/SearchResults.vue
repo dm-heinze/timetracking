@@ -5,10 +5,14 @@
         </div>
 
 
-        <div v-if="showSuggestions && smartPickedSuggestions.length !== 0">
-            <suggestions />
-        </div>
-        <div v-if="showSuggestions && smartPickedSuggestions.length === 0">No Search Results for This Query</div>
+        <client-only>
+            <div v-if="showSuggestions && smartPickedSuggestions.length !== 0">
+                <suggestions />
+            </div>
+        </client-only>
+        <client-only>
+            <div v-if="showSuggestions && smartPickedSuggestions.length === 0">No Search Results for This Query</div> <!-- todo: move to comp Suggestions.vue -->
+        </client-only>
 
 
         <bookmarks-selectable />
