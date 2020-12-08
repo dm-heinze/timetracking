@@ -1,8 +1,8 @@
 <template>
     <button v-b-modal="`confirm-push-time-singleTaskOnly-${uniqueId}`"
-            :disabled="isTimerActive || !taskWorklogComment || !timeSpent || booked || !assignedToTicket"
+            :disabled="(isTimerActive && activeTicket === uniqueId) || !taskWorklogComment || !timeSpent || booked || !assignedToTicket"
             class="px-2"
-            :class="{ 'disabled': isTimerActive || !taskWorklogComment || !timeSpent || booked || !assignedToTicket }">
+            :class="{ 'disabled': (isTimerActive && activeTicket === uniqueId) || !taskWorklogComment || !timeSpent || booked || !assignedToTicket }">
         <upload-cloud-icon />
 
         <b-modal :id="`confirm-push-time-singleTaskOnly-${uniqueId}`" centered>
@@ -59,7 +59,8 @@
         },
         computed: {
             ...mapState({
-                isTimerActive: state => state.moduleUser.isTimerActive
+                isTimerActive: state => state.moduleUser.isTimerActive,
+                activeTicket: state => state.moduleUser.activeTicket
             })
         },
         methods: {
