@@ -117,7 +117,7 @@
                         </b-modal>
                     </button>
 
-                    <button v-b-modal="`confirm-deletion-modal-${uniqueId}`" class="px-2">
+                    <button v-b-modal="`confirm-deletion-modal-${uniqueId}`" class="px-2" :disabled="isTimerActive && (activeTicket === uniqueId)" :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId) }">
                         <trash2-icon />
                     </button>
                     <b-modal :id="`confirm-deletion-modal-${uniqueId}`" centered>
