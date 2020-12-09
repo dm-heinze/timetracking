@@ -17,7 +17,7 @@ const response = function (request, response) {
             method: 'POST', // use POST to get the assigned tickets only
             baseURL: process.env.BASE_DOMAIN,
             url: process.env.ENDPOINT_REST + 'search',
-            data: { jql: jqlSearchString },
+            data: { jql: jqlSearchString, fields: ['summary', 'assignee'] }, // todo
             headers: parsedDataObject.headers,
         })
             .then((__response) => {

@@ -17,7 +17,7 @@ const response = function (request, response) {
             method: 'POST',
             baseURL: process.env.BASE_DOMAIN,
             url: process.env.ENDPOINT_REST + 'search',
-            data: { jql: jqlSearchString },
+            data: { jql: jqlSearchString, fields: ['summary'] }, // todo
             headers: parsedDataObject.headers,
         })
             .then((__response) => {
