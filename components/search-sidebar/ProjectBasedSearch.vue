@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <autocompleted-search class="mb-2" />
+	<div>
         <div class="select__container mb-2">
             <b-form-select v-model="selectedProject" class="rounded-pill pl-4 pr-5" aria-label="search by project" :disabled="$nuxt.isOffline">
                 <b-form-select-option v-if="!allExistingProjects.length" disabled value="">Loading Projects...</b-form-select-option>
@@ -34,34 +33,22 @@
                 <b-button pill variant="primary" class="font-weight-bold px-4 py-2" @click.prevent="addSelectionToSelectedTasks()">Select</b-button>
             </div>
         </div>
-
-        <div class="result-wrp">
-            <div class="result-item">
-                <search-results/>
-            </div>
-        </div>
     </div>
 </template>
 
 <script>
     import { mapMutations, mapState, mapActions } from 'vuex';
-    import AutocompletedSearch from "./AutocompletedSearch";
-    import { ChevronDownIcon } from 'vue-feather-icons';
-    import { BFormSelect, BFormSelectOption } from 'bootstrap-vue';
-    import _ from 'lodash';
+    import { BFormSelect, BFormSelectOption } from "bootstrap-vue";
+    import { ChevronDownIcon } from "vue-feather-icons";
+    import _ from "lodash";
 
     export default {
-        name: "TheSearch",
-        components: {
-            AutocompletedSearch,
-            SearchResults: () => import('./SearchResults'),
-            ChevronDownIcon,
-            BFormSelect, BFormSelectOption
-        },
+		name: "ProjectBasedSearch",
+        components: { ChevronDownIcon, BFormSelect, BFormSelectOption },
         directives: { 'b-form-select': BFormSelect, 'b-form-select-option': BFormSelectOption },
         data() {
             return {
-                show: true,
+                show: true, // todo
                 selectedProject: '',
                 selectedTicket: '',
                 selectedTaskObject: {}
@@ -104,6 +91,7 @@
                 setSearchResult: 'moduleUser/setSearchResult',
                 addSelectedTask: 'moduleUser/addSelectedTask',
                 setSelectedProject: 'moduleUser/setSelectedProject',
+                setRelatedTickets: 'moduleUser/setRelatedTickets'
             }),
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
@@ -135,7 +123,8 @@
                 this.selectedTicket = '';
                 this.selectedProject = '';
                 this.setSelectedProject('');
+                this.setRelatedTickets([]);
             }
         }
-    }
+	}
 </script>

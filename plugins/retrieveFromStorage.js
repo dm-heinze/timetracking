@@ -4,6 +4,7 @@ export default async (context) => {
             await context.store.dispatch('moduleUser/retrieveSelectedTasksFromStorage', context),
             await context.store.dispatch('moduleUser/retrieveBreaksFromStorage', context),
             await context.store.dispatch('moduleUser/retrieveBookmarksFromStorage', context),
+            await context.store.dispatch('moduleUser/retrieveSelectionForSuggestionsFromStorage', context)
         ])
     }
 }

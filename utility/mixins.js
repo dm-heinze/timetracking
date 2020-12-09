@@ -7,3 +7,11 @@ export const searchAriaLabelMixin = {
         }
     }
 }
+
+export const mainButtonsFlexDirectionMixin = {
+    computed: {
+        flexDirection () {
+            return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
+        }
+    }
+}

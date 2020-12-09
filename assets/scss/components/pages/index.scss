@@ -1,3 +1,4 @@
+// error messages
 .message--error, .message--network-error {
     color: $danger;
     font-weight: bold;
@@ -5,6 +6,21 @@
 
 .message--network-error {
     font-weight: normal;
+}
+
+// transitions
+.toggle-enter-active, .toggle-leave-active {
+    transition: all .3s ease-in-out;
+}
+
+.toggle-enter, .toggle-leave-to {
+    opacity: 0;
+    left: -100%;
+}
+
+.toggle-enter-to, .toggle-leave {
+    opacity: 1;
+    left: 0;
 }
 
 .overview {

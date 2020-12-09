@@ -13,7 +13,8 @@ const response = function (request, response) {
 
         axios({
             method: 'GET',
-            url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'issue/picker',
+            baseURL: process.env.BASE_DOMAIN,
+            url: process.env.ENDPOINT_REST + 'issue/picker',
             params: { showSubTasks: true },
             headers: parsedDataObject.headers,
         })

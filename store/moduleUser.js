@@ -1,11 +1,15 @@
 import axios from 'axios';
 import _ from 'lodash';
 import base64 from 'base-64';
+import { __base_url } from "../utility/constants";
 
 export const state = () => ({
     sessionObject: {}, // currently has 2 fields: name & value,
     currentUser: {},
     searchResults: [],
+    searchTerm: '',
+    searchLoading: false,
+    alreadyExists: false, // searchTerm matches ticketId pattern & searchTerm already in state.prefilledSearchSuggestions
     isTimerActive: false,
     allExistingProjects: [],
     selectedProject: '',
@@ -16,10 +20,13 @@ export const state = () => ({
     accumulatedBreakTime: '00:00:00',
     selectedTasks: [],
     prefilledSearchSuggestions: [],
+    assignedTickets: [],
     lastTicket: '',
     bookmarked: [],
     settingsOpen: false,
+    showSuggestions: true,
     showErrorMessages: false,
+    errorOccurred: false, // todo
     editingCustomTask: '',
     logoutInProgress: false
 });
@@ -30,10 +37,34 @@ export const getters = {
             'Content-Type': 'application/json',
             cookie: `JSESSIONID=${state.sessionObject.value}`,
         }
+    },
+    getSmartPickedSuggestions: (state) => {
+        return _.slice(state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee !== state.currentUser.name), 0, 5) // end excluded
+    },
+    getAssignedTickets: (state) => { // todo: flagged for possible deprecation
+        return state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee === state.currentUser.name)
     }
 }
 
 export const mutations = {
+    toggleSuggestions: (state, value) => {
+        state.showSuggestions = !state.showSuggestions;
+    },
+    setShowSuggestions: (state, value) => {
+        state.showSuggestions = value;
+    },
+    setBookedAt: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.taskToSetBookedAt) __selectedTask.bookedAt = _.now();
+            return __selectedTask;
+        })
+    },
+    setAlreadyExists: (state, payload) => {
+        state.alreadyExists = payload; // payload of type bool
+    },
+    updateErrorOccurred: (state, payload) => {
+        state.errorOccurred = payload;
+    },
     logoutStarted: (state, payload) => {
         state.logoutInProgress = payload;
     },
@@ -80,6 +111,12 @@ export const mutations = {
     setSearchResult: (state, value) => {
         state.searchResults = value;
     },
+    setSearchTerm: (state, value) => {
+        state.searchTerm = value;
+    },
+    setSearchLoading: (state, value) => {
+        state.searchLoading = value;
+    },
     setIsTimerActive: (state, value) => {
         state.isTimerActive = !(state.isTimerActive);
     },
@@ -118,6 +155,30 @@ export const mutations = {
         // check needed to prevent duplication from aggregated search results for assigned & picked issues
         const isAlreadyInSuggestions = state.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === value.key).length !== 0;
         if (!isAlreadyInSuggestions) state.prefilledSearchSuggestions.push(value);
+    },
+    // needed bc if on refreshing assignedTickets, a ticket previously part of suggestions, may need to get removed from that listing
+    updatePrefilledSearchSuggestions: (state, value) => {
+        // for every assignedTicket check if included in prefilledSearchSuggestions array
+        // if included check if the assignee field == currentUser
+        // if not - set it to the currentUser
+        // bc -> assignee may be empty but should be currentUser.name:
+        // if key already in prefilledSearchSuggestion the updated object will not be added to it by mutation addToPrefilledSearchSuggestions
+        // bc -> the endpoint for smartPickedIssues does not return the assignee field for found issues
+        state.assignedTickets.forEach((__assignedTicket) => {
+            const __indexToUpdate = state.prefilledSearchSuggestions.findIndex((__searchSuggestion) => __searchSuggestion.key === __assignedTicket.key);
+
+            if (state.prefilledSearchSuggestions[__indexToUpdate].assignee !== state.currentUser.name) {
+                state.prefilledSearchSuggestions[__indexToUpdate].assignee = state.currentUser.name;
+            }
+
+            // bc summary field may have changed between being viewed & being displayed as a smart picked search suggestion and being assigned as a ticket
+            if (state.prefilledSearchSuggestions[__indexToUpdate].summary !== __assignedTicket.summary) {
+                state.prefilledSearchSuggestions[__indexToUpdate].summary =  __assignedTicket.summary;
+            }
+        })
+    },
+    setAssignedTickets : (state, value) => {
+        state.assignedTickets = value;
     },
     updateOrderSearchSuggestions: (state) => {
         state.prefilledSearchSuggestions = _.reverse(state.prefilledSearchSuggestions);
@@ -186,6 +247,30 @@ export const mutations = {
 };
 
 export const actions = {
+    updateSelectionForSuggestions: function ({ state, commit }) {
+        return new Promise((resolve, reject) => {
+            commit('toggleSuggestions');
+
+            // save to storage // todo: extract in separate action
+            this.$localForage.setItem('VISIBILITY_SUGGESTIONS', state.showSuggestions)
+                .then(() => resolve())
+                .catch(() => reject())
+        })
+    },
+    retrieveSelectionForSuggestionsFromStorage: function({ state, commit }) {
+        return new Promise((resolve) => {
+            this.$localForage.getItem('VISIBILITY_SUGGESTIONS').then((__result) => {
+                if (__result !== undefined) { // todo!
+                    commit('setShowSuggestions', __result);
+
+                    resolve();
+                } else {
+                    commit('setShowSuggestions', true); // todo!
+                    resolve();
+                }
+            })
+        })
+    },
     saveBookmarksToStorage: function ({ state }) {
         return new Promise((resolve, reject) => {
             this.$localForage.setItem('BOOKMARKS', state.bookmarked)
@@ -233,11 +318,49 @@ export const actions = {
             })
         })
     },
+    toggleBookmarked: function ({ state, commit, dispatch }, payload) {
+        return new Promise(async (resolve, reject) => {
+            // summary default==='' -> no val may be passed in
+            commit('updateBookmarks', { bookmark: payload.searchResultToBeToggled, summary: payload.summary ? payload.summary : '' });
+
+            dispatch('saveBookmarksToStorage').then(() => resolve()).catch(() => reject());
+        })
+    },
+    addToSelectedIssues: function ({ state, commit, dispatch }, payload) {
+        return new Promise(async (resolve, reject) => {
+            let __selection;
+
+            if (payload.fromSearchResults) {
+                __selection = _.cloneDeep(payload.selectedTicket);
+                __selection.uniqueId = _.now();
+            } else {
+                __selection = {
+                    assignedToTicket: true,
+                    uniqueId: _.now(),
+                    key: payload.selectedTicket.key,
+                    issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + payload.selectedTicket.key,
+                    summary: payload.selectedTicket.summary,
+                    comment: '',
+                    timeSpent: 0,
+                    startTime: '',
+                    endTime: '',
+                    booked: false,
+                    assignee: '' // todo!
+                };
+            }
+
+            commit('addSelectedTask', __selection);
+
+            dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
+        })
+    },
     requestSavingSingleWorklog: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
-            axios.post('/api/addWorklog', { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId })
+            axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: payload.comment, timeSpentSeconds: payload.timeSpentSeconds, ticketId: payload.ticketId }})
                 .then(() => {
                     commit('markTaskAsBooked', { taskToMarkAsBooked: payload.uniqueId });
+
+                    commit('setBookedAt', { taskToSetBookedAt: payload.uniqueId }); // previously booked items won't have this field set in this step! (previous as in previous implementation)
 
                     dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                 })
@@ -270,40 +393,39 @@ export const actions = {
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            if (!__selectedTask.booked) await axios.post('/api/addWorklog', { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key })
+                            if (!__selectedTask.booked) await axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
                         }))
                             .then(() => {
-                                state.selectedTasks.forEach((__bookedTask) => commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId }));
+                                // note: previously booked items won't have the field 'bookedAt' set in this step!
+                                // (previous as in previous implementation)
+                                state.selectedTasks.forEach((__bookedTask) => {
+                                    commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId })
+                                    commit('setBookedAt', { taskToSetBookedAt: __bookedTask.uniqueId })
+                                });
 
                                 dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                             })
-                            .catch(() => reject()); // todo
+                            .catch((err) => {
+                                console.log("err occurred: ", err);
+
+                                if (err.response) {
+                                    if (err.response.status === 401) {
+                                        if (state.isTimerActive) commit('logoutStarted', true);
+                                        dispatch('stopTrackers')
+                                            .then(() => {
+                                                // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                                                dispatch('resetState')
+                                                    .then(() => reject(err))
+                                                    .catch(() => reject(err));
+                                            })
+                                            .catch(() => reject(err)) // todo
+                                    } else reject(err);
+                                } else reject(err);
+                            });
                     } catch (err) {
-                        console.log("err occurred in requestSavingWorklogs");
-                        if (err.response) {
-                            if (err.response.status === 401) {
-                                // todo?
+                        console.log("err occurred in requestSavingWorklogs: ", err);
 
-                                reject(err);
-                            } else reject(err);
-                        } else reject(err);
-
-                        // todo: differentiate between 401 & other errors -> needs adjustment in caller component
-                        /* if (err.response) {
-                            if (err.response.status === 401) {
-                                if (state.isTimerActive) commit('logoutStarted', true);
-                                dispatch('stopTrackers')
-                                    .then(() => {
-                                        // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
-                                        dispatch('resetState')
-                                            .then(() => reject(err))
-                                            .catch(() => reject(err));
-                                    })
-                                    .catch(() => reject(err)) // todo
-
-                                reject(err.response.status);
-                            } else reject(err);
-                        } else reject(err);*/
+                        reject(err); // todo
                     }
                 }
             } else {
@@ -331,6 +453,11 @@ export const actions = {
 
             resolve();
         })
+    },
+    resetSearch: function({ commit, state }, payload) {
+        commit('setSearchTerm', '');
+        commit('setSearchResult', []);
+        if (payload.close) commit('toggleSettings');
     },
     stopTrackers: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => { // todo
@@ -372,7 +499,7 @@ export const actions = {
     },
     requestSessionRemoval: function({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
-            axios.delete('/api/logout', { params: { value: state.sessionObject.value } })
+            axios({ method: 'delete', baseURL: __base_url, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
                 .then((_response) => {
                     if (_response.data.status === 204) {
                         commit('logoutStarted', true);
@@ -398,8 +525,7 @@ export const actions = {
     },
     createApiObject: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
-
-            axios.post('/api/login', { username: payload.data.name, password: payload.data.pass })
+            axios({ method: 'post', baseURL: __base_url, url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
                 .then(async (response) => {
                     if (response.data) { // todo
                         commit('setSessionObject', response.data);
@@ -430,8 +556,7 @@ export const actions = {
     },
     getIssue: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-
-            axios.post('/api/getTickets', { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name })
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
                 .then((__res) => {
                     if (__res.data.issues.length !== 0) {
                         const searchResults =__res.data.issues.map((__issueInSearchResult, index) => {
@@ -493,37 +618,19 @@ export const actions = {
         return new Promise((resolve, reject) => {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
-                if (process.server) {
-                    axios({
-                        method: 'GET',
-                        url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'project',
-                        headers: getters.getHeader(state),
+                axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
+                    .then((__res) => {
+                        commit('setExistingProjects', __res.data);
+
+                        resolve();
                     })
-                        .then((__response) => {
-                            const stringifiedResponse = JSON.stringify(__response.data);
-
-                            commit('setExistingProjects', JSON.parse(stringifiedResponse));
-
-                            resolve();
-                        })
-                        .catch((err) => reject(err))
-                } else {
-                    axios.post('/api/getProjects', { headers: getters.getHeader(state) })
-                        .then((__res) => {
-                            commit('setExistingProjects', __res.data);
-
-                            resolve();
-                        })
-                        .catch((err) => reject(err))
-                }
-            } else {
-                resolve();
+                    .catch((err) => reject(err))
             }
         })
     },
     requestRelatedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/getProjectRelatedTickets', { headers: getters.getHeader(state), selectedProject: state.selectedProject })
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getProjectRelatedTickets`, data: { headers: getters.getHeader(state), selectedProject: state.selectedProject }})
                 .then((__res) => {
                     const __relatedTickets = __res.data.issues.map((__ticket) =>  {
                         return {
@@ -558,82 +665,98 @@ export const actions = {
                 })
         })
     },
-    retrieveSelectedTasksFromStorage: function({ commit }) {
+    retrieveSelectedTasksFromStorage: function({ commit, dispatch }) { // todo
         return new Promise((resolve, reject) => {
             this.$localForage.getItem('SELECTEDTASKS').then((__result) => {
                 if (!_.isEmpty(__result)) {
-                    commit('setSelectedTasks', __result);
+                    // const expirationDuration = 5 * 24 * 60 * 60 * 1000; // 5 days in milliseconds - bc val of 'bookedAt' is in milliseconds // todo: actual val to be used in prod
+                    const expirationDuration = 72000; // 1.2 minutes in milliseconds // todo: val for testing purposes
 
-                    resolve();
+                    // important: previously booked items won't have the field 'bookedAt' set!
+                    // -> delete silently if the field does not exist for booked tasks
+                    // general note: only SOME TASKS will have the 'bookedAt' field: when being booked the field 'bookedAt' gets added
+                    // if the item is either not booked yet or booked but not expired yet leave in list
+                    // - everything else will be deleted from localStorage & never sent to vuex store
+                    const __removedExpiredBookedTasks = __result.filter((__task) =>
+                        // using hasOwnProperty in condition will delete previously booked items (previous as in previous implementation)
+                        (__task.booked && __task.hasOwnProperty('bookedAt') && ((__task.bookedAt + expirationDuration) > _.now())) || !__task.booked
+                    )
+
+                    // set vuex store state
+                    commit('setSelectedTasks', __removedExpiredBookedTasks);
+
+                    // save vuex store state to localStorage
+                    // anything (booked && expired) will now be completely removed from selectedTasks list:
+                    dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                 } else {
                     resolve();
                 }
             })
         })
     },
+    refreshAssignedTickets: function ({commit, state, dispatch}, payload) {
+        return new Promise((resolve, reject) => {
+            dispatch('requestAssignedTickets')
+                .then((__res) => {
+                    const __parsedAssignedIssues = __res.issues.map((__issue, index) => { // todo
+                        return {
+                            key: __issue.key,
+                            id: __issue.id,
+                            summary: __issue.fields.summary, // todo
+                            assignee: __issue.fields.assignee.name,
+                            // avatarUrl: __issue.fields.project.avatarUrls['16x16']
+                            issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + __issue.key,
+                            comment: '',
+                            timeSpent: 0,
+                            startTime: '',
+                            endTime: '',
+                            assignedToTicket: true,
+                            booked: false,
+                            uniqueId: _.now() + index // todo
+                        }
+                    });
+                    __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
+
+                    commit('setAssignedTickets', __parsedAssignedIssues);
+
+                    commit('updatePrefilledSearchSuggestions');
+                })
+                .catch((err) => {
+                    console.log("An err occurred");
+                    reject(err);
+                })
+        })
+    },
     requestSmartPickedIssues: function ({ state }) {
         return new Promise((resolve, reject) => {
-
-            if (process.server) {
-                axios({
-                    method: 'GET',
-                    url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'issue/picker',
-                    params: { showSubTasks: true },
-                    headers: getters.getHeader(state),
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
+                .then((__res) => resolve(__res.data))
+                .catch((err) => {
+                    if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
+                    else reject(err);
                 })
-                    .then((__response) => {
-                        const stringifiedResponse = JSON.stringify(__response.data);
-
-                        resolve(JSON.parse(stringifiedResponse));
-                    })
-                    .catch((err) => {
-                        if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired
-                        else reject(err);
-                    })
-            } else {
-               axios.post('/api/getSmartPickedIssues', { headers: getters.getHeader(state) })
-                    .then((__res) => resolve(__res.data))
-                    .catch((err) => reject(err)) // todo
-            }
         })
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            if (process.server) {
-                const jqlSearchString = `assignee = currentUser() AND resolution = Unresolved order by updated DESC`;
-
-                axios({
-                    method: 'POST', // use POST to get the assigned tickets only
-                    url: process.env.BASE_DOMAIN + process.env.ENDPOINT_REST + 'search',
-                    data: { jql: jqlSearchString },
-                    headers: getters.getHeader(state),
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
+                .then((__res) => resolve(__res.data))
+                .catch((err) => {
+                    if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
+                    else reject(err);
                 })
-                    .then((__response) => {
-                        const stringifiedResponse = JSON.stringify(__response.data);
-
-                        resolve(JSON.parse(stringifiedResponse));
-                    })
-                    .catch((err) => {
-                        if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired
-                        else reject(err);
-                    })
-            } else {
-                axios.post('/api/getAssignedTickets', { headers: getters.getHeader(state) })
-                    .then((__res) => resolve(__res.data))
-                    .catch((err) => reject(err)) // todo
-            }
         })
     },
-    requestPrefill: function ({ commit, dispatch }) {
+    requestPrefill: function ({ state, commit, dispatch }) {
         return new Promise(async (resolve, reject) => {
             try {
                 const [ assignedTickets, smartPickedIssues ] = await Promise.all([ dispatch('requestAssignedTickets'), dispatch('requestSmartPickedIssues') ]);
 
 
                 // assignedTickets
-                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name });
+                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name }); // used to filter for assignedTickets without the need for an extra array // todo
 
-                const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => {
+                const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => { // todo
                     return {
                         key: __issue.key,
                         id: __issue.id,
@@ -650,14 +773,18 @@ export const actions = {
                         uniqueId: _.now() + index // todo
                     }
                 });
-                __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue));
+
+                __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
+
+                commit('setAssignedTickets', __parsedAssignedIssues);
 
 
                 // smartPickedIssues
                 const __parsedSmartPickedIssues = smartPickedIssues.sections[0].issues.map((issue, index) => {
                     return {
                         key: issue.key,
-                        summary: issue.summary,
+                        summary: issue.summaryText, // todo!
+                        // summaryText: issue.summaryText, // todo: available field for data received from this endpoint
                         assignee: '',
                         issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + issue.key,
                         comment: '',
@@ -669,7 +796,9 @@ export const actions = {
                         uniqueId: _.now() + index // todo
                     }
                 })
+
                 __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue));
+
 
                 resolve();
             } catch (err) {

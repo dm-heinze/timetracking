@@ -1,4 +1,26 @@
 #sidebar-settings {
+    .toggle-listing {
+        text-transform: uppercase;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        & circle {
+            fill: $primary;
+        }
+
+        &--show, &--hide {
+            // sizing of visibility toggler
+            height: $toggler-size;
+            width: $toggler-size;
+            stroke-width: $toggler-stroke-width;
+        }
+
+        &--show {
+            fill: $success !important; // added !important flag bc otherwise styles change on hover which hides current state
+        }
+    }
 
     .autocompleted-search__container {
         padding-bottom: $sidebar-gap-small / 3;

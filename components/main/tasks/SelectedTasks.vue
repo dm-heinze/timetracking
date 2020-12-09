@@ -33,7 +33,8 @@
     export default {
         name: "SelectedTasks",
         components: {
-            SelectedTask: () => import(/* webpackPrefetch: true */ './SelectedTask')
+            // added prefetch directive for webpack for case: adding a custom task w/ no network connection & no selectedTasks
+            SelectedTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/task/SelectedTask')
         },
         computed: {
             ...mapState({

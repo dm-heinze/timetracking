@@ -1,0 +1,56 @@
+<template>
+    <div>
+        <div class="d-flex justify-content-between">
+            <h3 class="sidebar__title">Assigned Tickets</h3>
+            <button @click="refreshAssignedTickets" class="refresh--assignedTickets pl-2"> <!-- todo? v-b-tooltip.hover title="Get Latest" -->
+                <download-cloud-icon />
+            </button>
+        </div>
+        <b-list-group>
+            <b-list-group-item
+                v-for="assignedTicket in assignedTickets"
+                :key="assignedTicket.uniqueId"
+                @click="addToSelectedIssues({ selectedTicket: assignedTicket, fromSearchResults: true })"
+                class="d-flex justify-content-between"
+            >
+                <div class="ticket__info col-11">
+                    <div class="ticket__info__key font-weight-bold">{{ assignedTicket.key }}</div>
+                    <div class="ticket__info__summary text-truncate">{{ assignedTicket.summary }}</div>
+                </div>
+
+                <plus-circle-icon class="ticket__icon align-self-center" />
+            </b-list-group-item>
+        </b-list-group>
+    </div>
+</template>
+
+<script>
+    import { mapState, mapGetters, mapActions } from 'vuex';
+	import { PlusCircleIcon, DownloadCloudIcon } from "vue-feather-icons";
+    import { BListGroup, BListGroupItem } from "bootstrap-vue";
+
+    export default {
+		name: "AssignedTickets",
+        components: {
+		    PlusCircleIcon, DownloadCloudIcon,
+            BListGroupItem, BListGroup
+        },
+        directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
+        computed: {
+		    ...mapState({
+                assignedTickets: state => state.moduleUser.assignedTickets
+            }),
+            ...mapGetters({
+                // todo: flagged for possible deprecation
+                // filtered from aggregated search & request results
+                getAssignedTickets: 'moduleUser/getAssignedTickets'
+            })
+        },
+        methods: {
+		    ...mapActions({
+                addToSelectedIssues: 'moduleUser/addToSelectedIssues',
+                refreshAssignedTickets: 'moduleUser/refreshAssignedTickets'
+            })
+        }
+	}
+</script>
