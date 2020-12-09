@@ -344,7 +344,8 @@ export const actions = {
                     timeSpent: 0,
                     startTime: '',
                     endTime: '',
-                    booked: false
+                    booked: false,
+                    assignee: '' // todo!
                 };
             }
 
