@@ -669,8 +669,8 @@ export const actions = {
         return new Promise((resolve, reject) => {
             this.$localForage.getItem('SELECTEDTASKS').then((__result) => {
                 if (!_.isEmpty(__result)) {
-                    // const expirationDuration = 5 * 24 * 60 * 60 * 1000; // 5 days in milliseconds - bc val of 'bookedAt' is in milliseconds // todo: actual val to be used in prod
-                    const expirationDuration = 72000; // 1.2 minutes in milliseconds // todo: val for testing purposes
+                    const expirationDuration = 5 * 24 * 60 * 60 * 1000; // 5 days in milliseconds - bc val of 'bookedAt' is in milliseconds // todo: actual val to be used in prod
+                    // const expirationDuration = 72000; // 1.2 minutes in milliseconds // todo: val for testing purposes
 
                     // important: previously booked items won't have the field 'bookedAt' set!
                     // -> delete silently if the field does not exist for booked tasks
