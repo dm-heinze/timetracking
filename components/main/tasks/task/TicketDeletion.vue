@@ -1,6 +1,11 @@
 <template>
 	<div>
-        <button v-b-modal="`confirm-deletion-modal-${uniqueId}`" class="px-2 py-2">
+        <button
+            v-b-modal="`confirm-deletion-modal-${uniqueId}`"
+            class="px-2 py-2"
+            :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId) }"
+            :disabled="isTimerActive && (activeTicket === uniqueId)"
+        >
             <trash2-icon />
         </button>
 
@@ -29,7 +34,7 @@
 </template>
 
 <script>
-    import { mapMutations, mapActions } from 'vuex';
+    import { mapState, mapMutations, mapActions } from 'vuex';
     import { Trash2Icon, XIcon } from 'vue-feather-icons';
 
 	export default {
@@ -50,7 +55,11 @@
             },
         },
         components: { Trash2Icon, XIcon },
-        computed : {
+        computed: {
+		    ...mapState({
+                isTimerActive: state => state.moduleUser.isTimerActive,
+                activeTicket: state => state.moduleUser.activeTicket
+            }),
             optionalTaskKey () {
                 if (this.assignedToTicket) return `${this.taskKey}: `;
                 else return this.taskKey;
