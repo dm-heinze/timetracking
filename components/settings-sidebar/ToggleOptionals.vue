@@ -1,6 +1,6 @@
 <template>
     <div class="pb-5">
-        <h3>Main Sidebar Settings</h3>
+        <h3 class="sidebar__title">Main Sidebar Settings</h3>
         <div class="pb-3">Toggle the following groups visibility on the main sidebar</div>
         <b-list-group-item class="d-flex justify-content-between pt-3">
             <div class="ticket__info col-10">

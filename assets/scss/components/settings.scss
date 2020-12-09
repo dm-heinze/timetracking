@@ -10,11 +10,15 @@
             fill: $primary;
         }
 
+        &--show, &--hide {
+            // sizing of visibility toggler
+            height: $toggler-size;
+            width: $toggler-size;
+            stroke-width: $toggler-stroke-width;
+        }
+
         &--show {
             fill: $success !important; // added !important flag bc otherwise styles change on hover which hides current state
-        }
-        &--hide {
-            fill: $light-grey !important; // added !important flag bc otherwise styles change on hover which hides current state
         }
     }
 
