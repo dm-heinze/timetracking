@@ -28,7 +28,8 @@
         "nuxt-mq": "^2.0.1",
         "tls": "0.0.1",
         "v-click-outside": "^2.1.5",
-        "vue-feather-icons": "^5.1.0"
+        "vue-feather-icons": "^5.1.0",
+        "vuedraggable": "^2.24.3"
     },
     "devDependencies": {
         "@babel/cli": "^7.11.6",

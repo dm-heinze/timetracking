@@ -38,6 +38,13 @@
         list-style: none;
         padding-left: 0;
     }
+
+    /* for drag & drop feature */
+    & .currentlyDraggable {
+        &:hover {
+            cursor: grab; // or move // not visible if activeTracker === true
+        }
+    }
 }
 
 /*===  SelectedTask.vue  ===*/

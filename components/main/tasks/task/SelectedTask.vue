@@ -1,5 +1,5 @@
 <template>
-    <div class="selected-ticket__container" :class="{ 'currently-active': markedAsActive, 'already-booked': booked }">
+    <div class="selected-ticket__container" :class="{ 'currently-active': markedAsActive, 'already-booked': booked, 'currentlyDraggable': !isTimerActive }">
         <div class="selected-ticket__heading mb-2" :class="{ 'flex-column align-items-start': $mq === 'md', 'flex-column align-items-center': $mq === 'sm', 'align-items-center': ($mq === 'lg' && assignedToTicket) || ($mq === 'plg' && assignedToTicket), 'flex-column': $mq === 'mdp' || !assignedToTicket }">
             <a :href="taskDirectLink ? taskDirectLink : '#'" :target="taskDirectLink ? '_blank' : ''" rel="noopener" class="col-sm-12" :class="{ 'col-12': $mq === 'mdp' || !assignedToTicket, 'col-lg-4': assignedToTicket, 'notALink': !assignedToTicket }" v-if="!editingName">
                 <div class="pb-2" :class="{ 'd-flex flex-column align-items-center justify-content-center': $mq === 'sm' }">
