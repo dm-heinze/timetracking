@@ -13,7 +13,7 @@
 
             <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm', 'justify-content-between': $mq === 'mdp' || !assignedToTicket }" v-if="!booked">
                 <div v-if="!booked" class="selected-ticket__heading__assignments d-flex" :class="[flexDirection]">
-                    <b-button size="sm" v-if="!assignedToTicket" pill :variant="editingName ? 'success' : 'light-grey'" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleNameEditingClassic()" v-click-outside="toggleNameEditing">
+                    <b-button size="sm" v-if="!assignedToTicket" pill :variant="editingName ? 'success' : 'light-grey'" type="button" :disabled="isTimerActive && (activeTicket === uniqueId)" class="login-content__sign-in-btn button--customTaskName pt-2 pb-2" :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId), 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleNameEditingClassic()" v-click-outside="toggleNameEditing">
                         <edit2-icon v-if="!editingName" />
                         <save-icon v-else />
                         <span class="pl-1">{{ editingName ? 'Save' : 'Edit' }} Name</span>
