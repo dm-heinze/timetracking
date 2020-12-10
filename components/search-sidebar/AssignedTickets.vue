@@ -2,7 +2,7 @@
     <div>
         <div class="d-flex justify-content-between">
             <h3 class="sidebar__title">Assigned Tickets</h3>
-            <button @click="refreshAssignedTickets" class="refresh--assignedTickets pl-2"> <!-- todo? v-b-tooltip.hover title="Get Latest" -->
+            <button @click="refreshAssignedTickets" class="refresh--assignedTickets pl-2" aria-label="refresh assigned tickets"> <!-- todo? v-b-tooltip.hover title="Get Latest" -->
                 <download-cloud-icon />
             </button>
         </div>
