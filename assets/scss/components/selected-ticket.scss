@@ -26,6 +26,12 @@
 }
 /* ------ todo: endOfTodo -------- */
 
+.button--ticketAssignment {
+    &:disabled {
+        cursor: not-allowed; // todo
+    }
+}
+
 /*===  SelectedTasks.vue  ===*/
 .selected-tickets__container {
     ul {

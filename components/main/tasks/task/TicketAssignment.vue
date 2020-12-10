@@ -1,6 +1,6 @@
 <template>
 	<div>
-        <b-button pill variant="light-grey" type="button" class="login-content__sign-in-btn pt-2 pb-2" :class="{ 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg', 'mr-2': $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleTicketAssignment()">
+        <b-button :disabled="isTimerActive && (activeTicket === uniqueId)" pill variant="light-grey" type="button" class="login-content__sign-in-btn button--ticketAssignment pt-2 pb-2" :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId), 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg', 'mr-2': $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleTicketAssignment()">
             <plus-circle-icon />
             <span class="pl-1">Assign Ticket</span>
         </b-button>
@@ -84,7 +84,9 @@
         computed: {
             ...mapState({
                 allExistingProjects: state => state.moduleUser.allExistingProjects,
-                relatedTickets: state => state.moduleUser.relatedTickets
+                relatedTickets: state => state.moduleUser.relatedTickets,
+                isTimerActive: state => state.moduleUser.isTimerActive,
+                activeTicket: state => state.moduleUser.activeTicket
             })
         },
         methods: {
