@@ -188,7 +188,8 @@
 
             textarea {
                 width: 100%;
-                height: 100px;
+                height: 100px; // todo
+                overflow: hidden; // todo
                 margin: 7px 0 7px 0;
                 border-color: $light-grey;
             }
