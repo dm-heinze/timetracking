@@ -4,7 +4,8 @@ export default async (context) => {
             await context.store.dispatch('moduleUser/retrieveSelectedTasksFromStorage', context),
             await context.store.dispatch('moduleUser/retrieveBreaksFromStorage', context),
             await context.store.dispatch('moduleUser/retrieveBookmarksFromStorage', context),
-            await context.store.dispatch('moduleUser/retrieveSelectionForSuggestionsFromStorage', context)
+            await context.store.dispatch('moduleUser/retrieveSelectionForSuggestionsFromStorage', context), // todo: as cookie?
+            await context.store.dispatch('moduleUser/retrieveSuggestionGroupsFromStorage', context) // todo: as cookie?
         ])
     }
 }

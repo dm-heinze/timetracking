@@ -4,6 +4,9 @@
             <assigned-tickets />
         </div>
 
+        <client-only> <!-- todo -->
+            <bookmarks-selectable v-if="showBookmarksFirst" />
+        </client-only>
 
         <client-only>
             <div v-if="showSuggestions && smartPickedSuggestions.length !== 0">
@@ -14,8 +17,9 @@
             <div v-if="showSuggestions && smartPickedSuggestions.length === 0">No Search Results for This Query</div> <!-- todo: move to comp Suggestions.vue -->
         </client-only>
 
-
-        <bookmarks-selectable />
+        <client-only> <!-- todo -->
+            <bookmarks-selectable v-if="!showBookmarksFirst" />
+        </client-only>
     </div>
 </template>
 
@@ -35,12 +39,16 @@
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
                 selectedTasks: state => state.moduleUser.selectedTasks,
-                showSuggestions: state => state.moduleUser.showSuggestions
+                showSuggestions: state => state.moduleUser.showSuggestions,
+                suggestionGroups: state => state.moduleUser.suggestionGroups
             }),
             ...mapGetters({
                 assignedTickets: 'moduleUser/getAssignedTickets', // todo: flagged for deprecation
                 smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'
-            })
+            }),
+            showBookmarksFirst () { // todo
+                return [...this.suggestionGroups].pop() !== 'Bookmarks';
+            }
         }
     }
 </script>

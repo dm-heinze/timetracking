@@ -25,6 +25,7 @@ export const state = () => ({
     bookmarked: [],
     settingsOpen: false,
     showSuggestions: true,
+    suggestionGroups: ['Assigned Tickets', 'Suggestions', 'Bookmarks'], // default order
     showErrorMessages: false,
     errorOccurred: false, // todo
     editingCustomTask: '',
@@ -92,6 +93,9 @@ export const mutations = {
     },
     setSelectedTasks: (state, value) => {
         state.selectedTasks = value;
+    },
+    setSuggestionGroups: (state, value) => {
+        state.suggestionGroups = value;
     },
     markTaskAsBooked: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
@@ -285,6 +289,13 @@ export const actions = {
                 .catch(() => reject())
         })
     },
+    saveSuggestionGroupsToStorage: function ({ state }) {
+        return new Promise((resolve, reject) => {
+            this.$localForage.setItem('SUGGESTION_GROUPS', state.suggestionGroups)
+                .then(() => resolve())
+                .catch(() => reject())
+        })
+    },
     saveBreaksToStorage: function ({ state }) {
         return new Promise((resolve, reject) => {
             this.$localForage.setItem('BREAKS', state.accumulatedBreakTime)
@@ -314,6 +325,19 @@ export const actions = {
                     resolve();
                 } else {
                     resolve();
+                }
+            })
+        })
+    },
+    retrieveSuggestionGroupsFromStorage: function({ commit }) {
+        return new Promise((resolve) => {
+            this.$localForage.getItem('SUGGESTION_GROUPS').then((__result) => {
+                if (!_.isEmpty(__result)) {
+                    commit('setSuggestionGroups', __result);
+
+                    resolve();
+                } else {
+                    resolve(); // default already defined in store state will be used
                 }
             })
         })
