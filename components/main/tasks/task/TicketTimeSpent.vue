@@ -5,7 +5,7 @@
         <div v-else class="selected-ticket__tracked-time__editing pl-2">
             <input type="time" step="1" :value="parsedTimeSpent" @input="saveEditedWorklogTimeSpent" @keyup.enter.prevent="activateEditModeForTrackedTime">
         </div>
-        <button v-if="!booked"
+        <button v-if="!booked && !ofTypeBreak"
                 class="btn--edit"
                 :class="{ 'disabled': (isTimerActive && (activeTicket === uniqueId)) }"
                 :disabled="(isTimerActive && (activeTicket === uniqueId))"
@@ -35,6 +35,11 @@
             },
             booked: {
                 required: true
+            },
+            ofTypeBreak: {
+                type: Boolean,
+                required: false,
+                default: false
             }
         },
         data() {

@@ -1,6 +1,10 @@
 <template>
     <div class="selected-tickets__container">
         <client-only>
+            <b-collapse :visible="!onABreak && (accumulatedBreakTime != '00:00:00')" id="breakTask">
+                <BreakTask v-if="(accumulatedBreakTime != '00:00:00') && !onABreak" />
+            </b-collapse>
+
             <div v-if="notAlreadyBooked.length !== 0">
                 <ul>
                     <li>
@@ -32,19 +36,25 @@
 <script>
     import { mapMutations, mapState, mapActions } from 'vuex';
     import draggable from 'vuedraggable';
+    import { BCollapse } from "bootstrap-vue";
 
     export default {
         name: "SelectedTasks",
         components: {
+            BCollapse,
+            BreakTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/BreakTask'),
             // added prefetch directive for webpack for case: adding a custom task w/ no network connection & no selectedTasks
             SelectedTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/task/SelectedTask'),
             draggable
         },
+        directives: { 'b-collapse': BCollapse },
         computed: {
             ...mapState({
                 selectedTasks: state => state.moduleUser.selectedTasks,
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
-                isTimerActive: state => state.moduleUser.isTimerActive
+                isTimerActive: state => state.moduleUser.isTimerActive,
+                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
+                onABreak: state => state.moduleUser.onABreak
             }),
             alreadyBooked () { // todo: expiration
                 return this.selectedTasks.filter((__task) => __task.booked)
@@ -74,7 +84,6 @@
                         this.saveSelectedTasksToStorage();
                     }
                 }
-
             }
         },
         methods: {
