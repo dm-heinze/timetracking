@@ -23,25 +23,16 @@
 
 
                 <div class="ticket-trackers d-flex flex-row" :class="{ 'align-self-center': $mq === 'sm' }">
-                    <button @click.prevent="updateIsTimerActiveState(uniqueId)"
-                            :disabled="(isTimerActive && (activeTicket === uniqueId))"
-                            class="px-2"
-                            :class="{'disabled': (isTimerActive && (activeTicket === uniqueId)) }">
-                        <play-circle-icon />
+                    <button @click.prevent="updateIsTimerActiveState(uniqueId)" class="px-2">
+                        <pause-circle-icon v-if="(isTimerActive && (activeTicket === uniqueId))" />
+                        <play-circle-icon v-else />
                     </button>
-
-                    <button @click.prevent="updateIsTimerActiveState(uniqueId)"
-                            :disabled="(!isTimerActive && (activeTicket !== uniqueId)) || (isTimerActive && (activeTicket !== uniqueId)) || !isTimerActive"
-                            class="px-2"
-                            :class="{'disabled': (!isTimerActive && (activeTicket !== uniqueId)) || (isTimerActive && (activeTicket !== uniqueId)) || !isTimerActive}">
-                        <pause-circle-icon />
-                    </button>
-
-                    <push-single-task :task-key="taskKey" :task-worklog-comment="taskWorklogComment" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" :booked="booked" :unique-id="uniqueId" />
 
                     <ticket-deletion :unique-id="uniqueId" :task-summary="taskSummary" :task-key="taskKey" :assigned-to-ticket="assignedToTicket" />
 
                     <ticket-time-spent :time-spent="timeSpent" :unique-id="uniqueId" :booked="booked" />
+
+                    <push-single-task :task-key="taskKey" :task-worklog-comment="taskWorklogComment" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" :booked="booked" :unique-id="uniqueId" />
                 </div>
             </div>
         </div>
