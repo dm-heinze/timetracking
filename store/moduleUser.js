@@ -264,7 +264,7 @@ export const actions = {
     retrieveSelectionForSuggestionsFromStorage: function({ state, commit }) {
         return new Promise((resolve) => {
             this.$localForage.getItem('VISIBILITY_SUGGESTIONS').then((__result) => {
-                if (__result !== undefined) { // todo!
+                if (__result === false) { // todo!
                     commit('setShowSuggestions', __result);
 
                     resolve();
