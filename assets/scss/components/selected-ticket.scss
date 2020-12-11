@@ -32,6 +32,16 @@
     }
 }
 
+.checkbox--resetBreakTime {
+    font-size: 14px; // todo
+    font-weight: bold;
+    color: $primary;
+
+    :hover { // todo
+        cursor: pointer;
+    }
+}
+
 /*===  SelectedTasks.vue  ===*/
 .selected-tickets__container {
     ul {

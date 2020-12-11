@@ -16,18 +16,27 @@
                 <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
                     <h3 class="primary">Push Time?</h3>
                     <span>
-                        <x-icon @click="close()" />
+                        <x-icon @click="resetStateAndCloseModal" /> <!-- todo -->
                     </span>
                 </div>
             </template>
             <template v-slot:default>
                 <div class="modal__main-container">
                     <div class="modal__main-container__main-text">Are you sure you want to book tracked time?</div>
+
+                    <b-form-checkbox
+                        v-if="!onABreak && (accumulatedBreakTime != '00:00:00')"
+                        v-model="resetTrackedBreakTime"
+                        aria-label="reset break tracker"
+                        class="checkbox--resetBreakTime"
+                    >
+                        Reset Break Tracker
+                    </b-form-checkbox>
                 </div>
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
                 <div class="d-flex justify-content-between w-100 modal__actions">
-                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
+                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="resetStateAndCloseModal">Cancel</b-button> <!-- todo -->
                     <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="saveWorklogs()">Push Time</b-button>
                 </div>
             </template>
@@ -38,15 +47,23 @@
 <script>
     import { mapState, mapActions, mapMutations } from 'vuex';
     import { SendIcon, XIcon } from 'vue-feather-icons';
+    import { BFormCheckbox } from 'bootstrap-vue'; // todo
 
 	export default {
 		name: "PushTotalTime",
-        components: { SendIcon, XIcon },
+        components: { SendIcon, XIcon, BFormCheckbox },
+        data() {
+            return {
+                resetTrackedBreakTime: false
+            }
+        },
         computed: {
             ...mapState({
                 selectedTasks: state => state.moduleUser.selectedTasks,
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
-                isTimerActive: state => state.moduleUser.isTimerActive
+                isTimerActive: state => state.moduleUser.isTimerActive,
+                onABreak: state => state.moduleUser.onABreak,
+                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime
             }),
             everythingBookedAlready () {
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.booked).length === 0; // todo
@@ -63,11 +80,18 @@
         },
         methods: {
 		    ...mapMutations({
-                toggleShowErrorMessages: 'moduleUser/toggleShowErrorMessages'
+                toggleShowErrorMessages: 'moduleUser/toggleShowErrorMessages',
+                updateTotalBreakTime: 'moduleUser/updateTotalBreakTime',
             }),
             ...mapActions({
                 requestSavingWorklogs: 'moduleUser/requestSavingWorklogs',
+                saveBreaksToStorage: 'moduleUser/saveBreaksToStorage'
             }),
+            resetStateAndCloseModal: function () {
+                this.$bvModal.hide(`confirm-push-time`);
+
+                this.resetTrackedBreakTime = false; // de-selects checkbox that resets break tracker
+            },
             saveWorklogs: function () {
                 this.$bvModal.hide('confirm-push-time'); // any cancel event needed?
 
@@ -100,6 +124,8 @@
                         // make API request to book each task
                         this.requestSavingWorklogs()
                             .then(() => {
+                                if (this.resetTrackedBreakTime) this.updateTotalBreakTime({ totalBreakTime: '00:00:00' }); // todo
+
                                 this.$bvModal.msgBoxOk('Worklogs were successfully booked', {
                                     centered: true,
                                     okVariant: 'success rounded-pill',
@@ -107,6 +133,8 @@
                                     bodyClass: 'modal__main-container',
                                     footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                                 })
+
+                                if (this.resetTrackedBreakTime) this.saveBreaksToStorage().then(() => this.resetTrackedBreakTime = false); // todo: msgBoxOk?
                             })
                             .catch((err) => {
                                 if (err.response && (err.response.status === 401)) {
