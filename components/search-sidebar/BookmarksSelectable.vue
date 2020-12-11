@@ -1,6 +1,6 @@
 <template>
 	<div>
-        <h3 class="sidebar__title">Bookmarks</h3>
+        <h3 class="sidebar__title title--bookmarks">Bookmarks</h3>
         <client-only>
             <div v-if="bookmarked.length !== 0">
                 <b-list-group> <!-- todo: dynamically import -->

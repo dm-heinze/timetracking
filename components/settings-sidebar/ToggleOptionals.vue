@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-5">
+    <div class="wrapper--toggleOptionals">
         <h3 class="sidebar__title">Main Sidebar Settings</h3>
         <div class="pb-3">Toggle the following groups visibility on the main sidebar or reorder them</div>
         <draggable v-model="groups">

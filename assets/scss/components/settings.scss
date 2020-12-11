@@ -34,7 +34,26 @@
         padding-top: $sidebar-gap-large;
     }
     .sidebar__title--no-bookmarks {
-        padding-bottom: $sidebar-gap-large;
+        padding-bottom: $sidebar-gap-medium;
+        font-size: $default__font-size;
+    }
+
+    .wrapper--toggleOptionals {
+        margin-bottom: $sidebar-gap-medium;
+
+        .list-group-item {
+
+            &:hover {
+                cursor: grab;
+            }
+
+            .toggle-listing {
+
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
     }
 
     .button--close {

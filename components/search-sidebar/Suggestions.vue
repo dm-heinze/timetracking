@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3 class="sidebar__title">Suggestions</h3>
+        <h3 class="sidebar__title title--suggestions">Suggestions</h3>
         <b-list-group>
             <b-list-group-item
                 v-for="searchResult in smartPickedSuggestions"

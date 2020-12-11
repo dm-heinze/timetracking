@@ -32,5 +32,9 @@
         }
 
         padding-top: $sidebar-gap-small;
+
+        &.title--suggestions, &.title--bookmarks { //
+            padding-top: $sidebar-gap-medium;
+        }
     }
 }
