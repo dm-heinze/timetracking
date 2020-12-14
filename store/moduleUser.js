@@ -199,6 +199,15 @@ export const mutations = {
             return __selectedIssue;
         })
     },
+    saveToTasksStartAndEndTimeArray: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedIssue) => {
+            if (__selectedIssue.uniqueId === value.uniqueId) {
+                if (__selectedIssue.hasOwnProperty('startAndEndTimesArray')) __selectedIssue.startAndEndTimesArray.push(value.entryToAdd);
+                else __selectedIssue.startAndEndTimesArray = [value.entryToAdd];
+            }
+            return __selectedIssue;
+        })
+    },
     removeSelectedTask: (state, value) => {
         state.selectedTasks = state.selectedTasks.filter((__selectedTask) => __selectedTask.uniqueId !== value);
     },

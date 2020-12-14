@@ -42,7 +42,7 @@
         <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
 
         <ul>
-            <li v-for="startAndEndTime in startAndEndTimes" :key="startAndEndTime.id"> {{ startAndEndTime.startTime }} - {{ startAndEndTime.endTime }} = {{ startAndEndTime.duration }}</li>
+            <li v-for="startAndEndTime in startAndEndTimesArray" :key="startAndEndTime.id"> {{ startAndEndTime.startTime }} - {{ startAndEndTime.endTime }} = {{ startAndEndTime.duration }}</li>
         </ul>
 
         <div v-if="startTime">
@@ -105,7 +105,11 @@
             },
             uniqueId: {
                 required: true
-            }
+            },
+            startAndEndTimesArray: { // may not be set - todo
+                required: false,
+                default: () => []
+            },
         },
         data() {
             return {
@@ -150,7 +154,8 @@
                 toggleBreakMutation: 'moduleUser/toggleBreak',
                 setLastTicket: 'moduleUser/setLastTicket',
                 assignNameToCustomTask: 'moduleUser/assignNameToCustomTask',
-                updateEditingCustomTask: 'moduleUser/updateEditingCustomTask'
+                updateEditingCustomTask: 'moduleUser/updateEditingCustomTask',
+                saveToTasksStartAndEndTimeArray: 'moduleUser/saveToTasksStartAndEndTimeArray'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
@@ -230,12 +235,14 @@
                 const __dateRightNow = new Date(); // todo: this.timeRightNow
                 const __duration = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, this.endTime.getTime() - this.startTime.getTime());
 
-                this.startAndEndTimes.push({
+                const __newStartAndEndTime = {
                     startTime: this.startTime.toTimeString().slice(0, 8),
                     endTime: this.endTime.toTimeString().slice(0, 8),
                     duration: __duration.toTimeString().slice(0, 8),
                     id: _.now()
-                });
+                }
+
+                this.saveToTasksStartAndEndTimeArray({ entryToAdd: __newStartAndEndTime, uniqueId: this.uniqueId });
 
                 this.startTime = '';
                 this.endTime = '';
