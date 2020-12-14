@@ -28,11 +28,11 @@
                         <play-circle-icon v-else />
                     </button>
 
+                    <push-single-task :task-key="taskKey" :task-worklog-comment="taskWorklogComment" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" :booked="booked" :unique-id="uniqueId" />
+
                     <ticket-deletion :unique-id="uniqueId" :task-summary="taskSummary" :task-key="taskKey" :assigned-to-ticket="assignedToTicket" />
 
                     <ticket-time-spent :time-spent="timeSpent" :unique-id="uniqueId" :booked="booked" />
-
-                    <push-single-task :task-key="taskKey" :task-worklog-comment="taskWorklogComment" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" :booked="booked" :unique-id="uniqueId" />
                 </div>
             </div>
         </div>

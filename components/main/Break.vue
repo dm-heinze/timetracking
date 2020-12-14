@@ -154,6 +154,10 @@
             this.$nextTick(function () {
                 // show tooltip on all viewports as always icon-only
                 if (this.$refs.resetBreakButton) this.$root.$emit('bv::enable::tooltip', 'resetTrackedBreakTime');
+
+                // for AssignedTickets.vue - alternative: $root listener on event 'bv::tooltip::disabled' in AssignedTickets.vue
+                // watcher in AssignedTickets/call in above watcher for $mq needed for this approach
+                // this.$root.$emit('bv::enable::tooltip', 'refreshTooltipTargetButton');
             })
         }
 	}

@@ -3,7 +3,8 @@
         <div class="d-flex justify-content-between">
             <h3 class="sidebar__title">Assigned Tickets</h3>
             <button
-                id="refreshTooltipTarget"
+                id="refreshTooltipTargetButton"
+                ref="refreshTooltipTarget"
                 @click="refreshAssignedTickets"
                 class="refresh--assignedTickets pl-2"
                 aria-label="refresh assigned tickets"
@@ -56,6 +57,16 @@
 		    ...mapActions({
                 addToSelectedIssues: 'moduleUser/addToSelectedIssues',
                 refreshAssignedTickets: 'moduleUser/refreshAssignedTickets'
+            })
+        },
+        mounted() {
+            // wait for rendering
+            this.$nextTick(function () {
+                // bc disable event from Break.vue may 'overwrite' call from AssignedTickets.vue bc of timing
+                // this listener also covers the case of $mq changes -> no separate watcher needed as in Break.vue
+                this.$root.$on('bv::tooltip::disabled', (e) => {
+                    this.$root.$emit('bv::enable::tooltip', 'refreshTooltipTargetButton');
+                })
             })
         }
 	}
