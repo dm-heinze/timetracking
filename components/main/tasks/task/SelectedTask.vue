@@ -40,6 +40,14 @@
         <ticket-error-messages :unique-id="uniqueId" :task-key="taskKey" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" />
 
         <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
+
+        <ul>
+            <li v-for="startAndEndTime in startAndEndTimes" :key="startAndEndTime.id"> {{ startAndEndTime.startTime }} - {{ startAndEndTime.endTime }} = {{ startAndEndTime.duration }}</li>
+        </ul>
+
+        <div v-if="startTime">
+            <div>{{ parsedCurrentStartTime }} - {{ parsedCurrentEndTime }}</div>
+        </div>
     </div>
 </template>
 
@@ -108,7 +116,8 @@
                 markedAsActive: false,
                 editingName: false,
                 localEditedName: '',
-                initialTimeSpent: 0
+                initialTimeSpent: 0,
+                startAndEndTimes: []
             };
         },
         computed: {
@@ -123,6 +132,12 @@
             }),
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
+            },
+            parsedCurrentStartTime () {
+                return this.startTime !== '' ? this.startTime.toTimeString().slice(0, 8) : ''
+            },
+            parsedCurrentEndTime () {
+                return this.endTime !== '' ? this.endTime.toTimeString().slice(0, 8) : 'Ongoing...'
             }
         },
         methods: {
@@ -210,6 +225,21 @@
                 // this.setActiveTicket('');
 
                 this.saveTaskEndTime({ uniqueId: this.uniqueId, endTime: this.endTime.toTimeString() }); // update vuex store
+
+
+                const __dateRightNow = new Date(); // todo: this.timeRightNow
+                const __duration = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, this.endTime.getTime() - this.startTime.getTime());
+
+                this.startAndEndTimes.push({
+                    startTime: this.startTime.toTimeString().slice(0, 8),
+                    endTime: this.endTime.toTimeString().slice(0, 8),
+                    duration: __duration.toTimeString().slice(0, 8),
+                    id: _.now()
+                });
+
+                this.startTime = '';
+                this.endTime = '';
+
 
                 this.saveSelectedTasksToStorage(); // update localStorage
             },
