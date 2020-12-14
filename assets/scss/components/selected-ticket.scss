@@ -49,6 +49,12 @@
     }
 }
 
+.modal__main-container__main-text {
+    & span {
+        font-weight: bold;
+    }
+}
+
 /*===  SelectedTasks.vue  ===*/
 .selected-tickets__container {
     ul {
