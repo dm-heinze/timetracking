@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="d-flex justify-content-between">
-            <div class="d-flex flex-row amountToggler" :class="{ 'no-toggle': this.assignedTickets.length < 5 }">
+            <div class="d-flex flex-row amountToggler" :class="{ 'no-toggle': this.assignedTickets.length < 6 }">
                 <h3 class="sidebar__title pr-1" @click="toggleShownAmount" v-b-hover="handleShowTogglerOnHover">Assigned Tickets</h3>
 
                 <chevrons-down-icon v-if="!showMore && showTogglerIcon && this.assignedTickets.length > 5" class="mx-2" />

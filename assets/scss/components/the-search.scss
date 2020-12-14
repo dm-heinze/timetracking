@@ -37,10 +37,22 @@
         margin-top: 155px; //
         color: $primary;
     }
+
+    &--suggestions {
+        margin-top: $sidebar-gap-small;
+
+        & h3 {
+            margin-top: inherit !important;
+        }
+
+        & svg {
+            margin-top: $sidebar-gap-small + 5px;
+        }
+    }
 }
 
 .no-toggle {
-    
+
     h3 {
         &:hover {
             cursor: default !important;
