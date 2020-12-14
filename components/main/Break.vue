@@ -4,11 +4,6 @@
             <coffee-icon />
             <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Take a break</span>
         </b-button>
-        <client-only>
-            <button  @click.prevent="resetBreakTracker" class="button--resetBreakTracker ml-1 mr-2 px-3" v-b-tooltip.hover title="Reset Break Tracker" ref="resetBreakButton" id="resetTrackedBreakTime" v-if="!onABreak && (accumulatedBreakTime != '00:00:00')">
-                <rotate-ccw-icon />
-            </button>
-        </client-only>
     </div>
 </template>
 
@@ -87,31 +82,6 @@
                 }
 
                 this.startTime = new Date(); // todo
-            },
-            resetBreakTracker: function () {
-                // update vuex store
-                this.updateTotalBreakTime({ totalBreakTime: '00:00:00' });
-
-                // update localStorage & show feedback
-                this.saveBreaksToStorage()
-                    .then(() => {
-                        this.$bvModal.msgBoxOk('Break Tracker was successfully reset to 00:00:00.', {
-                            centered: true,
-                            okVariant: 'success rounded-pill',
-                            okTitle: 'Okay',
-                            bodyClass: 'modal__main-container',
-                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
-                        })
-                    })
-                    .catch(() => {
-                        this.$bvModal.msgBoxOk('There has been an error. Break Tracker could not be reset.', {
-                            centered: true,
-                            okVariant: 'danger rounded-pill',
-                            okTitle: 'Okay',
-                            bodyClass: 'modal__main-container',
-                            footerClass: 'modal__main-container modal__actions modal__feedback__footer'
-                        })
-                    });
             },
             currentTimeInSeconds: function () {
                 const __dateRightNow = new Date();

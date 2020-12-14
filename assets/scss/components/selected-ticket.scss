@@ -32,6 +32,13 @@
     }
 }
 
+.btn--resetBreak {
+    & svg {
+        height: 21px; //
+        width: 21px; //
+    }
+}
+
 .checkbox--resetBreakTime {
     font-size: 14px; // todo
     font-weight: bold;
