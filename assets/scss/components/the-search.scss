@@ -22,6 +22,32 @@
     }
 }
 
+.amountToggler {
+
+    h3 {
+        padding-top: inherit !important;
+        margin-top: $sidebar-gap-large;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    svg {
+        margin-top: 155px; //
+        color: $primary;
+    }
+}
+
+.no-toggle {
+    
+    h3 {
+        &:hover {
+            cursor: default !important;
+        }
+    }
+}
+
 .result-wrp {
     padding-bottom: $sidebar-gap-large;
 
