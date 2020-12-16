@@ -41,9 +41,6 @@ export const getters = {
     },
     getSmartPickedSuggestions: (state) => {
         return _.slice(state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee !== state.currentUser.name), 0, 5) // end excluded
-    },
-    getAssignedTickets: (state) => { // todo: flagged for possible deprecation
-        return state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee === state.currentUser.name)
     }
 }
 
