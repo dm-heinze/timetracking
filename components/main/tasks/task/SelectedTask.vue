@@ -1,19 +1,44 @@
 <template>
     <div class="selected-ticket__container" :class="{ 'currently-active': markedAsActive, 'already-booked': booked, 'currentlyDraggable': !isTimerActive }">
         <div class="selected-ticket__heading mb-2" :class="{ 'flex-column align-items-start': $mq === 'md', 'flex-column align-items-center': $mq === 'sm', 'align-items-center': ($mq === 'lg' && assignedToTicket) || ($mq === 'plg' && assignedToTicket), 'flex-column': $mq === 'mdp' || !assignedToTicket }">
-            <a :href="taskDirectLink ? taskDirectLink : '#'" :target="taskDirectLink ? '_blank' : ''" rel="noopener" class="col-sm-12" :class="{ 'col-12': $mq === 'mdp' || !assignedToTicket, 'col-lg-4': assignedToTicket, 'notALink': !assignedToTicket }" v-if="!editingName">
+            <a
+                v-if="!editingName"
+                :href="taskDirectLink ? taskDirectLink : '#'"
+                :target="taskDirectLink ? '_blank' : ''"
+                rel="noopener"
+                class="col-sm-12"
+                :class="{ 'col-12': $mq === 'mdp' || !assignedToTicket, 'col-lg-4': assignedToTicket, 'notALink': !assignedToTicket }"
+            >
                 <div class="pb-2" :class="{ 'd-flex flex-column align-items-center justify-content-center': $mq === 'sm' }">
                     <div class="font-weight-bold">{{ taskKey }}</div>
                     <div class="selected-ticket__heading__summary text-truncate">{{ taskSummary }}</div>
                 </div>
             </a>
             <div v-else-if="editingName">
-                <input type="text" :value="taskKey" @input="saveEditedCustomTaskName" @keyup.esc="toggleNameEditingClassic(true)" @keyup.enter.prevent="toggleNameEditingClassic()" :name="`customNameEditField-${uniqueId}`">
+                <input
+                    type="text"
+                    :value="taskKey"
+                    @input="saveEditedCustomTaskName"
+                    @keyup.esc="toggleNameEditingClassic(true)"
+                    @keyup.enter.prevent="toggleNameEditingClassic()"
+                    :name="`customNameEditField-${uniqueId}`"
+                >
             </div>
 
-            <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm', 'justify-content-between': $mq === 'mdp' || !assignedToTicket }" v-if="!booked">
+            <div v-if="!booked" class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm', 'justify-content-between': $mq === 'mdp' || !assignedToTicket }">
                 <div v-if="!booked" class="selected-ticket__heading__assignments d-flex" :class="[flexDirection]">
-                    <b-button size="sm" v-if="!assignedToTicket" pill :variant="editingName ? 'success' : 'light-grey'" type="button" :disabled="isTimerActive && (activeTicket === uniqueId)" class="login-content__sign-in-btn button--customTaskName pt-2 pb-2" :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId), 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleNameEditingClassic()" v-click-outside="toggleNameEditing">
+                    <b-button
+                        v-if="!assignedToTicket"
+                        pill
+                        size="sm"
+                        :variant="editingName ? 'success' : 'light-grey'"
+                        type="button"
+                        :disabled="isTimerActive && (activeTicket === uniqueId)"
+                        class="login-content__sign-in-btn button--customTaskName pt-2 pb-2"
+                        :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId), 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }"
+                        @click.prevent="toggleNameEditingClassic()"
+                        v-click-outside="toggleNameEditing"
+                    >
                         <edit2-icon v-if="!editingName" />
                         <save-icon v-else />
                         <span class="pl-1">{{ editingName ? 'Save' : 'Edit' }} Name</span>
