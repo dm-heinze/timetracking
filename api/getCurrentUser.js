@@ -18,7 +18,11 @@ const response = function (request, response) {
             headers: parsedDataObject.headers,
         })
             .then((__response) => {
-                response.end(JSON.stringify(__response.data));
+                const currentUser = {
+                    name: __response.data.name
+                }
+
+                response.end(JSON.stringify(currentUser));
             })
             .catch((err) =>{
                 response.writeHead(err.response.status);
