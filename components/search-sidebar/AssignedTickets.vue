@@ -32,7 +32,7 @@
 </template>
 
 <script>
-    import { mapState, mapGetters, mapActions } from 'vuex';
+    import { mapState, mapActions } from 'vuex';
 	import { PlusCircleIcon, DownloadCloudIcon } from "vue-feather-icons";
     import { BListGroup, BListGroupItem } from "bootstrap-vue";
 
@@ -46,11 +46,6 @@
         computed: {
 		    ...mapState({
                 assignedTickets: state => state.moduleUser.assignedTickets
-            }),
-            ...mapGetters({
-                // todo: flagged for possible deprecation
-                // filtered from aggregated search & request results
-                getAssignedTickets: 'moduleUser/getAssignedTickets'
             })
         },
         methods: {

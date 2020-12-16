@@ -40,10 +40,10 @@
                 searchResults: state => state.moduleUser.searchResults,
                 selectedTasks: state => state.moduleUser.selectedTasks,
                 showSuggestions: state => state.moduleUser.showSuggestions,
-                suggestionGroups: state => state.moduleUser.suggestionGroups
+                suggestionGroups: state => state.moduleUser.suggestionGroups,
+                assignedTickets: state => state.moduleUser.assignedTickets
             }),
             ...mapGetters({
-                assignedTickets: 'moduleUser/getAssignedTickets', // todo: flagged for deprecation
                 smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'
             }),
             showBookmarksFirst () { // todo
