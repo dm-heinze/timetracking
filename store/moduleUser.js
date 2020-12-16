@@ -414,7 +414,19 @@ export const actions = {
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            if (!__selectedTask.booked) await axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
+                            if (!__selectedTask.booked) {
+                                await axios({
+                                    method: 'post',
+                                    baseURL: __base_url,
+                                    url: `/api/addWorklog`,
+                                    data: {
+                                        headers: getters.getHeader(state),
+                                        comment: __selectedTask.comment,
+                                        timeSpentSeconds: __selectedTask.timeSpent,
+                                        ticketId: __selectedTask.key
+                                    }
+                                })
+                            }
                         }))
                             .then(() => {
                                 // note: previously booked items won't have the field 'bookedAt' set in this step!
@@ -520,7 +532,14 @@ export const actions = {
     },
     requestSessionRemoval: function({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'delete', baseURL: __base_url, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
+            axios({
+                method: 'delete',
+                baseURL: __base_url,
+                url: `/api/logout`,
+                params: {
+                    value: state.sessionObject.value
+                }
+            }) // todo
                 .then((_response) => {
                     if (_response.data.status === 204) {
                         commit('logoutStarted', true);
@@ -546,7 +565,15 @@ export const actions = {
     },
     createApiObject: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/login`,
+                data: {
+                    username: payload.data.name,
+                    password: payload.data.pass
+                }
+            })
                 .then(async (response) => {
                     if (response.data) { // todo
                         commit('setSessionObject', response.data);
@@ -581,7 +608,16 @@ export const actions = {
     },
     getIssue: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getTickets`,
+                data: {
+                    headers: getters.getHeader(state),
+                    searchTerm: payload.searchTerm,
+                    currentUser: state.currentUser.name
+                }
+            })
                 .then((__res) => {
                     if (__res.data.issues.length !== 0) {
                         const searchResults =__res.data.issues.map((__issueInSearchResult, index) => {
@@ -643,7 +679,14 @@ export const actions = {
         return new Promise((resolve, reject) => {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
-                axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
+                axios({
+                    method: 'post',
+                    baseURL: __base_url,
+                    url: `/api/getProjects`,
+                    data: {
+                        headers: getters.getHeader(state)
+                    }
+                })
                     .then((__res) => {
                         commit('setExistingProjects', __res.data);
 
@@ -655,7 +698,15 @@ export const actions = {
     },
     requestRelatedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getProjectRelatedTickets`, data: { headers: getters.getHeader(state), selectedProject: state.selectedProject }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getProjectRelatedTickets`,
+                data: {
+                    headers: getters.getHeader(state),
+                    selectedProject: state.selectedProject
+                }
+            })
                 .then((__res) => {
                     const __relatedTickets = __res.data.issues.map((__ticket) =>  {
                         return {
@@ -754,7 +805,14 @@ export const actions = {
     },
     requestSmartPickedIssues: function ({ state }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getSmartPickedIssues`,
+                data: {
+                    headers: getters.getHeader(state)
+                }
+            })
                 .then((__res) => resolve(__res.data))
                 .catch((err) => {
                     if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
@@ -764,7 +822,14 @@ export const actions = {
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getAssignedTickets`,
+                data: {
+                    headers: getters.getHeader(state)
+                }
+            })
                 .then((__res) => resolve(__res.data))
                 .catch((err) => {
                     if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
@@ -774,7 +839,14 @@ export const actions = {
     },
     requestCurrentUser: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getCurrentUser`, data: { headers: getters.getHeader(state) }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getCurrentUser`,
+                data: {
+                    headers: getters.getHeader(state)
+                }
+            })
                 .then((__res) => resolve(__res.data))
                 .catch((err) => {
                     if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
