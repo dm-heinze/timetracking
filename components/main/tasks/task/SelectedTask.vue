@@ -1,5 +1,5 @@
 <template>
-    <div class="selected-ticket__container" :class="{ 'currently-active': markedAsActive, 'already-booked': booked, 'currentlyDraggable': !isTimerActive }">
+    <div class="selected-ticket__container" :class="{ 'currently-active': isTimerActive && (activeTicket === uniqueId), 'already-booked': booked, 'currentlyDraggable': !isTimerActive }">
         <div class="selected-ticket__heading mb-2" :class="{ 'flex-column align-items-start': $mq === 'md', 'flex-column align-items-center': $mq === 'sm', 'align-items-center': ($mq === 'lg' && assignedToTicket) || ($mq === 'plg' && assignedToTicket), 'flex-column': $mq === 'mdp' || !assignedToTicket }">
             <a
                 v-if="!editingName"
@@ -124,7 +124,6 @@
         },
         data() {
             return {
-                markedAsActive: false,
                 editingName: false,
                 localEditedName: ''
             };

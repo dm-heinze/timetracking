@@ -28,7 +28,6 @@
                 runningTimer: '',
                 startTime: '',
                 endTime: '',
-                markedAsActive: false,
                 initialTimeSpent: 0
             };
         },
@@ -71,9 +70,6 @@
                 this.saveSelectedTasksToStorage(); // update localStorage
             },
             startTimer: function () {
-                // mark the current activeTicket
-                this.markedAsActive = true;
-
                 this.initialTimeSpent = this.timeSpent; // needed for sum calculation if tracker is restarted
 
                 this.startTime = new Date();
@@ -83,8 +79,6 @@
                 this.runningTimer = setInterval(() => this.currentTimeInSeconds(), 1000); // calls function that saves current tracked time to vuex store & localStorage every second
             },
             stopTimer: function () {
-                this.markedAsActive = false;
-
                 this.endTime = new Date();
 
                 clearInterval(this.runningTimer);
