@@ -554,6 +554,10 @@ export const actions = {
                     if (response.data) { // todo
                         commit('setSessionObject', response.data);
 
+                        // currentUser may not have any assignedTickets which return the assignee === currentUser -> setting the currentUser here
+                        // receiving a sessionId indicates the correctness of the entered credentials therefore the user entered name can be set as the currentUser val
+                        commit('setCurrentUserName', { name: payload.data.name });
+
                         await Promise.all([
                             await dispatch('saveSessionIdToCookies'),
                             await dispatch('retrieveSelectedTasksFromStorage'),
@@ -771,6 +775,16 @@ export const actions = {
                 })
         })
     },
+    requestCurrentUser: function ({commit, state, dispatch}, payload) {
+        return new Promise((resolve, reject) => {
+            axios({ method: 'post', baseURL: __base_url, url: `/api/getCurrentUser`, data: { headers: getters.getHeader(state) }})
+                .then((__res) => resolve(__res.data))
+                .catch((err) => {
+                    if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
+                    else reject(err);
+                })
+        })
+    },
     requestPrefill: function ({ state, commit, dispatch }) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -778,29 +792,32 @@ export const actions = {
 
 
                 // assignedTickets
-                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name }); // used to filter for assignedTickets without the need for an extra array // todo
+                if (assignedTickets.issues.length) {
+                    // if there are assignedTickets but the request is not queued after the login step the val for currentUser was not set before
+                    if (!state.currentUser.name) commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name }); // used to filter for assignedTickets without the need for an extra array // todo
 
-                const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => { // todo
-                    return {
-                        key: __issue.key,
-                        id: __issue.id,
-                        summary: __issue.fields.summary, // todo
-                        assignee: __issue.fields.assignee.name,
-                        // avatarUrl: __issue.fields.project.avatarUrls['16x16']
-                        issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + __issue.key,
-                        comment: '',
-                        timeSpent: 0,
-                        startTime: '',
-                        endTime: '',
-                        assignedToTicket: true,
-                        booked: false,
-                        uniqueId: _.now() + index // todo
-                    }
-                });
+                    const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => { // todo
+                        return {
+                            key: __issue.key,
+                            id: __issue.id,
+                            summary: __issue.fields.summary, // todo
+                            assignee: __issue.fields.assignee.name,
+                            // avatarUrl: __issue.fields.project.avatarUrls['16x16']
+                            issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + __issue.key,
+                            comment: '',
+                            timeSpent: 0,
+                            startTime: '',
+                            endTime: '',
+                            assignedToTicket: true,
+                            booked: false,
+                            uniqueId: _.now() + index // todo
+                        }
+                    });
 
-                __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
+                    __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
 
-                commit('setAssignedTickets', __parsedAssignedIssues);
+                    commit('setAssignedTickets', __parsedAssignedIssues);
+                }
 
 
                 // smartPickedIssues
@@ -824,7 +841,18 @@ export const actions = {
                 __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue));
 
 
-                resolve();
+                // if request not queued after login but due to reload the field may not be available if the assignedTickets.issues array is empty
+                if (!state.currentUser.name && !assignedTickets.issues.length) {
+                    dispatch('requestCurrentUser')
+                        .then((__res) => {
+                            commit('setCurrentUserName', { name: __res.name });
+
+                            resolve();
+                        })
+                        .catch((err) => reject(err))
+                } else {
+                    resolve();
+                }
             } catch (err) {
                 if (err === 401) {
                     commit('setSessionObject', {}); // todo
