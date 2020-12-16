@@ -16,7 +16,9 @@
             </template>
             <template v-slot:default>
                 <div class="modal__main-container">
-                    <div class="modal__main-container__main-text">Are you sure you want to book tracked time for {{ taskKey }}?</div>
+                    <div class="modal__main-container__main-text">
+                        Are you sure you want to book tracked time for <span class="font-weight-bold">{{ taskKey }}</span>?
+                    </div>
                 </div>
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
