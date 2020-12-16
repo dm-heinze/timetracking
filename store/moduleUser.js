@@ -29,7 +29,8 @@ export const state = () => ({
     showErrorMessages: false,
     errorOccurred: false, // todo
     editingCustomTask: '',
-    logoutInProgress: false
+    logoutInProgress: false,
+    currentDay: ''
 });
 
 export const getters = {
@@ -45,6 +46,9 @@ export const getters = {
 }
 
 export const mutations = {
+    setCurrentDay: (state, payload) => {
+        state.currentDay = payload.currentDay; // todo
+    },
     toggleSuggestions: (state, value) => {
         state.showSuggestions = !state.showSuggestions;
     },
