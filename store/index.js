@@ -8,15 +8,23 @@ export const actions = {
             const __currentDayNow = new Date().toDateString();
 
             if (__lastSavedCurrentDay) {
-                if (base64.decode(__lastSavedCurrentDay) !== __currentDayNow) {
-                    // set new val to vuex store
+                if (__lastSavedCurrentDay !== __currentDayNow) {
+                    // not the same day anymore
+                    // -> set today's date to vuex store
                     commit('moduleUser/setCurrentDay', { currentDay: __currentDayNow });
 
-                    // set new val to cookies
-                    this.$cookies.set('CURRENT_DAY', base64.encode(__currentDayNow));
+                    // & update cookies
+                    this.$cookies.set('CURRENT_DAY', __currentDayNow);
+                } else {
+                    // still the same day
+                    // -> use saved date for vuex store
+                    commit('moduleUser/setCurrentDay', { currentDay: __lastSavedCurrentDay });
                 }
             } else {
-                this.$cookies.set('CURRENT_DAY', base64.encode(__currentDayNow)); // todo
+                // no val yet saved to cookies todo: expire cookie?
+                this.$cookies.set('CURRENT_DAY', __currentDayNow);
+
+                commit('moduleUser/setCurrentDay', { currentDay: __currentDayNow });
             }
 
 

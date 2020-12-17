@@ -5,12 +5,29 @@
                 <BreakTask v-if="(accumulatedBreakTime != '00:00:00') && !onABreak" />
             </b-collapse>
 
-            <div v-if="notAlreadyBooked.length !== 0">
+            <div class="toggle-show-all pb-2 d-flex flex-row"> <!-- todo -->
+                <toggle-right-icon
+                    class="toggle-show-all--show"
+                    v-b-tooltip.hover
+                    title="Toggle Booked"
+                    @click="toggleShowAllSelectedTasksOfCurrentDay()"
+                    v-if="showAllSelectedTasksOfCurrentDay"
+                />
+                <toggle-left-icon
+                    class="toggle-show-all--hide"
+                    v-b-tooltip.hover
+                    title="Toggle Booked"
+                    @click="toggleShowAllSelectedTasksOfCurrentDay()"
+                    v-else
+                />
+            </div>
+
+            <div v-if="tasksOfTheDay.length !== 0">
                 <ul>
                     <li>
-                        <draggable v-model="notAlreadyBooked" :disabled="isTimerActive">
+                        <draggable v-model="tasksOfTheDay" :disabled="isTimerActive">
                             <SelectedTask
-                                v-for="selectedTask in notAlreadyBooked"
+                                v-for="selectedTask in tasksOfTheDay"
                                 :key="selectedTask.uniqueId"
                                 :taskKey="selectedTask.key"
                                 :taskDirectLink="selectedTask.assignedToTicket ? selectedTask.issueLink : ''"
@@ -28,15 +45,16 @@
                 </ul>
             </div>
             <div v-else>There are no selected issues</div>
-            <div v-if="showErrorMessages && (notAlreadyBooked.length === 0)" class="message--error">No selected issues</div>
+            <div v-if="showErrorMessages && (tasksOfTheDay.length === 0)" class="message--error">No selected issues</div>
         </client-only>
     </div>
 </template>
 
 <script>
-    import { mapMutations, mapState, mapActions } from 'vuex';
+    import { mapMutations, mapState, mapGetters, mapActions } from 'vuex';
     import draggable from 'vuedraggable';
     import { BCollapse } from "bootstrap-vue";
+    import { ToggleLeftIcon, ToggleRightIcon } from "vue-feather-icons";
 
     export default {
         name: "SelectedTasks",
@@ -45,7 +63,8 @@
             BreakTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/BreakTask'),
             // added prefetch directive for webpack for case: adding a custom task w/ no network connection & no selectedTasks
             SelectedTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/task/SelectedTask'),
-            draggable
+            draggable,
+            ToggleLeftIcon, ToggleRightIcon
         },
         directives: { 'b-collapse': BCollapse },
         computed: {
@@ -54,26 +73,41 @@
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
-                onABreak: state => state.moduleUser.onABreak
+                onABreak: state => state.moduleUser.onABreak,
+                currentDay: state => state.moduleUser.currentDay,
+                showAllSelectedTasksOfCurrentDay: state => state.moduleUser.showAllSelectedTasksOfCurrentDay
             }),
-            alreadyBooked () { // todo: expiration
-                return this.selectedTasks.filter((__task) => __task.booked)
+            ...mapGetters({
+                getSelectedTasksWithDayIndicator: 'moduleUser/getSelectedTasksWithDayIndicator',
+                getSelectedTasksWithoutDayIndicator: 'moduleUser/getSelectedTasksWithoutDayIndicator'
+            }),
+            tasksNotOfTheDay () {
+                return this.getSelectedTasksWithDayIndicator.filter((__task) => __task.dayAdded !== this.currentDay); // field 'dayAdded' may not exist
             },
-            notAlreadyBooked: {
+            tasksOfTheDayBooked () {
+                return this.getSelectedTasksWithDayIndicator.filter((__task) => __task.dayAdded === this.currentDay).filter((__task) => __task.booked);
+            },
+            tasksOfTheDay: {
+                // 'dayAdded' needs to match the currentDay set in vuex store via nuxtServerInit
+                //  not all selectedTasks will have the field dayAdded as this field was added later on
                 get () {
-                    return this.selectedTasks.filter((__task) => !__task.booked) // todo
+                    // booked & non-booked of the day
+                    if (this.showAllSelectedTasksOfCurrentDay) {
+                        return this.getSelectedTasksWithDayIndicator.filter((__task) => __task.dayAdded === this.currentDay);
+                    } else {
+                        // only non-booked of the day
+                        return this.getSelectedTasksWithDayIndicator.filter((__task) => !__task.booked).filter((__task) => __task.dayAdded === this.currentDay);
+                    }
                 },
-
-                set (value) { // value param represents the updated array consisting only of non-booked tasks
-                    if(!this.isTimerActive) {
+                set (value) {
+                    if (!this.isTimerActive) {
                         let __selectedTasks;
-
-                        if (this.alreadyBooked.length) {
-                            // non-expired booked tasks should stay in the list
-                            // -> aggregate those w/ list of unbooked tasks represented by received value param
-                            __selectedTasks = [...value, ...this.alreadyBooked]; // todo
+                        if (this.showAllSelectedTasksOfCurrentDay) {
+                            // tasks today booked & unbooked  +  tasks not today w/ indicator  +  tasks not today w/ no indicator
+                            __selectedTasks = [...value, ...this.tasksNotOfTheDay, ...this.getSelectedTasksWithoutDayIndicator];
                         } else {
-                            __selectedTasks = value; // no booked tasks in selectedTasks list -> no need to create aggregated list
+                            // today & booked  +  today & non-booked  +  not today & booked & non-booked   +  tasks not today w/ no indicator
+                            __selectedTasks = [...value, ...this.tasksOfTheDayBooked, ...this.tasksNotOfTheDay, ...this.getSelectedTasksWithoutDayIndicator];
                         }
 
                         // set vuex store state
@@ -88,7 +122,8 @@
         },
         methods: {
             ...mapMutations({
-                setSelectedTasks: 'moduleUser/setSelectedTasks'
+                setSelectedTasks: 'moduleUser/setSelectedTasks',
+                toggleShowAllSelectedTasksOfCurrentDay: 'moduleUser/toggleShowAllSelectedTasksOfCurrentDay'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'

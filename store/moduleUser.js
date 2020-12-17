@@ -30,7 +30,8 @@ export const state = () => ({
     errorOccurred: false, // todo
     editingCustomTask: '',
     logoutInProgress: false,
-    currentDay: ''
+    currentDay: '',
+    showAllSelectedTasksOfCurrentDay: false // show booked AND non-booked selectedTasks
 });
 
 export const getters = {
@@ -42,10 +43,21 @@ export const getters = {
     },
     getSmartPickedSuggestions: (state) => {
         return _.slice(state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee !== state.currentUser.name), 0, 5) // end excluded
+    },
+    // previously saved tasks will not have the field 'dayAdded' when retrieved from localStorage
+    // but to prevent loss of any unbooked tasks when re-ordering selectedTasks, all non-booked tasks from before need to be retained in storage
+    getSelectedTasksWithoutDayIndicator: (state) => {
+        return state.selectedTasks.filter((__ticket) => !__ticket.hasOwnProperty('dayAdded'))
+    },
+    getSelectedTasksWithDayIndicator: (state) => {
+        return state.selectedTasks.filter((__ticket) => __ticket.hasOwnProperty('dayAdded'))
     }
 }
 
 export const mutations = {
+    toggleShowAllSelectedTasksOfCurrentDay: (state, value) => {
+        state.showAllSelectedTasksOfCurrentDay = !state.showAllSelectedTasksOfCurrentDay;
+    },
     setCurrentDay: (state, payload) => {
         state.currentDay = payload.currentDay; // todo
     },
@@ -358,6 +370,7 @@ export const actions = {
             if (payload.fromSearchResults) {
                 __selection = _.cloneDeep(payload.selectedTicket);
                 __selection.uniqueId = _.now();
+                __selection.dayAdded = new Date().toDateString();
             } else {
                 __selection = {
                     assignedToTicket: true,
@@ -370,7 +383,8 @@ export const actions = {
                     startTime: '',
                     endTime: '',
                     booked: false,
-                    assignee: '' // todo!
+                    assignee: '', // todo!
+                    dayAdded: new Date().toDateString()
                 };
             }
 
@@ -759,11 +773,13 @@ export const actions = {
                     // - everything else will be deleted from localStorage & never sent to vuex store
                     const __removedExpiredBookedTasks = __result.filter((__task) =>
                         // using hasOwnProperty in condition will delete previously booked items (previous as in previous implementation)
-                        (__task.booked && __task.hasOwnProperty('bookedAt') && ((__task.bookedAt + expirationDuration) > _.now())) || !__task.booked
+                        // any booked tasks that have not expired yet & have the field dayAdded -> keep in list
+                        // todo: case -> booked + but not expired + does not have the field dayAdded
+                        (__task.booked && __task.hasOwnProperty('bookedAt') && ((__task.bookedAt + expirationDuration) > _.now()) && __task.hasOwnProperty('dayAdded')) || !__task.booked
                     )
 
                     // set vuex store state
-                    commit('setSelectedTasks', __removedExpiredBookedTasks);
+                    commit('setSelectedTasks', __removedExpiredBookedTasks); // todo: dayAdded field - alternative implementation
 
                     // save vuex store state to localStorage
                     // anything (booked && expired) will now be completely removed from selectedTasks list:
