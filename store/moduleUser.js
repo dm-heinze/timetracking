@@ -31,7 +31,9 @@ export const state = () => ({
     editingCustomTask: '',
     logoutInProgress: false,
     currentDay: '',
-    showAllSelectedTasksOfCurrentDay: false // show booked AND non-booked selectedTasks
+    showAllSelectedTasksOfCurrentDay: false, // show booked AND non-booked selectedTasks
+    showUnbookedTasksLeftModal: false, // any tasks from previous days w/ no 'dayAdded' field can be booked through the modal shown when this state value has val true
+    doesNotHaveFieldDayAdded: []
 });
 
 export const getters = {
@@ -55,6 +57,24 @@ export const getters = {
 }
 
 export const mutations = {
+    toggleUnbookedTasksLeftModal: (state, value) => {
+        state.showUnbookedTasksLeftModal = !state.showUnbookedTasksLeftModal;
+    },
+    updateListDoesNotHaveFieldDayAdded: (state, value) => {
+        state.doesNotHaveFieldDayAdded = value;
+    },
+    removeFromDoesNotHaveFieldDayAdded: (state, payload) => {
+        state.doesNotHaveFieldDayAdded = state.doesNotHaveFieldDayAdded.filter((__task) => __task.uniqueId !== payload.uniqueIdOfTaskToDelete)
+    },
+    saveTimeSpentOnDoesNotHaveFieldDayAddedTask: (state, value) => {
+        state.doesNotHaveFieldDayAdded = state.doesNotHaveFieldDayAdded.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.uniqueId) __selectedTask.timeSpent = value.timeSpent;
+            return __selectedTask;
+        })
+    },
+    removeDoesNotHaveFieldDayAddedTasks: (state, value) => {
+        state.selectedTasks = state.selectedTasks.filter((__task) => __task.hasOwnProperty('dayAdded'))
+    },
     toggleShowAllSelectedTasksOfCurrentDay: (state, value) => {
         state.showAllSelectedTasksOfCurrentDay = !state.showAllSelectedTasksOfCurrentDay;
     },
@@ -484,6 +504,73 @@ export const actions = {
             }
         })
     },
+    requestSavingPreviousWorklogs: function ({ state, commit, dispatch }) {
+        return new Promise(async (resolve, reject) => {
+            // todo
+            if (state.doesNotHaveFieldDayAdded.length !== 0) { // todo
+                let hasNonTrackedTasks = state.doesNotHaveFieldDayAdded.filter((__selectedTask) => !(__selectedTask.timeSpent)).length !== 0;
+
+                let hasUnassignedCustomTasks = state.doesNotHaveFieldDayAdded.filter((__selectedTask) => !__selectedTask.assignedToTicket).length !== 0;
+
+                if (hasNonTrackedTasks || hasUnassignedCustomTasks) reject();
+
+                if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
+                    try {
+                        await Promise.all(state.doesNotHaveFieldDayAdded.map(async __selectedTask => {
+                            if (!__selectedTask.booked) {
+                                await axios({
+                                    method: 'post',
+                                    baseURL: __base_url,
+                                    url: `/api/addWorklog`,
+                                    data: {
+                                        headers: getters.getHeader(state),
+                                        comment: __selectedTask.comment,
+                                        timeSpentSeconds: __selectedTask.timeSpent,
+                                        ticketId: __selectedTask.key
+                                    }
+                                })
+                            }
+                        }))
+                            .then(() => {
+                                // remove all tasks as they have been booked
+                                // if they had been booked previously w/ no 'dayAdded' field they would've been already removed on app start anyways
+                                // the field 'dayAdded' was not part of previous implementations
+                                commit('updateListDoesNotHaveFieldDayAdded', []);
+
+                                // remove every task from selectedTasks that does not include field dayAdded
+                                commit('removeDoesNotHaveFieldDayAddedTasks');
+
+                                // save updated list of selectedTasks to storage
+                                dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
+                            })
+                            .catch((err) => {
+                                console.log("err occurred: ", err);
+
+                                if (err.response) {
+                                    if (err.response.status === 401) {
+                                        if (state.isTimerActive) commit('logoutStarted', true);
+                                        dispatch('stopTrackers')
+                                            .then(() => {
+                                                // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                                                dispatch('resetState')
+                                                    .then(() => reject(err))
+                                                    .catch(() => reject(err));
+                                            })
+                                            .catch(() => reject(err)) // todo
+                                    } else reject(err);
+                                } else reject(err);
+                            });
+                    } catch (err) {
+                        console.log("err occurred in requestSavingPreviousWorklogs: ", err);
+
+                        reject(err); // todo
+                    }
+                }
+            } else {
+                reject("no selected tasks"); // todo
+            }
+        })
+    },
     removeFromStorage: function({commit, state}, payload) {
         return new Promise((resolve, reject) => {
             this.$localForage.removeItem(payload)
@@ -774,9 +861,16 @@ export const actions = {
                     const __removedExpiredBookedTasks = __result.filter((__task) =>
                         // using hasOwnProperty in condition will delete previously booked items (previous as in previous implementation)
                         // any booked tasks that have not expired yet & have the field dayAdded -> keep in list
-                        // todo: case -> booked + but not expired + does not have the field dayAdded
+                        // todo: case -> booked + but not expired + does not have the field dayAdded -> SOLVED below //
                         (__task.booked && __task.hasOwnProperty('bookedAt') && ((__task.bookedAt + expirationDuration) > _.now()) && __task.hasOwnProperty('dayAdded')) || !__task.booked
                     )
+
+                    const __doesNotHaveFieldDayAdded = __removedExpiredBookedTasks.filter((__task) => !__task.hasOwnProperty('dayAdded'));
+                    if (__doesNotHaveFieldDayAdded.length) {
+                        commit('updateListDoesNotHaveFieldDayAdded', __doesNotHaveFieldDayAdded);
+
+                        commit('toggleUnbookedTasksLeftModal'); // this toggles on the visibility of the modal
+                    }
 
                     // set vuex store state
                     commit('setSelectedTasks', __removedExpiredBookedTasks); // todo: dayAdded field - alternative implementation

@@ -1,0 +1,50 @@
+#confirm-push-time-indicatorless-tasks {
+
+    .ticket__info {
+        padding-left: 0;
+    }
+
+    .list-group-item {
+        height: $list-item-height + 25px;
+
+        .ticket__info__summary {
+            color: $dark-grey;
+            font-size: $small-button__font-size;
+        }
+
+        svg {
+            fill: white;
+            transition: fill 0.25s ease-in-out;
+        }
+
+        &:hover {
+            cursor: pointer;
+            @include button-hover-styles;
+
+            & svg {
+                fill: white;
+            }
+        }
+    }
+
+    .btn--edit {
+        background: transparent;
+        border: none;
+        outline: none;
+
+        &:hover {
+            & svg {
+                stroke: $secondary;
+            }
+        }
+    }
+
+    .ticket__actions {
+
+        &:hover {
+            & svg {
+                fill: $danger;
+            }
+        }
+    }
+}

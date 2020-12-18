@@ -31,6 +31,8 @@
                         <selected-tasks />
                     </div>
                 </b-col>
+
+                <indicatorless-tasks v-if="doesNotHaveFieldDayAdded.length" />
             </b-row>
         </div>
     </div>
@@ -57,13 +59,15 @@
             PushTotalTime,
             AddCustomTask,
             SelectedTasks,
-            SettingsSidebar: () => import('~/components/settings-sidebar/SettingsSidebar')
+            SettingsSidebar: () => import('~/components/settings-sidebar/SettingsSidebar'),
+            IndicatorlessTasks: () => import('~/components/main/tasks/IndicatorlessTasks')
         },
         mixins: [mainButtonsFlexDirectionMixin],
         computed: {
             ...mapState({
                 settingsOpen: state => state.moduleUser.settingsOpen,
-                searchResults: state => state.moduleUser.searchResults
+                searchResults: state => state.moduleUser.searchResults,
+                doesNotHaveFieldDayAdded: state => state.moduleUser.doesNotHaveFieldDayAdded
             }),
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
