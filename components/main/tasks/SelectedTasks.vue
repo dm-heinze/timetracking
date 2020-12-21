@@ -175,7 +175,7 @@
                 if (!updatedArrayUnbookedTasksNotOfTheDay.length) {
                     // when there are no more unbooked tasks left from previous days -> the state should default to 'today'
                     // -> also needed for conditional in 'push all' button
-                    this.toggleUnbookedTasksNotOfTheDay();
+                    if (this.showUnbookedTasksNotOfTheDay) this.toggleUnbookedTasksNotOfTheDay();
                 }
             }
         }
