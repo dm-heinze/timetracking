@@ -82,14 +82,25 @@
             $mq: function (newValue) {
                 if (newValue === 'lg' || newValue === 'sm') this.$root.$emit('bv::disable::tooltip');
                 else this.$root.$emit('bv::enable::tooltip');
+            },
+            doesNotHaveFieldDayAdded: function (updatedArrayDoesNotHaveFieldDayAdded) {
+                if (updatedArrayDoesNotHaveFieldDayAdded.length === 0) {
+                    // remove every task from selectedTasks that does not include field dayAdded
+                    this.removeDoesNotHaveFieldDayAddedTasks();
+
+                    // save updated list of selectedTasks to storage
+                    this.saveSelectedTasksToStorage();
+                }
             }
         },
         methods: {
             ...mapActions({
-                requestAllProjects: 'moduleUser/requestAllProjects'
+                requestAllProjects: 'moduleUser/requestAllProjects',
+                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
-                setSearchResult: 'moduleUser/setSearchResult'
+                setSearchResult: 'moduleUser/setSearchResult',
+                removeDoesNotHaveFieldDayAddedTasks: 'moduleUser/removeDoesNotHaveFieldDayAddedTasks'
             })
         },
         middleware ({ store, redirect }) {
