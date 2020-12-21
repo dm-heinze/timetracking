@@ -48,7 +48,7 @@
 
 
                 <div class="ticket-trackers d-flex flex-row" :class="{ 'align-self-center': $mq === 'sm' }">
-                    <ticket-play-and-pause v-if="!booked" :time-spent="timeSpent" :unique-id="uniqueId" />
+                    <ticket-play-and-pause v-if="!booked && !showUnbookedTasksNotOfTheDay" :time-spent="timeSpent" :unique-id="uniqueId" />
 
                     <push-single-task v-if="!booked" :task-key="taskKey" :task-worklog-comment="taskWorklogComment" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" :booked="booked" :unique-id="uniqueId" />
 
@@ -132,7 +132,8 @@
             ...mapState({
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket,
-                editingCustomTask: state => state.moduleUser.editingCustomTask
+                editingCustomTask: state => state.moduleUser.editingCustomTask,
+                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
             }),
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`

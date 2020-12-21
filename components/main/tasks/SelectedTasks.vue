@@ -26,6 +26,7 @@
 
                 <toggle-right-icon
                     class="toggle-show-all--show"
+                    :class="{ 'disabled': showUnbookedTasksNotOfTheDay }"
                     v-b-tooltip.hover
                     title="Toggle Booked"
                     @click="toggleShowAllSelectedTasksOfCurrentDay()"
@@ -33,6 +34,7 @@
                 />
                 <toggle-left-icon
                     class="toggle-show-all--hide"
+                    :class="{ 'disabled': showUnbookedTasksNotOfTheDay }"
                     v-b-tooltip.hover
                     title="Toggle Booked"
                     @click="toggleShowAllSelectedTasksOfCurrentDay()"
@@ -66,7 +68,7 @@
             <div v-if="showErrorMessages && (tasksOfTheDay.length === 0)" class="message--error">No selected issues</div>
 
             <div v-if="unbookedTasksNotOfTheDay.length && showUnbookedTasksNotOfTheDay"> <!-- todo -->
-                <div class="previous-day-unbooked-warning font-weight-bold">Any of these unbooked tasks will be booked for the current day if you push. You need to correct the date manually afterwards.</div>
+                <div class="previous-day-unbooked-warning font-weight-bold mb-4">Any of these unbooked tasks will be booked for the current day if you push. You need to correct the date manually afterwards.</div>
                 <SelectedTask
                     v-for="selectedTask in unbookedTasksNotOfTheDay"
                     :key="selectedTask.uniqueId"

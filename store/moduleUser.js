@@ -80,7 +80,7 @@ export const mutations = {
         state.selectedTasks = state.selectedTasks.filter((__task) => __task.hasOwnProperty('dayAdded'))
     },
     toggleShowAllSelectedTasksOfCurrentDay: (state, value) => {
-        state.showAllSelectedTasksOfCurrentDay = !state.showAllSelectedTasksOfCurrentDay;
+        if (!state.showUnbookedTasksNotOfTheDay) state.showAllSelectedTasksOfCurrentDay = !state.showAllSelectedTasksOfCurrentDay;
     },
     setCurrentDay: (state, payload) => {
         state.currentDay = payload.currentDay; // todo

@@ -92,6 +92,10 @@
         height: $toggler-size;
         width: $toggler-size;
         stroke-width: $toggler-stroke-width;
+
+        &.disabled {
+            cursor: not-allowed;
+        }
     }
 
     &--show {
