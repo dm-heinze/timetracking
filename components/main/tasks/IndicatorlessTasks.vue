@@ -34,13 +34,13 @@
                         class="d-flex justify-content-between"
                     >
                         <div class="ticket__info col-10">
-                            <span class="ticket__info__key font-weight-bold">
+                            <span class="ticket__info__key font-weight-bold d-flex align-items-center">
                                 {{ task.key }}
                                 <b-badge v-if="!task.assignedToTicket" variant="warning" class="ml-2 px-2">Custom Task</b-badge>
                             </span>
                             <div class="ticket__info__summary text-truncate">{{ task.summary }}</div>
-                            <div class="d-flex flex-row">
-                                <div v-if="!editingTrackedTime">
+                            <div class="d-flex flex-row align-items-center">
+                                <div v-if="!editingTrackedTime || (editingTrackedTime && (currentEditedTasksUniqueId !== task.uniqueId))">
                                     {{ parsedTimeSpent(task.timeSpent) }}
                                 </div>
 
@@ -56,9 +56,10 @@
                                 <button
                                     class="btn--edit"
                                     @click.prevent="activateEditModeForTrackedTime(task.uniqueId)"
+                                    :disabled="editingTrackedTime && (currentEditedTasksUniqueId !== task.uniqueId)"
                                 >
-                                    <edit2-icon v-if="!editingTrackedTime" />
-                                    <check-icon v-else />
+                                    <edit2-icon v-if="!editingTrackedTime || (editingTrackedTime && (currentEditedTasksUniqueId !== task.uniqueId))" />
+                                    <check-icon v-else-if="editingTrackedTime && (currentEditedTasksUniqueId === task.uniqueId)" />
                                 </button>
                             </div>
                         </div>
@@ -155,11 +156,11 @@
                 // update state & vuex store & localStorage
                 this.saveTimeSpentOnDoesNotHaveFieldDayAddedTask({ uniqueId: this.currentEditedTasksUniqueId, timeSpent: dateFromEditedTimeSpentTimeStringArray.getTime() - dateFromParsedStartTime.getTime() }); // todo: rename dateFromParsedStartTime
                 this.saveSelectedTasksToStorage(); // todo
-            }, 1000),
+            }, 0), // todo
             activateEditModeForTrackedTime: function (idOfTask) {
                 this.editingTrackedTime = !this.editingTrackedTime;
                 if (this.editingTrackedTime) this.currentEditedTasksUniqueId = idOfTask;
-                else this.currentEditedTasksUniqueId = '';
+                if (!this.editingTrackedTime) this.currentEditedTasksUniqueId = '';
             },
             saveWorklogs: function () {
                 this.$bvModal.hide('confirm-push-time-indicatorless-tasks'); // any cancel event needed?
