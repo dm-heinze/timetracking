@@ -125,7 +125,8 @@
             }),
             ...mapMutations({
                 removeFromDoesNotHaveFieldDayAdded: 'moduleUser/removeFromDoesNotHaveFieldDayAdded',
-                saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUser/saveTimeSpentOnDoesNotHaveFieldDayAddedTask'
+                saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUser/saveTimeSpentOnDoesNotHaveFieldDayAddedTask',
+                removeDoesNotHaveFieldDayAddedTasks: 'moduleUser/removeDoesNotHaveFieldDayAddedTasks'
             }),
             parsedTimeSpent (timespent) {
                 const helperDate = new Date();
@@ -197,6 +198,17 @@
                             })
                         }
                     });
+            }
+        },
+        watch: {
+		    doesNotHaveFieldDayAdded: function (updatedArrayDoesNotHaveFieldDayAdded) {
+		        if (updatedArrayDoesNotHaveFieldDayAdded.length === 0) {
+                    // remove every task from selectedTasks that does not include field dayAdded
+                    this.removeDoesNotHaveFieldDayAddedTasks();
+
+                    // save updated list of selectedTasks to storage
+                    this.saveSelectedTasksToStorage();
+                }
             }
         }
     }
