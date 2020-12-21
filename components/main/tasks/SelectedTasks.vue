@@ -5,7 +5,25 @@
                 <BreakTask v-if="(accumulatedBreakTime != '00:00:00') && !onABreak" />
             </b-collapse>
 
-            <div class="toggle-show-all pb-2 d-flex flex-row justify-content-end mr-4"> <!-- todo -->
+            <div class="toggle-show-all pb-2 d-flex flex-row justify-content-end align-items-center mr-4"> <!-- todo -->
+                <button
+                    @click="toggleUnbookedTasksNotOfTheDay"
+                    class="mr-4 font-weight-bold"
+                    :class="{ 'inactive': !showUnbookedTasksNotOfTheDay }"
+                    :disabled="showUnbookedTasksNotOfTheDay"
+                    v-if="unbookedTasksNotOfTheDay.length"
+                >
+                    Previously
+                </button>
+                <button
+                    @click="toggleUnbookedTasksNotOfTheDay"
+                    class="mr-4 font-weight-bold"
+                    :class="{ 'inactive': showUnbookedTasksNotOfTheDay }"
+                    :disabled="!showUnbookedTasksNotOfTheDay"
+                >
+                    Today
+                </button>
+
                 <toggle-right-icon
                     class="toggle-show-all--show"
                     v-b-tooltip.hover
@@ -22,7 +40,7 @@
                 />
             </div>
 
-            <div v-if="tasksOfTheDay.length !== 0">
+            <div v-if="tasksOfTheDay.length !== 0 && !showUnbookedTasksNotOfTheDay">
                 <ul>
                     <li>
                         <draggable v-model="tasksOfTheDay" :disabled="isTimerActive">
@@ -44,8 +62,26 @@
                     </li>
                 </ul>
             </div>
-            <div v-else>There are no selected issues</div>
+            <div v-else-if="!tasksOfTheDay.length && !showUnbookedTasksNotOfTheDay">There are no selected issues</div>
             <div v-if="showErrorMessages && (tasksOfTheDay.length === 0)" class="message--error">No selected issues</div>
+
+            <div v-if="unbookedTasksNotOfTheDay.length && showUnbookedTasksNotOfTheDay"> <!-- todo -->
+                <div class="previous-day-unbooked-warning font-weight-bold">Any of these unbooked tasks will be booked for the current day if you push. You need to correct the date manually afterwards.</div>
+                <SelectedTask
+                    v-for="selectedTask in unbookedTasksNotOfTheDay"
+                    :key="selectedTask.uniqueId"
+                    :taskKey="selectedTask.key"
+                    :taskDirectLink="selectedTask.assignedToTicket ? selectedTask.issueLink : ''"
+                    :taskSummary="selectedTask.assignedToTicket ? selectedTask.summary : ''"
+                    :taskWorklogComment="selectedTask.comment"
+                    :timeSpent="selectedTask.timeSpent"
+                    :startedAt="selectedTask.startTime"
+                    :endedAt="selectedTask.endTime"
+                    :assigned-to-ticket="selectedTask.assignedToTicket"
+                    :booked="selectedTask.booked"
+                    :uniqueId="selectedTask.uniqueId"
+                />
+            </div>
         </client-only>
     </div>
 </template>
@@ -75,7 +111,8 @@
                 accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
                 onABreak: state => state.moduleUser.onABreak,
                 currentDay: state => state.moduleUser.currentDay,
-                showAllSelectedTasksOfCurrentDay: state => state.moduleUser.showAllSelectedTasksOfCurrentDay
+                showAllSelectedTasksOfCurrentDay: state => state.moduleUser.showAllSelectedTasksOfCurrentDay,
+                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
             }),
             ...mapGetters({
                 getSelectedTasksWithDayIndicator: 'moduleUser/getSelectedTasksWithDayIndicator',
@@ -83,6 +120,9 @@
             }),
             tasksNotOfTheDay () {
                 return this.getSelectedTasksWithDayIndicator.filter((__task) => __task.dayAdded !== this.currentDay); // field 'dayAdded' may not exist
+            },
+            unbookedTasksNotOfTheDay () {
+                return this.tasksNotOfTheDay.filter((__task) => !__task.booked);
             },
             tasksOfTheDayBooked () {
                 return this.getSelectedTasksWithDayIndicator.filter((__task) => __task.dayAdded === this.currentDay).filter((__task) => __task.booked);
@@ -123,7 +163,8 @@
         methods: {
             ...mapMutations({
                 setSelectedTasks: 'moduleUser/setSelectedTasks',
-                toggleShowAllSelectedTasksOfCurrentDay: 'moduleUser/toggleShowAllSelectedTasksOfCurrentDay'
+                toggleShowAllSelectedTasksOfCurrentDay: 'moduleUser/toggleShowAllSelectedTasksOfCurrentDay',
+                toggleUnbookedTasksNotOfTheDay: 'moduleUser/toggleUnbookedTasksNotOfTheDay'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
