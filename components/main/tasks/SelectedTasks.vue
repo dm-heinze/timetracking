@@ -5,7 +5,7 @@
                 <BreakTask v-if="(accumulatedBreakTime != '00:00:00') && !onABreak" />
             </b-collapse>
 
-            <div class="toggle-show-all pb-2 d-flex flex-row"> <!-- todo -->
+            <div class="toggle-show-all pb-2 d-flex flex-row justify-content-end mr-4"> <!-- todo -->
                 <toggle-right-icon
                     class="toggle-show-all--show"
                     v-b-tooltip.hover
