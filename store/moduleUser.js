@@ -76,6 +76,13 @@ export const mutations = {
             return __selectedTask;
         })
     },
+    saveCommentOfDoesNotHaveFieldDayAddedTask: (state, value) => {
+        state.doesNotHaveFieldDayAdded = state.doesNotHaveFieldDayAdded.map((__selectedTask) => {
+            // casting to a number bc event.target.name resulted in a string val
+            if (__selectedTask.uniqueId === Number(value.uniqueId)) __selectedTask.comment = value.comment;
+            return __selectedTask;
+        })
+    },
     removeDoesNotHaveFieldDayAddedTasks: (state, value) => {
         state.selectedTasks = state.selectedTasks.filter((__task) => __task.hasOwnProperty('dayAdded'))
     },

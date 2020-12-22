@@ -5,7 +5,11 @@
     }
 
     .list-group-item {
-        height: $list-item-height + 25px;
+        height: $list-item-height + 100px; // todo
+
+        textarea {
+            width: 100%;
+        }
 
         .ticket__info__summary {
             color: $dark-grey;

@@ -19,7 +19,7 @@
                     <div>
                         <div>You can remove them or otherwise the tasks will be booked for the current day. You can adjust the booking manually afterwards.</div>
                         <div
-                            class="font-weight-bold custom-tasks-available pt-3"
+                            class="font-weight-bold custom-tasks-available pt-4"
                             v-if="hasCustomTasks.length"
                         >
                             You have custom tasks that need to get booked and removed manually.
@@ -31,12 +31,12 @@
                     <b-list-group-item
                         v-for="task in doesNotHaveFieldDayAdded"
                         :key="task.uniqueId"
-                        class="d-flex justify-content-between"
+                        class="d-flex justify-content-between align-items-start pt-4"
                     >
                         <div class="ticket__info col-10">
-                            <span class="ticket__info__key font-weight-bold d-flex align-items-center">
+                            <span class="ticket__info__key font-weight-bold d-flex align-items-start">
                                 {{ task.key }}
-                                <b-badge v-if="!task.assignedToTicket" variant="warning" class="ml-2 px-2">Custom Task</b-badge>
+                                <b-badge v-if="!task.assignedToTicket" variant="warning" class="ml-2 px-2 mt-1">Custom Task</b-badge>
                             </span>
                             <div class="ticket__info__summary text-truncate">{{ task.summary }}</div>
                             <div class="d-flex flex-row align-items-center">
@@ -63,6 +63,7 @@
                                     <check-icon v-else-if="editingTrackedTime && (currentEditedTasksUniqueId === task.uniqueId)" />
                                 </button>
                             </div>
+                            <textarea rows="2" class="mt-2" :value="task.comment" @input="saveCommentToStore" :disabled="task.booked || !task.assignedToTicket" :name="task.uniqueId"></textarea>
                         </div>
 
                         <div class="ticket__actions">
@@ -126,8 +127,15 @@
             }),
             ...mapMutations({
                 removeFromDoesNotHaveFieldDayAdded: 'moduleUser/removeFromDoesNotHaveFieldDayAdded',
-                saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUser/saveTimeSpentOnDoesNotHaveFieldDayAddedTask'
+                saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUser/saveTimeSpentOnDoesNotHaveFieldDayAddedTask',
+                saveTaskComment: 'moduleUser/saveTaskComment',
+                saveCommentOfDoesNotHaveFieldDayAddedTask: 'moduleUser/saveCommentOfDoesNotHaveFieldDayAddedTask'
             }),
+            saveCommentToStore: _.debounce(function (event) {
+                this.saveCommentOfDoesNotHaveFieldDayAddedTask({ uniqueId: event.target.name, comment: event.target.value }); // update vuex store
+
+                this.saveSelectedTasksToStorage(); // bc array elements of doesNotHaveFieldDayAdded still are part of selectedTasks
+            }, 1000),
             parsedTimeSpent (timespent) {
                 const helperDate = new Date();
 
