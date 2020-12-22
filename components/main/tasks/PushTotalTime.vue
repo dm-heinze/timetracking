@@ -62,8 +62,8 @@
                 selectedTasks: state => state.moduleUser.selectedTasks,
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
                 isTimerActive: state => state.moduleUser.isTimerActive,
-                onABreak: state => state.moduleUser.onABreak,
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
+                onABreak: state => state.moduleBreak.onABreak,
+                accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
                 showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
             }),
             everythingBookedAlready () {
@@ -82,11 +82,11 @@
         methods: {
 		    ...mapMutations({
                 toggleShowErrorMessages: 'moduleUser/toggleShowErrorMessages',
-                updateTotalBreakTime: 'moduleUser/updateTotalBreakTime',
+                updateTotalBreakTime: 'moduleBreak/updateTotalBreakTime',
             }),
             ...mapActions({
                 requestSavingWorklogs: 'moduleUser/requestSavingWorklogs',
-                saveBreaksToStorage: 'moduleUser/saveBreaksToStorage'
+                saveBreaksToStorage: 'moduleBreak/saveBreaksToStorage'
             }),
             resetStateAndCloseModal: function () {
                 this.$bvModal.hide(`confirm-push-time`);

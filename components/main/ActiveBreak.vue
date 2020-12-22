@@ -26,12 +26,12 @@
         directives: { 'b-collapse': BCollapse, 'b-navbar-nav': BNavbarNav },
         computed: {
             ...mapState({
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime
+                accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime
             })
         },
         methods: {
             ...mapMutations({
-                toggleBreakMutation: 'moduleUser/toggleBreak'
+                toggleBreakMutation: 'moduleBreak/toggleBreak'
             }),
             toggleBreak: function () {
                 // start a break immediately

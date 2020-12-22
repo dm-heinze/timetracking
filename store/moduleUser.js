@@ -15,9 +15,6 @@ export const state = () => ({
     selectedProject: '',
     relatedTickets: [],
     activeTicket: '',
-    breaks: [],
-    onABreak: false,
-    accumulatedBreakTime: '00:00:00',
     selectedTasks: [],
     prefilledSearchSuggestions: [],
     assignedTickets: [],
@@ -191,17 +188,8 @@ export const mutations = {
     setRelatedTickets: (state, value) => {
         state.relatedTickets = value;
     },
-    addBreak: (state, value) => {
-        state.breaks.push(value);
-    },
     setActiveTicket: (state, value) => {
         state.activeTicket = value;
-    },
-    toggleBreak: (state) => {
-        state.onABreak = !state.onABreak;
-    },
-    updateTotalBreakTime: (state, value) => {
-        state.accumulatedBreakTime = value.totalBreakTime
     },
     addToPrefilledSearchSuggestions : (state, value) => {
         // check needed to prevent duplication from aggregated search results for assigned & picked issues
@@ -342,26 +330,6 @@ export const actions = {
             this.$localForage.setItem('SUGGESTION_GROUPS', state.suggestionGroups)
                 .then(() => resolve())
                 .catch(() => reject())
-        })
-    },
-    saveBreaksToStorage: function ({ state }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.setItem('BREAKS', state.accumulatedBreakTime)
-                .then(() => resolve())
-                .catch(() => reject())
-        })
-    },
-    retrieveBreaksFromStorage: function({ commit }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.getItem('BREAKS').then((__result) => {
-                if (!_.isEmpty(__result)) {
-                    commit('updateTotalBreakTime', { totalBreakTime: __result });
-
-                    resolve();
-                } else {
-                    resolve();
-                }
-            })
         })
     },
     retrieveBookmarksFromStorage: function({ commit }) {
@@ -612,10 +580,10 @@ export const actions = {
         commit('setSearchResult', []);
         if (payload.close) commit('toggleSettings');
     },
-    stopTrackers: function({ commit, state, dispatch }, payload) {
+    stopTrackers: function({ commit, state, rootState, dispatch }, payload) {
         return new Promise((resolve, reject) => { // todo
             // check if any break or task trackers are active
-            if (state.onABreak) commit('toggleBreak');
+            if (rootState.moduleBreak.onABreak) commit('moduleBreak/toggleBreak', {}, { root: true }); // todo
 
             if (state.isTimerActive) {
                 commit('setLastTicket', state.activeTicket);
@@ -639,7 +607,7 @@ export const actions = {
             if (state.relatedTickets) commit('setRelatedTickets', []); // todo
             commit('setBookmarks', []);
             commit('setSelectedTasks', []);
-            commit('updateTotalBreakTime', { totalBreakTime: '00:00:00' });
+            commit('moduleBreak/updateTotalBreakTime', { totalBreakTime: '00:00:00' }, { root: true }); // todo
             commit('logoutStarted', false);
 
             dispatch('removeFromCookies', 'JSESSIONID')
@@ -705,7 +673,7 @@ export const actions = {
                         await Promise.all([
                             await dispatch('saveSessionIdToCookies'),
                             await dispatch('retrieveSelectedTasksFromStorage'),
-                            await dispatch('retrieveBreaksFromStorage'),
+                            await dispatch('moduleBreak/retrieveBreaksFromStorage', {}, { root: true }), // todo
                             await dispatch('retrieveBookmarksFromStorage'),
                         ])
                             .then(() => resolve())
@@ -726,7 +694,7 @@ export const actions = {
                 })
         })
     },
-    getIssue: function ({commit, state, dispatch}, payload) {
+    getIssue: function ({ commit, state, rootState, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             axios({
                 method: 'post',
@@ -773,7 +741,7 @@ export const actions = {
                     if (err.response) {
                         if (err.response.status === 401) {
                             // stop any running trackers before logout step
-                            if(state.onABreak) commit('toggleBreak');
+                            if(rootState.moduleBreak.onABreak) commit('moduleBreak/toggleBreak', {}, { root: true });
 
                             if (state.isTimerActive) {
                                 commit('logoutStarted', true);

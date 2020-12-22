@@ -30,8 +30,8 @@
         },
         computed: {
             ...mapState({
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
-                onABreak: state => state.moduleUser.onABreak,
+                accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
+                onABreak: state => state.moduleBreak.onABreak,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket
             })
@@ -59,11 +59,11 @@
         },
         methods: {
             ...mapActions({
-                saveBreaksToStorage: 'moduleUser/saveBreaksToStorage',
+                saveBreaksToStorage: 'moduleBreak/saveBreaksToStorage',
             }),
             ...mapMutations({
-                toggleBreakMutation: 'moduleUser/toggleBreak',
-                updateTotalBreakTime: 'moduleUser/updateTotalBreakTime',
+                toggleBreakMutation: 'moduleBreak/toggleBreak',
+                updateTotalBreakTime: 'moduleBreak/updateTotalBreakTime',
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
                 setLastTicket: 'moduleUser/setLastTicket'
             }),
