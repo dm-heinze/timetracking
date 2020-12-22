@@ -45,7 +45,7 @@ export default {
         middleware: ['auth']
     },
 
-    serverMiddleware: ['~/api/login', '~/api/logout', '~/api/getTickets', '~/api/addWorklog', '~/api/getProjects', '~/api/getProjectRelatedTickets', '~/api/getAssignedTickets', '~/api/getSmartPickedIssues'],
+    serverMiddleware: ['~/api/login', '~/api/getCurrentUser', '~/api/logout', '~/api/getTickets', '~/api/addWorklog', '~/api/getProjects', '~/api/getProjectRelatedTickets', '~/api/getAssignedTickets', '~/api/getSmartPickedIssues'],
 
     /*
      ** Plugins to load before mounting the App

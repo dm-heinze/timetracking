@@ -70,7 +70,8 @@
                     timeSpent: 0,
                     startTime: '',
                     endTime: '',
-                    booked: false // todo
+                    booked: false, // todo
+                    dayAdded: new Date().toDateString()
                 };
 
                 this.addSelectedTask(newCustomTask);

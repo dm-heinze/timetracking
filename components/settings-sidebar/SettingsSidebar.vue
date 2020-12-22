@@ -7,11 +7,7 @@
 
         <autocompleted-search />
 
-        <h3 class="sidebar__title sidebar__title--bookmarks">Bookmarks</h3>
-        <div v-if="bookmarked.length !== 0">
-            <bookmarks-editable />
-        </div>
-        <div v-else class="sidebar__title sidebar__title--no-bookmarks">No Bookmarks Saved.</div>
+        <bookmarks-editable />
 
         <toggle-optionals />
 
@@ -20,23 +16,18 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from 'vuex';
+    import { mapActions } from 'vuex';
     import { XCircleIcon } from 'vue-feather-icons';
     import Logout from '~/components/settings-sidebar/Logout';
     import AutocompletedSearch from "~/components/settings-sidebar/AutocompletedSearch";
     import ToggleOptionals from "~/components/settings-sidebar/ToggleOptionals";
+    import BookmarksEditable from "~/components/settings-sidebar/BookmarksEditable"; // handles case 'no bookmarks'
 
 	export default {
 		name: "SettingsSidebar",
         components: {
-            ToggleOptionals, AutocompletedSearch, Logout,
-            XCircleIcon,
-            BookmarksEditable: () => import('~/components/settings-sidebar/BookmarksEditable'),
-        },
-        computed: {
-            ...mapState({
-                bookmarked: state => state.moduleUser.bookmarked
-            })
+            ToggleOptionals, AutocompletedSearch, Logout, BookmarksEditable,
+            XCircleIcon
         },
         methods: {
             ...mapActions({

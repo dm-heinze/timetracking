@@ -13,26 +13,32 @@
                 <download-cloud-icon />
             </button>
         </div>
-        <b-list-group>
-            <b-list-group-item
-                v-for="assignedTicket in assignedTickets"
-                :key="assignedTicket.uniqueId"
-                @click="addToSelectedIssues({ selectedTicket: assignedTicket, fromSearchResults: true })"
-                class="d-flex justify-content-between"
-            >
-                <div class="ticket__info col-11">
-                    <div class="ticket__info__key font-weight-bold">{{ assignedTicket.key }}</div>
-                    <div class="ticket__info__summary text-truncate">{{ assignedTicket.summary }}</div>
-                </div>
+        <div v-if="assignedTickets.length"> <!-- todo -->
+            <b-list-group>
+                <b-list-group-item
+                    v-for="assignedTicket in assignedTickets"
+                    :key="assignedTicket.uniqueId"
+                    @click="addToSelectedIssues({ selectedTicket: assignedTicket, fromSearchResults: true })"
+                    class="d-flex justify-content-between"
+                >
+                    <div class="ticket__info col-11">
+                        <div class="ticket__info__key font-weight-bold">{{ assignedTicket.key }}</div>
+                        <div class="ticket__info__summary text-truncate">{{ assignedTicket.summary }}</div>
+                    </div>
 
-                <plus-circle-icon class="ticket__icon align-self-center" />
-            </b-list-group-item>
-        </b-list-group>
+                    <plus-circle-icon class="ticket__icon align-self-center" />
+                </b-list-group-item>
+            </b-list-group>
+        </div>
+        <div v-else class="sidebar__title--no-bookmarks pt-2">
+            <div class="font-weight-bold">Currently no assigned tickets.</div>
+            To check for any updates try the refresh button above.
+        </div>
     </div>
 </template>
 
 <script>
-    import { mapState, mapGetters, mapActions } from 'vuex';
+    import { mapState, mapActions } from 'vuex';
 	import { PlusCircleIcon, DownloadCloudIcon } from "vue-feather-icons";
     import { BListGroup, BListGroupItem } from "bootstrap-vue";
 
@@ -46,11 +52,6 @@
         computed: {
 		    ...mapState({
                 assignedTickets: state => state.moduleUser.assignedTickets
-            }),
-            ...mapGetters({
-                // todo: flagged for possible deprecation
-                // filtered from aggregated search & request results
-                getAssignedTickets: 'moduleUser/getAssignedTickets'
             })
         },
         methods: {

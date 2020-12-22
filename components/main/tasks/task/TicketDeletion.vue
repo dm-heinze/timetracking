@@ -20,7 +20,9 @@
             </template>
             <template v-slot:default>
                 <div class="modal__main-container">
-                    <div class="modal__main-container__main-text">Delete tracker for {{ optionalTaskKey }} {{ taskSummary }}?</div>
+                    <div class="modal__main-container__main-text">
+                        Delete tracker for <span class="font-weight-bold">{{ optionalTaskKey }} {{ taskSummary }}</span>?
+                    </div>
                 </div>
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">

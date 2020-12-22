@@ -63,7 +63,8 @@
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 onABreak: state => state.moduleUser.onABreak,
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime
+                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
+                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
             }),
             everythingBookedAlready () {
                 return this.selectedTasks.filter((__selectedTask) => !__selectedTask.booked).length === 0; // todo
@@ -98,6 +99,14 @@
                 // prevent booking when active tracker exists
                 if (this.isTimerActive) {
                     this.$bvModal.msgBoxOk('Tasks cannot be booked while there are active task trackers.', {
+                        centered: true,
+                        okVariant: 'danger rounded-pill',
+                        okTitle: 'Okay',
+                        bodyClass: 'modal__main-container',
+                        footerClass: 'modal__main-container modal__actions modal__feedback__footer'
+                    })
+                } else if (this.showUnbookedTasksNotOfTheDay) { // todo
+                    this.$bvModal.msgBoxOk('Tasks from previous days can only be booked one by one.', {
                         centered: true,
                         okVariant: 'danger rounded-pill',
                         okTitle: 'Okay',

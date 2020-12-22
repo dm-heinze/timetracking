@@ -31,6 +31,8 @@
                         <selected-tasks />
                     </div>
                 </b-col>
+                <update-message /> <!-- todo -->
+                <indicatorless-tasks v-if="doesNotHaveFieldDayAdded.length" />
             </b-row>
         </div>
     </div>
@@ -46,10 +48,12 @@
     import ActiveBreak from "~/components/main/ActiveBreak";
     import Break from "~/components/main/Break";
     import { mainButtonsFlexDirectionMixin } from "~/utility/mixins";
+    import UpdateMessage from "../components/main/tasks/UpdateMessage"; // todo
 
     export default {
         name: 'Index',
         components: {
+            UpdateMessage, // todo
             TotalTime,
             ActiveBreak,
             Break,
@@ -57,13 +61,15 @@
             PushTotalTime,
             AddCustomTask,
             SelectedTasks,
-            SettingsSidebar: () => import('~/components/settings-sidebar/SettingsSidebar')
+            SettingsSidebar: () => import('~/components/settings-sidebar/SettingsSidebar'),
+            IndicatorlessTasks: () => import('~/components/main/tasks/IndicatorlessTasks')
         },
         mixins: [mainButtonsFlexDirectionMixin],
         computed: {
             ...mapState({
                 settingsOpen: state => state.moduleUser.settingsOpen,
-                searchResults: state => state.moduleUser.searchResults
+                searchResults: state => state.moduleUser.searchResults,
+                doesNotHaveFieldDayAdded: state => state.moduleUser.doesNotHaveFieldDayAdded
             }),
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
@@ -78,14 +84,25 @@
             $mq: function (newValue) {
                 if (newValue === 'lg' || newValue === 'sm') this.$root.$emit('bv::disable::tooltip');
                 else this.$root.$emit('bv::enable::tooltip');
+            },
+            doesNotHaveFieldDayAdded: function (updatedArrayDoesNotHaveFieldDayAdded) {
+                if (updatedArrayDoesNotHaveFieldDayAdded.length === 0) {
+                    // remove every task from selectedTasks that does not include field dayAdded
+                    this.removeDoesNotHaveFieldDayAddedTasks();
+
+                    // save updated list of selectedTasks to storage
+                    this.saveSelectedTasksToStorage();
+                }
             }
         },
         methods: {
             ...mapActions({
-                requestAllProjects: 'moduleUser/requestAllProjects'
+                requestAllProjects: 'moduleUser/requestAllProjects',
+                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
-                setSearchResult: 'moduleUser/setSearchResult'
+                setSearchResult: 'moduleUser/setSearchResult',
+                removeDoesNotHaveFieldDayAddedTasks: 'moduleUser/removeDoesNotHaveFieldDayAddedTasks'
             })
         },
         middleware ({ store, redirect }) {

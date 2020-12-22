@@ -110,7 +110,8 @@
                     endTime: '',
                     assignedToTicket: true,
                     booked: false,
-                    uniqueId: _.now()
+                    uniqueId: _.now(),
+                    dayAdded: new Date().toDateString()
                 }
 
                 // reset search via project selection

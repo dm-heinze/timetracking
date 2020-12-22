@@ -29,7 +29,13 @@ export const state = () => ({
     showErrorMessages: false,
     errorOccurred: false, // todo
     editingCustomTask: '',
-    logoutInProgress: false
+    logoutInProgress: false,
+    currentDay: '',
+    showAllSelectedTasksOfCurrentDay: false, // show booked AND non-booked selectedTasks
+    showUnbookedTasksLeftModal: false, // any tasks from previous days w/ no 'dayAdded' field can be booked through the modal shown when this state value has val true
+    doesNotHaveFieldDayAdded: [],
+    showUnbookedTasksNotOfTheDay: false,
+    updateMessageShown: false
 });
 
 export const getters = {
@@ -42,12 +48,54 @@ export const getters = {
     getSmartPickedSuggestions: (state) => {
         return _.slice(state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee !== state.currentUser.name), 0, 5) // end excluded
     },
-    getAssignedTickets: (state) => { // todo: flagged for possible deprecation
-        return state.prefilledSearchSuggestions.filter((__ticket) => __ticket.assignee === state.currentUser.name)
+    // previously saved tasks will not have the field 'dayAdded' when retrieved from localStorage
+    // but to prevent loss of any unbooked tasks when re-ordering selectedTasks, all non-booked tasks from before need to be retained in storage
+    getSelectedTasksWithoutDayIndicator: (state) => {
+        return state.selectedTasks.filter((__ticket) => !__ticket.hasOwnProperty('dayAdded'))
+    },
+    getSelectedTasksWithDayIndicator: (state) => {
+        return state.selectedTasks.filter((__ticket) => __ticket.hasOwnProperty('dayAdded'))
     }
 }
 
 export const mutations = {
+    updateUpdateMessageShown: (state, value) => {
+        state.updateMessageShown = value;
+    },
+    toggleUnbookedTasksNotOfTheDay: (state, value) => {
+        state.showUnbookedTasksNotOfTheDay = !state.showUnbookedTasksNotOfTheDay;
+    },
+    toggleUnbookedTasksLeftModal: (state, value) => {
+        state.showUnbookedTasksLeftModal = !state.showUnbookedTasksLeftModal;
+    },
+    updateListDoesNotHaveFieldDayAdded: (state, value) => {
+        state.doesNotHaveFieldDayAdded = value;
+    },
+    removeFromDoesNotHaveFieldDayAdded: (state, payload) => {
+        state.doesNotHaveFieldDayAdded = state.doesNotHaveFieldDayAdded.filter((__task) => __task.uniqueId !== payload.uniqueIdOfTaskToDelete)
+    },
+    saveTimeSpentOnDoesNotHaveFieldDayAddedTask: (state, value) => {
+        state.doesNotHaveFieldDayAdded = state.doesNotHaveFieldDayAdded.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.uniqueId) __selectedTask.timeSpent = value.timeSpent;
+            return __selectedTask;
+        })
+    },
+    saveCommentOfDoesNotHaveFieldDayAddedTask: (state, value) => {
+        state.doesNotHaveFieldDayAdded = state.doesNotHaveFieldDayAdded.map((__selectedTask) => {
+            // casting to a number bc event.target.name resulted in a string val
+            if (__selectedTask.uniqueId === Number(value.uniqueId)) __selectedTask.comment = value.comment;
+            return __selectedTask;
+        })
+    },
+    removeDoesNotHaveFieldDayAddedTasks: (state, value) => {
+        state.selectedTasks = state.selectedTasks.filter((__task) => __task.hasOwnProperty('dayAdded'))
+    },
+    toggleShowAllSelectedTasksOfCurrentDay: (state, value) => {
+        if (!state.showUnbookedTasksNotOfTheDay) state.showAllSelectedTasksOfCurrentDay = !state.showAllSelectedTasksOfCurrentDay;
+    },
+    setCurrentDay: (state, payload) => {
+        state.currentDay = payload.currentDay; // todo
+    },
     toggleSuggestions: (state, value) => {
         state.showSuggestions = !state.showSuggestions;
     },
@@ -366,6 +414,7 @@ export const actions = {
             if (payload.fromSearchResults) {
                 __selection = _.cloneDeep(payload.selectedTicket);
                 __selection.uniqueId = _.now();
+                __selection.dayAdded = new Date().toDateString();
             } else {
                 __selection = {
                     assignedToTicket: true,
@@ -378,7 +427,8 @@ export const actions = {
                     startTime: '',
                     endTime: '',
                     booked: false,
-                    assignee: '' // todo!
+                    assignee: '', // todo!
+                    dayAdded: new Date().toDateString()
                 };
             }
 
@@ -426,7 +476,19 @@ export const actions = {
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
                         await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            if (!__selectedTask.booked) await axios({ method: 'post', baseURL: __base_url, url: `/api/addWorklog`, data: { headers: getters.getHeader(state), comment: __selectedTask.comment, timeSpentSeconds: __selectedTask.timeSpent, ticketId: __selectedTask.key }})
+                            if (!__selectedTask.booked) {
+                                await axios({
+                                    method: 'post',
+                                    baseURL: __base_url,
+                                    url: `/api/addWorklog`,
+                                    data: {
+                                        headers: getters.getHeader(state),
+                                        comment: __selectedTask.comment,
+                                        timeSpentSeconds: __selectedTask.timeSpent,
+                                        ticketId: __selectedTask.key
+                                    }
+                                })
+                            }
                         }))
                             .then(() => {
                                 // note: previously booked items won't have the field 'bookedAt' set in this step!
@@ -457,6 +519,73 @@ export const actions = {
                             });
                     } catch (err) {
                         console.log("err occurred in requestSavingWorklogs: ", err);
+
+                        reject(err); // todo
+                    }
+                }
+            } else {
+                reject("no selected tasks"); // todo
+            }
+        })
+    },
+    requestSavingPreviousWorklogs: function ({ state, commit, dispatch }) {
+        return new Promise(async (resolve, reject) => {
+            // todo
+            if (state.doesNotHaveFieldDayAdded.length !== 0) { // todo
+                let hasNonTrackedTasks = state.doesNotHaveFieldDayAdded.filter((__selectedTask) => !(__selectedTask.timeSpent)).length !== 0;
+
+                let hasUnassignedCustomTasks = state.doesNotHaveFieldDayAdded.filter((__selectedTask) => !__selectedTask.assignedToTicket).length !== 0;
+
+                if (hasNonTrackedTasks || hasUnassignedCustomTasks) reject();
+
+                if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
+                    try {
+                        await Promise.all(state.doesNotHaveFieldDayAdded.map(async __selectedTask => {
+                            if (!__selectedTask.booked) {
+                                await axios({
+                                    method: 'post',
+                                    baseURL: __base_url,
+                                    url: `/api/addWorklog`,
+                                    data: {
+                                        headers: getters.getHeader(state),
+                                        comment: __selectedTask.comment,
+                                        timeSpentSeconds: __selectedTask.timeSpent,
+                                        ticketId: __selectedTask.key
+                                    }
+                                })
+                            }
+                        }))
+                            .then(() => {
+                                // remove all tasks as they have been booked
+                                // if they had been booked previously w/ no 'dayAdded' field they would've been already removed on app start anyways
+                                // the field 'dayAdded' was not part of previous implementations
+                                commit('updateListDoesNotHaveFieldDayAdded', []);
+
+                                // remove every task from selectedTasks that does not include field dayAdded
+                                commit('removeDoesNotHaveFieldDayAddedTasks');
+
+                                // save updated list of selectedTasks to storage
+                                dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
+                            })
+                            .catch((err) => {
+                                console.log("err occurred: ", err);
+
+                                if (err.response) {
+                                    if (err.response.status === 401) {
+                                        if (state.isTimerActive) commit('logoutStarted', true);
+                                        dispatch('stopTrackers')
+                                            .then(() => {
+                                                // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
+                                                dispatch('resetState')
+                                                    .then(() => reject(err))
+                                                    .catch(() => reject(err));
+                                            })
+                                            .catch(() => reject(err)) // todo
+                                    } else reject(err);
+                                } else reject(err);
+                            });
+                    } catch (err) {
+                        console.log("err occurred in requestSavingPreviousWorklogs: ", err);
 
                         reject(err); // todo
                     }
@@ -532,7 +661,14 @@ export const actions = {
     },
     requestSessionRemoval: function({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'delete', baseURL: __base_url, url: `/api/logout`, params: { value: state.sessionObject.value } }) // todo
+            axios({
+                method: 'delete',
+                baseURL: __base_url,
+                url: `/api/logout`,
+                params: {
+                    value: state.sessionObject.value
+                }
+            }) // todo
                 .then((_response) => {
                     if (_response.data.status === 204) {
                         commit('logoutStarted', true);
@@ -558,10 +694,22 @@ export const actions = {
     },
     createApiObject: function({ commit, state, dispatch }, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/login`, data: { username: payload.data.name, password: payload.data.pass }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/login`,
+                data: {
+                    username: payload.data.name,
+                    password: payload.data.pass
+                }
+            })
                 .then(async (response) => {
                     if (response.data) { // todo
                         commit('setSessionObject', response.data);
+
+                        // currentUser may not have any assignedTickets which return the assignee === currentUser -> setting the currentUser here
+                        // receiving a sessionId indicates the correctness of the entered credentials therefore the user entered name can be set as the currentUser val
+                        commit('setCurrentUserName', { name: payload.data.name });
 
                         await Promise.all([
                             await dispatch('saveSessionIdToCookies'),
@@ -589,7 +737,16 @@ export const actions = {
     },
     getIssue: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getTickets`, data: { headers: getters.getHeader(state), searchTerm: payload.searchTerm, currentUser: state.currentUser.name }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getTickets`,
+                data: {
+                    headers: getters.getHeader(state),
+                    searchTerm: payload.searchTerm,
+                    currentUser: state.currentUser.name
+                }
+            })
                 .then((__res) => {
                     if (__res.data.issues.length !== 0) {
                         const searchResults =__res.data.issues.map((__issueInSearchResult, index) => {
@@ -651,7 +808,14 @@ export const actions = {
         return new Promise((resolve, reject) => {
             // only re-fetch projects on initial load & reload/refresh
             if (state.allExistingProjects.length === 0) {
-                axios({ method: 'post', baseURL: __base_url, url: `/api/getProjects`, data: { headers: getters.getHeader(state) }})
+                axios({
+                    method: 'post',
+                    baseURL: __base_url,
+                    url: `/api/getProjects`,
+                    data: {
+                        headers: getters.getHeader(state)
+                    }
+                })
                     .then((__res) => {
                         commit('setExistingProjects', __res.data);
 
@@ -663,7 +827,15 @@ export const actions = {
     },
     requestRelatedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getProjectRelatedTickets`, data: { headers: getters.getHeader(state), selectedProject: state.selectedProject }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getProjectRelatedTickets`,
+                data: {
+                    headers: getters.getHeader(state),
+                    selectedProject: state.selectedProject
+                }
+            })
                 .then((__res) => {
                     const __relatedTickets = __res.data.issues.map((__ticket) =>  {
                         return {
@@ -712,11 +884,20 @@ export const actions = {
                     // - everything else will be deleted from localStorage & never sent to vuex store
                     const __removedExpiredBookedTasks = __result.filter((__task) =>
                         // using hasOwnProperty in condition will delete previously booked items (previous as in previous implementation)
-                        (__task.booked && __task.hasOwnProperty('bookedAt') && ((__task.bookedAt + expirationDuration) > _.now())) || !__task.booked
+                        // any booked tasks that have not expired yet & have the field dayAdded -> keep in list
+                        // todo: case -> booked + but not expired + does not have the field dayAdded -> SOLVED below //
+                        (__task.booked && __task.hasOwnProperty('bookedAt') && ((__task.bookedAt + expirationDuration) > _.now()) && __task.hasOwnProperty('dayAdded')) || !__task.booked
                     )
 
+                    const __doesNotHaveFieldDayAdded = __removedExpiredBookedTasks.filter((__task) => !__task.hasOwnProperty('dayAdded'));
+                    if (__doesNotHaveFieldDayAdded.length) {
+                        commit('updateListDoesNotHaveFieldDayAdded', __doesNotHaveFieldDayAdded);
+
+                        commit('toggleUnbookedTasksLeftModal'); // this toggles on the visibility of the modal
+                    }
+
                     // set vuex store state
-                    commit('setSelectedTasks', __removedExpiredBookedTasks);
+                    commit('setSelectedTasks', __removedExpiredBookedTasks); // todo: dayAdded field - alternative implementation
 
                     // save vuex store state to localStorage
                     // anything (booked && expired) will now be completely removed from selectedTasks list:
@@ -762,7 +943,14 @@ export const actions = {
     },
     requestSmartPickedIssues: function ({ state }) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getSmartPickedIssues`, data:{ headers: getters.getHeader(state) }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getSmartPickedIssues`,
+                data: {
+                    headers: getters.getHeader(state)
+                }
+            })
                 .then((__res) => resolve(__res.data))
                 .catch((err) => {
                     if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
@@ -772,7 +960,31 @@ export const actions = {
     },
     requestAssignedTickets: function ({commit, state, dispatch}, payload) {
         return new Promise((resolve, reject) => {
-            axios({ method: 'post', baseURL: __base_url, url: `/api/getAssignedTickets`, data: { headers: getters.getHeader(state) }})
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getAssignedTickets`,
+                data: {
+                    headers: getters.getHeader(state)
+                }
+            })
+                .then((__res) => resolve(__res.data))
+                .catch((err) => {
+                    if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
+                    else reject(err);
+                })
+        })
+    },
+    requestCurrentUser: function ({commit, state, dispatch}, payload) {
+        return new Promise((resolve, reject) => {
+            axios({
+                method: 'post',
+                baseURL: __base_url,
+                url: `/api/getCurrentUser`,
+                data: {
+                    headers: getters.getHeader(state)
+                }
+            })
                 .then((__res) => resolve(__res.data))
                 .catch((err) => {
                     if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
@@ -787,29 +999,32 @@ export const actions = {
 
 
                 // assignedTickets
-                commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name }); // used to filter for assignedTickets without the need for an extra array // todo
+                if (assignedTickets.issues.length) {
+                    // if there are assignedTickets but the request is not queued after the login step the val for currentUser was not set before
+                    if (!state.currentUser.name) commit('setCurrentUserName', { name: assignedTickets.issues[0].fields.assignee.name }); // used to filter for assignedTickets without the need for an extra array // todo
 
-                const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => { // todo
-                    return {
-                        key: __issue.key,
-                        id: __issue.id,
-                        summary: __issue.fields.summary, // todo
-                        assignee: __issue.fields.assignee.name,
-                        // avatarUrl: __issue.fields.project.avatarUrls['16x16']
-                        issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + __issue.key,
-                        comment: '',
-                        timeSpent: 0,
-                        startTime: '',
-                        endTime: '',
-                        assignedToTicket: true,
-                        booked: false,
-                        uniqueId: _.now() + index // todo
-                    }
-                });
+                    const __parsedAssignedIssues = assignedTickets.issues.map((__issue, index) => { // todo
+                        return {
+                            key: __issue.key,
+                            id: __issue.id,
+                            summary: __issue.fields.summary, // todo
+                            assignee: __issue.fields.assignee.name,
+                            // avatarUrl: __issue.fields.project.avatarUrls['16x16']
+                            issueLink: process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE + __issue.key,
+                            comment: '',
+                            timeSpent: 0,
+                            startTime: '',
+                            endTime: '',
+                            assignedToTicket: true,
+                            booked: false,
+                            uniqueId: _.now() + index // todo
+                        }
+                    });
 
-                __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
+                    __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
 
-                commit('setAssignedTickets', __parsedAssignedIssues);
+                    commit('setAssignedTickets', __parsedAssignedIssues);
+                }
 
 
                 // smartPickedIssues
@@ -833,7 +1048,18 @@ export const actions = {
                 __parsedSmartPickedIssues.forEach((__parsedIssue) => commit('addToPrefilledSearchSuggestions', __parsedIssue));
 
 
-                resolve();
+                // if request not queued after login but due to reload the field may not be available if the assignedTickets.issues array is empty
+                if (!state.currentUser.name && !assignedTickets.issues.length) {
+                    dispatch('requestCurrentUser')
+                        .then((__res) => {
+                            commit('setCurrentUserName', { name: __res.name });
+
+                            resolve();
+                        })
+                        .catch((err) => reject(err))
+                } else {
+                    resolve();
+                }
             } catch (err) {
                 if (err === 401) {
                     commit('setSessionObject', {}); // todo

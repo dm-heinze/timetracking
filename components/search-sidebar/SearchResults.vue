@@ -1,8 +1,6 @@
 <template>
     <div class="search-results">
-        <div v-if="assignedTickets.length !== 0">
-            <assigned-tickets />
-        </div>
+        <assigned-tickets />
 
         <client-only> <!-- todo -->
             <bookmarks-selectable v-if="showBookmarksFirst" />
@@ -25,7 +23,7 @@
 
 <script>
     import { mapState, mapGetters } from 'vuex';
-    import AssignedTickets from "~/components/search-sidebar/AssignedTickets"; // todo: dynamically import
+    import AssignedTickets from "~/components/search-sidebar/AssignedTickets"; // handles case if no assignedTickets available
     import BookmarksSelectable from "~/components/search-sidebar/BookmarksSelectable"; // todo
 
     export default {
@@ -43,7 +41,6 @@
                 suggestionGroups: state => state.moduleUser.suggestionGroups
             }),
             ...mapGetters({
-                assignedTickets: 'moduleUser/getAssignedTickets', // todo: flagged for deprecation
                 smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'
             }),
             showBookmarksFirst () { // todo
