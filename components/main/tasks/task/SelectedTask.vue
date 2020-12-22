@@ -25,7 +25,7 @@
                 >
             </div>
 
-            <div v-if="!booked" class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm', 'justify-content-between': $mq === 'mdp' || !assignedToTicket }">
+            <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm', 'justify-content-between': $mq === 'mdp' || !assignedToTicket }">
                 <div v-if="!booked" class="selected-ticket__heading__assignments d-flex" :class="[flexDirection]">
                     <b-button
                         v-if="!assignedToTicket"
@@ -48,11 +48,11 @@
 
 
                 <div class="ticket-trackers d-flex flex-row" :class="{ 'align-self-center': $mq === 'sm' }">
-                    <ticket-play-and-pause :time-spent="timeSpent" :unique-id="uniqueId" />
+                    <ticket-play-and-pause v-if="!booked && !showUnbookedTasksNotOfTheDay" :time-spent="timeSpent" :unique-id="uniqueId" />
 
-                    <push-single-task :task-key="taskKey" :task-worklog-comment="taskWorklogComment" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" :booked="booked" :unique-id="uniqueId" />
+                    <push-single-task v-if="!booked" :task-key="taskKey" :task-worklog-comment="taskWorklogComment" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" :booked="booked" :unique-id="uniqueId" />
 
-                    <ticket-deletion :unique-id="uniqueId" :task-summary="taskSummary" :task-key="taskKey" :assigned-to-ticket="assignedToTicket" />
+                    <ticket-deletion v-if="!booked" :unique-id="uniqueId" :task-summary="taskSummary" :task-key="taskKey" :assigned-to-ticket="assignedToTicket" />
 
                     <ticket-time-spent :time-spent="timeSpent" :unique-id="uniqueId" :booked="booked" />
                 </div>
@@ -132,7 +132,8 @@
             ...mapState({
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket,
-                editingCustomTask: state => state.moduleUser.editingCustomTask
+                editingCustomTask: state => state.moduleUser.editingCustomTask,
+                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
             }),
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`

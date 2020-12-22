@@ -72,7 +72,12 @@
             }),
             addTicketToSelectedTasks: function (selection) {
                 let __selection = _.cloneDeep(selection);
+
+                // although the object has already the field uniqueId, this only makes it unique in the search results list
+                // to make it selectable multiple times as a selectedTask, each selection requires a unique value for uniqueId
                 __selection.uniqueId = _.now();
+
+                __selection.dayAdded = new Date().toDateString();
 
                 // update store & localStorage
                 this.addSelectedTask(__selection);

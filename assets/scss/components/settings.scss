@@ -6,6 +6,7 @@
             cursor: pointer;
         }
 
+        // ** todo -> selected-ticket.scss
         & circle {
             fill: $primary;
         }
@@ -20,6 +21,7 @@
         &--show {
             fill: $success !important; // added !important flag bc otherwise styles change on hover which hides current state
         }
+        // ** endOfTodo
     }
 
     .autocompleted-search__container {

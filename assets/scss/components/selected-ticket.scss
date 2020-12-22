@@ -54,9 +54,59 @@
         font-weight: bold;
     }
 }
+.previous-day-unbooked-warning {
+    background: white;
+    padding: 20px; //
+    border: 1px solid $primary;
+    border-radius: $list-item-border-radius; // 4px
+    color: $primary;
+}
+
+.toggle-show-all {
+    color: $primary;
+
+    & button {
+        outline: none;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+
+        &:disabled {
+            cursor: not-allowed;
+            color: $primary;
+        }
+
+        &.inactive {
+            color: $muted-grey;
+        }
+    }
+
+
+    & circle {
+        fill: $primary;
+    }
+
+    &--show, &--hide {
+        cursor: pointer;
+        // sizing of visibility toggler
+        height: $toggler-size;
+        width: $toggler-size;
+        stroke-width: $toggler-stroke-width;
+
+        &.disabled {
+            cursor: not-allowed;
+        }
+    }
+
+    &--show {
+        fill: $success !important; // added !important flag bc otherwise styles change on hover which hides current state
+    }
+}
 
 /*===  SelectedTasks.vue  ===*/
 .selected-tickets__container {
+    cursor: default;
+
     ul {
         list-style: none;
         padding-left: 0;
