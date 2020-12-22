@@ -15,9 +15,9 @@
         <template v-slot:default>
             <div class="modal__main-container">
                 <div class="modal__main-container__main-text">
-                    <div class="font-weight-bold">You have unbooked tasks from previous days</div>
+                    <div class="font-weight-bold">You have unbooked tasks</div>
                     <div>
-                        <div>Tasks will be booked for the current day. You need to correct the date manually afterwards.</div>
+                        <div>You can remove them or otherwise the tasks will be booked for the current day. You can adjust the booking manually afterwards.</div>
                         <div
                             class="font-weight-bold custom-tasks-available pt-3"
                             v-if="hasCustomTasks.length"
@@ -57,6 +57,7 @@
                                     class="btn--edit"
                                     @click.prevent="activateEditModeForTrackedTime(task.uniqueId)"
                                     :disabled="editingTrackedTime && (currentEditedTasksUniqueId !== task.uniqueId)"
+                                    v-if="task.assignedToTicket"
                                 >
                                     <edit2-icon v-if="!editingTrackedTime || (editingTrackedTime && (currentEditedTasksUniqueId !== task.uniqueId))" />
                                     <check-icon v-else-if="editingTrackedTime && (currentEditedTasksUniqueId === task.uniqueId)" />
