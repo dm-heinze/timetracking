@@ -5,7 +5,7 @@
         no-close-on-backdrop
         no-close-on-esc
         tall
-        :visible="showUnbookedTasksLeftModal"
+        :visible="showUnbookedTasksLeftModal && updateMessageShown"
     >
         <template v-slot:modal-header="{ close }">
             <div class="d-flex justify-content-between align-items-center w-100 modal__top-bar">
@@ -114,7 +114,8 @@
         computed: {
             ...mapState({
                 doesNotHaveFieldDayAdded: state => state.moduleUser.doesNotHaveFieldDayAdded,
-                showUnbookedTasksLeftModal: state => state.moduleUser.showUnbookedTasksLeftModal
+                showUnbookedTasksLeftModal: state => state.moduleUser.showUnbookedTasksLeftModal,
+                updateMessageShown: state => state.moduleUser.updateMessageShown
             }),
             hasCustomTasks () {
                 return this.doesNotHaveFieldDayAdded.filter((__task) => !__task.assignedToTicket);

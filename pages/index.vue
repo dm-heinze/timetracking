@@ -31,7 +31,7 @@
                         <selected-tasks />
                     </div>
                 </b-col>
-
+                <update-message /> <!-- todo -->
                 <indicatorless-tasks v-if="doesNotHaveFieldDayAdded.length" />
             </b-row>
         </div>
@@ -48,10 +48,12 @@
     import ActiveBreak from "~/components/main/ActiveBreak";
     import Break from "~/components/main/Break";
     import { mainButtonsFlexDirectionMixin } from "~/utility/mixins";
+    import UpdateMessage from "../components/main/tasks/UpdateMessage"; // todo
 
     export default {
         name: 'Index',
         components: {
+            UpdateMessage, // todo
             TotalTime,
             ActiveBreak,
             Break,

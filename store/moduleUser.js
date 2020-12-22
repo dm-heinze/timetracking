@@ -34,7 +34,8 @@ export const state = () => ({
     showAllSelectedTasksOfCurrentDay: false, // show booked AND non-booked selectedTasks
     showUnbookedTasksLeftModal: false, // any tasks from previous days w/ no 'dayAdded' field can be booked through the modal shown when this state value has val true
     doesNotHaveFieldDayAdded: [],
-    showUnbookedTasksNotOfTheDay: false
+    showUnbookedTasksNotOfTheDay: false,
+    updateMessageShown: false
 });
 
 export const getters = {
@@ -58,6 +59,9 @@ export const getters = {
 }
 
 export const mutations = {
+    updateUpdateMessageShown: (state, value) => {
+        state.updateMessageShown = value;
+    },
     toggleUnbookedTasksNotOfTheDay: (state, value) => {
         state.showUnbookedTasksNotOfTheDay = !state.showUnbookedTasksNotOfTheDay;
     },
