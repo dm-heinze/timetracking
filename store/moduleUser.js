@@ -457,37 +457,54 @@ export const actions = {
     },
     requestSavingWorklogs: function ({ state, commit, dispatch }) {
         return new Promise(async (resolve, reject) => {
-            if (state.selectedTasks.length !== 0) { // todo
-                let hasNonTrackedTasks = state.selectedTasks.filter((__selectedTask) => !(__selectedTask.timeSpent)).length !== 0;
+            if (state.selectedTasks.length !== 0) { // todo!
 
-                let hasUnassignedCustomTasks = state.selectedTasks.filter((__selectedTask) => !__selectedTask.assignedToTicket).length !== 0;
+                let hasNonTrackedTasks = state.selectedTasks
+                    .filter((__selectedTask) => __selectedTask.dayAdded === state.currentDay)
+                    .filter((__selectedTask) => !(__selectedTask.timeSpent))
+                    .length !== 0;
+
+                let hasUnassignedCustomTasks = state.selectedTasks
+                    .filter((__selectedTask) => __selectedTask.dayAdded === state.currentDay)
+                    .filter((__selectedTask) => !__selectedTask.assignedToTicket)
+                    .length !== 0;
 
                 if (hasNonTrackedTasks || hasUnassignedCustomTasks) reject();
 
                 if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
                     try {
-                        await Promise.all(state.selectedTasks.map(async __selectedTask => {
-                            if (!__selectedTask.booked) {
-                                await axios({
-                                    method: 'post',
-                                    baseURL: __base_url,
-                                    url: `/api/addWorklog`,
-                                    data: {
-                                        headers: getters.getHeader(state),
-                                        comment: __selectedTask.comment,
-                                        timeSpentSeconds: __selectedTask.timeSpent,
-                                        ticketId: __selectedTask.key
+                        // only book tasks from today
+                        // - tasks from previous days should only be booked one by one via 'requestSavingSingleWorklog'
+                        await Promise.all(
+                            state.selectedTasks
+                                .filter((__selectedTask) => __selectedTask.dayAdded === state.currentDay)
+                                .map(async __selectedTask => {
+                                    if (!__selectedTask.booked) {
+                                        await axios({
+                                            method: 'post',
+                                            baseURL: __base_url,
+                                            url: `/api/addWorklog`,
+                                            data: {
+                                                headers: getters.getHeader(state),
+                                                comment: __selectedTask.comment,
+                                                timeSpentSeconds: __selectedTask.timeSpent,
+                                                ticketId: __selectedTask.key
+                                            }
+                                        })
                                     }
                                 })
-                            }
-                        }))
+                        )
                             .then(() => {
                                 // note: previously booked items won't have the field 'bookedAt' set in this step!
                                 // (previous as in previous implementation)
-                                state.selectedTasks.forEach((__bookedTask) => {
-                                    commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId })
-                                    commit('setBookedAt', { taskToSetBookedAt: __bookedTask.uniqueId })
-                                });
+
+                                // only mark those tasks as booked that are from current day as only those got booked above
+                                state.selectedTasks
+                                    .filter((__selectedTask) => __selectedTask.dayAdded === state.currentDay)
+                                    .forEach((__bookedTask) => {
+                                        commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId })
+                                        commit('setBookedAt', { taskToSetBookedAt: __bookedTask.uniqueId })
+                                    });
 
                                 dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
                             })

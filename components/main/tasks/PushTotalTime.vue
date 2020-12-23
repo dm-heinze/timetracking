@@ -64,19 +64,21 @@
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 onABreak: state => state.moduleUser.onABreak,
                 accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
-                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
+                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay,
+                currentDay: state => state.moduleUser.currentDay
             }),
+            // todo
             everythingBookedAlready () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.booked).length === 0; // todo
+                return this.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === this.currentDay).filter((__selectedTask) => !__selectedTask.booked).length === 0; // todo
             },
             noMissingComments () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.comment).length === 0; // todo
+                return this.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === this.currentDay).filter((__selectedTask) => !__selectedTask.comment).length === 0; // todo
             },
             noUnassignedCustomTasks () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.assignedToTicket).length === 0; // todo
+                return this.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === this.currentDay).filter((__selectedTask) => !__selectedTask.assignedToTicket).length === 0; // todo
             },
             noUntrackedTasks () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.timeSpent).length === 0; // todo
+                return this.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === this.currentDay).filter((__selectedTask) => !__selectedTask.timeSpent).length === 0; // todo
             }
         },
         methods: {
@@ -115,6 +117,7 @@
                     })
                 } else {
                     // show error message if not all conditions (should exist: selectedTasks, every selectedTask should have a comment, tracked time & should not be a custom task) for booking are met
+                    // todo
                     if (this.selectedTasks.length===0 || this.everythingBookedAlready || !this.noMissingComments || !this.noUnassignedCustomTasks || !this.noUntrackedTasks) {
                         // toggle error messages below the fields that are affected
                         this.toggleShowErrorMessages({ show: true });
@@ -128,6 +131,7 @@
                         })
                     } else {
                         // toggle off visibility of error messages from any previous booking request that toggled on the visibility
+                        // todo
                         if (this.showErrorMessages && this.selectedTasks.length!==0 && !this.everythingBookedAlready && this.noMissingComments && this.noUnassignedCustomTasks && this.noUntrackedTasks) this.toggleShowErrorMessages({ show: false });
 
                         // make API request to book each task
