@@ -31,13 +31,8 @@
         },
         methods: {
             ...mapMutations({
-                toggleBreakMutation: 'moduleBreak/toggleBreak'
-            }),
-            toggleBreak: function () {
-                // start a break immediately
-                // -> step 1) set onABreak to true
-                this.toggleBreakMutation();
-            }
+                toggleBreak: 'moduleBreak/toggleBreak'
+            })
         }
 	}
 </script>

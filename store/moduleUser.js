@@ -741,7 +741,7 @@ export const actions = {
                     if (err.response) {
                         if (err.response.status === 401) {
                             // stop any running trackers before logout step
-                            if(rootState.moduleBreak.onABreak) commit('moduleBreak/toggleBreak', {}, { root: true });
+                            if (rootState.moduleBreak.onABreak) commit('moduleBreak/toggleBreak', {}, { root: true });
 
                             if (state.isTimerActive) {
                                 commit('logoutStarted', true);

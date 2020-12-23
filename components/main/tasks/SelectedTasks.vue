@@ -110,7 +110,7 @@
                 selectedTasks: state => state.moduleUser.selectedTasks,
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
                 isTimerActive: state => state.moduleUser.isTimerActive,
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
+                accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
                 onABreak: state => state.moduleUser.onABreak,
                 currentDay: state => state.moduleUser.currentDay,
                 showAllSelectedTasksOfCurrentDay: state => state.moduleUser.showAllSelectedTasksOfCurrentDay,
