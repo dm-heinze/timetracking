@@ -111,7 +111,7 @@
                 showErrorMessages: state => state.moduleUser.showErrorMessages,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
-                onABreak: state => state.moduleUser.onABreak,
+                onABreak: state => state.moduleBreak.onABreak,
                 currentDay: state => state.moduleUser.currentDay,
                 showAllSelectedTasksOfCurrentDay: state => state.moduleUser.showAllSelectedTasksOfCurrentDay,
                 showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
