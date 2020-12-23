@@ -34,7 +34,7 @@
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
-                bookmarked: state => state.moduleUser.bookmarked
+                bookmarked: state => state.moduleBookmark.bookmarked
             })
         },
         methods: {
