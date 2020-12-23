@@ -37,8 +37,8 @@
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
                 selectedTasks: state => state.moduleUser.selectedTasks,
-                showSuggestions: state => state.moduleUser.showSuggestions,
-                suggestionGroups: state => state.moduleUser.suggestionGroups
+                showSuggestions: state => state.moduleOptional.showSuggestions,
+                suggestionGroups: state => state.moduleOptional.suggestionGroups
             }),
             ...mapGetters({
                 smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'

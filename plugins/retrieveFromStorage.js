@@ -30,8 +30,8 @@ export default async (context) => {
             await context.store.dispatch('moduleUser/retrieveSelectedTasksFromStorage', context), // this needs the current date for the UI
             await context.store.dispatch('moduleBreak/retrieveBreaksFromStorage', context),
             await context.store.dispatch('moduleBookmark/retrieveBookmarksFromStorage', context),
-            await context.store.dispatch('moduleUser/retrieveSelectionForSuggestionsFromStorage', context), // todo: as cookie?
-            await context.store.dispatch('moduleUser/retrieveSuggestionGroupsFromStorage', context) // todo: as cookie?
+            await context.store.dispatch('moduleOptional/retrieveSelectionForSuggestionsFromStorage', context), // todo: as cookie?
+            await context.store.dispatch('moduleOptional/retrieveSuggestionGroupsFromStorage', context) // todo: as cookie?
         ])
     }
 }
