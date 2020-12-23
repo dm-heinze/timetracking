@@ -19,7 +19,6 @@ export const state = () => ({
     prefilledSearchSuggestions: [],
     assignedTickets: [],
     lastTicket: '',
-    bookmarked: [],
     settingsOpen: false,
     showSuggestions: true,
     suggestionGroups: ['Assigned Tickets', 'Suggestions', 'Bookmarks'], // default order
@@ -125,16 +124,6 @@ export const mutations = {
     },
     toggleSettings: (state) => {
         state.settingsOpen = !state.settingsOpen;
-    },
-    updateBookmarks: (state, value) => {
-        if (state.bookmarked.find((__bookmarked) => __bookmarked.key === value.bookmark)) {
-            state.bookmarked = state.bookmarked.filter((__bookmarked) => __bookmarked.key !== value.bookmark)
-        } else {
-            state.bookmarked.push({ key: value.bookmark, summary: value.summary });
-        }
-    },
-    setBookmarks: (state, value) => {
-        state.bookmarked = value;
     },
     setSelectedTasks: (state, value) => {
         state.selectedTasks = value;
@@ -311,13 +300,6 @@ export const actions = {
             })
         })
     },
-    saveBookmarksToStorage: function ({ state }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.setItem('BOOKMARKS', state.bookmarked)
-                .then(() => resolve())
-                .catch(() => reject())
-        })
-    },
     saveSelectedTasksToStorage: function ({ state }) {
         return new Promise((resolve, reject) => {
             this.$localForage.setItem('SELECTEDTASKS', state.selectedTasks)
@@ -332,19 +314,6 @@ export const actions = {
                 .catch(() => reject())
         })
     },
-    retrieveBookmarksFromStorage: function({ commit }) {
-        return new Promise((resolve) => {
-            this.$localForage.getItem('BOOKMARKS').then((__result) => {
-                if (!_.isEmpty(__result)) {
-                    commit('setBookmarks', __result );
-
-                    resolve();
-                } else {
-                    resolve();
-                }
-            })
-        })
-    },
     retrieveSuggestionGroupsFromStorage: function({ commit }) {
         return new Promise((resolve) => {
             this.$localForage.getItem('SUGGESTION_GROUPS').then((__result) => {
@@ -356,14 +325,6 @@ export const actions = {
                     resolve(); // default already defined in store state will be used
                 }
             })
-        })
-    },
-    toggleBookmarked: function ({ state, commit, dispatch }, payload) {
-        return new Promise(async (resolve, reject) => {
-            // summary default==='' -> no val may be passed in
-            commit('updateBookmarks', { bookmark: payload.searchResultToBeToggled, summary: payload.summary ? payload.summary : '' });
-
-            dispatch('saveBookmarksToStorage').then(() => resolve()).catch(() => reject());
         })
     },
     addToSelectedIssues: function ({ state, commit, dispatch }, payload) {
@@ -622,7 +583,7 @@ export const actions = {
             commit('setExistingProjects', []);
             if (state.selectedProject) commit('setSelectedProject', '');
             if (state.relatedTickets) commit('setRelatedTickets', []); // todo
-            commit('setBookmarks', []);
+            commit('moduleBookmark/setBookmarks', [], { root: true }); // todo
             commit('setSelectedTasks', []);
             commit('moduleBreak/updateTotalBreakTime', { totalBreakTime: '00:00:00' }, { root: true }); // todo
             commit('logoutStarted', false);
@@ -691,7 +652,7 @@ export const actions = {
                             await dispatch('saveSessionIdToCookies'),
                             await dispatch('retrieveSelectedTasksFromStorage'),
                             await dispatch('moduleBreak/retrieveBreaksFromStorage', {}, { root: true }), // todo
-                            await dispatch('retrieveBookmarksFromStorage'),
+                            await dispatch('moduleBookmark/retrieveBookmarksFromStorage', {}, { root: true }), // todo
                         ])
                             .then(() => resolve())
                             .catch(() => {

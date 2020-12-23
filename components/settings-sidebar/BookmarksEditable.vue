@@ -37,12 +37,12 @@
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
-                bookmarked: state => state.moduleUser.bookmarked
+                bookmarked: state => state.moduleBookmark.bookmarked
             })
         },
         methods: {
             ...mapActions({
-                toggleBookmarked: 'moduleUser/toggleBookmarked',
+                toggleBookmarked: 'moduleBookmark/toggleBookmarked',
                 addToSelectedIssues: 'moduleUser/addToSelectedIssues'
             })
         }

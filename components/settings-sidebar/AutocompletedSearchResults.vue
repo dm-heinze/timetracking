@@ -47,14 +47,14 @@
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
-                bookmarked: state => state.moduleUser.bookmarked,
+                bookmarked: state => state.moduleBookmark.bookmarked,
                 searchLoading: state => state.moduleUser.searchLoading,
                 errorOccurred: state => state.moduleUser.errorOccurred
             })
         },
         methods: {
             ...mapActions({
-                toggleBookmarked: 'moduleUser/toggleBookmarked',
+                toggleBookmarked: 'moduleBookmark/toggleBookmarked',
                 addToSelectedIssues: 'moduleUser/addToSelectedIssues'
             })
         }
