@@ -87,7 +87,7 @@
                 updateTotalBreakTime: 'moduleBreak/updateTotalBreakTime'
             }),
             ...mapActions({
-                requestSavingWorklogs: 'moduleTask/requestSavingWorklogs',
+                requestSavingWorklogs: 'moduleBooking/requestSavingWorklogs',
                 saveBreaksToStorage: 'moduleBreak/saveBreaksToStorage'
             }),
             resetStateAndCloseModal: function () {

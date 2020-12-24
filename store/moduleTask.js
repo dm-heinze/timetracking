@@ -1,6 +1,4 @@
-import axios from 'axios';
 import _ from 'lodash';
-import { __base_url } from "../utility/constants";
 
 export const state = () => ({
     selectedTasks: [],
@@ -28,20 +26,16 @@ export const getters = {
 }
 
 export const mutations = {
-    // booking
-    markTaskAsBooked: (state, value) => {
+    // booking // todo
+    updateBookedStatus: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
-            if (__selectedTask.uniqueId === value.taskToMarkAsBooked) __selectedTask.booked = true;
+            if (__selectedTask.uniqueId === value.taskToMarkAsBooked) {
+                __selectedTask.booked = true;
+                __selectedTask.bookedAt = _.now();
+            }
             return __selectedTask;
         })
     },
-    setBookedAt: (state, value) => {
-        state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
-            if (__selectedTask.uniqueId === value.taskToSetBookedAt) __selectedTask.bookedAt = _.now();
-            return __selectedTask;
-        })
-    },
-    // end of booking
 
     // selected tasks
     saveTaskStartTime: (state, value) => {
@@ -124,123 +118,6 @@ export const mutations = {
 }
 
 export const actions = {
-    // booking
-    requestSavingSingleWorklog: function ({ state, rootState, rootGetters, commit, dispatch }, payload) {
-        return new Promise(async (resolve, reject) => {
-            axios({ method: 'post',
-                baseURL: __base_url,
-                url: `/api/addWorklog`,
-                data: {
-                    headers: rootGetters['moduleUser/getHeader'],
-                    comment: payload.comment,
-                    timeSpentSeconds: payload.timeSpentSeconds,
-                    ticketId: payload.ticketId
-                }
-            })
-                .then(() => {
-                    commit('markTaskAsBooked', { taskToMarkAsBooked: payload.uniqueId });
-
-                    commit('setBookedAt', { taskToSetBookedAt: payload.uniqueId }); // previously booked items won't have this field set in this step! (previous as in previous implementation)
-
-                    dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
-                })
-                .catch((err) => {
-                    if (err.response) {
-                        if (err.response.status === 401) {
-                            if (rootState.moduleUser.isTimerActive) commit('moduleUser/logoutStarted', true, { root: true });
-                            dispatch('moduleUser/stopTrackers', {}, { root: true })
-                                .then(() => {
-                                    // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
-                                    dispatch('moduleUser/resetState', {}, { root: true })
-                                        .then(() => reject(err))
-                                        .catch(() => reject(err));
-                                })
-                                .catch(() => reject(err)) // todo
-                        } else reject(err);
-                    } else reject(err);
-                });
-        })
-    },
-    requestSavingWorklogs: function ({ state, rootState, getters, rootGetters, commit, dispatch }) {
-        return new Promise(async (resolve, reject) => {
-            if (state.selectedTasks.length !== 0) { // todo!
-                let hasNonTrackedTasks = getters.getSelectedTasksOfCurrentDay
-                    .filter((__selectedTask) => !(__selectedTask.timeSpent))
-                    .length !== 0;
-
-                let hasUnassignedCustomTasks = getters.getSelectedTasksOfCurrentDay
-                    .filter((__selectedTask) => !__selectedTask.assignedToTicket)
-                    .length !== 0;
-
-                if (hasNonTrackedTasks || hasUnassignedCustomTasks) reject();
-
-                if (!hasNonTrackedTasks && !hasUnassignedCustomTasks) {
-                    try {
-                        // only book tasks from today
-                        // - tasks from previous days should only be booked one by one via 'requestSavingSingleWorklog'
-                        await Promise.all(
-                            getters.getSelectedTasksOfCurrentDay
-                                .map(async __selectedTask => {
-                                    if (!__selectedTask.booked) {
-                                        await axios({
-                                            method: 'post',
-                                            baseURL: __base_url,
-                                            url: `/api/addWorklog`,
-                                            data: {
-                                                headers: rootGetters['moduleUser/getHeader'],
-                                                comment: __selectedTask.comment,
-                                                timeSpentSeconds: __selectedTask.timeSpent,
-                                                ticketId: __selectedTask.key
-                                            }
-                                        })
-                                    }
-                                })
-                        )
-                            .then(() => {
-                                // note: previously booked items won't have the field 'bookedAt' set in this step!
-                                // (previous as in previous implementation)
-
-                                // only mark those tasks as booked that are from current day as only those got booked above
-                                getters.getSelectedTasksOfCurrentDay
-                                    .forEach((__selectedTask) => {
-                                        if (!__selectedTask.booked) { // todo
-                                            commit('markTaskAsBooked', { taskToMarkAsBooked: __selectedTask.uniqueId })
-                                            commit('setBookedAt', { taskToSetBookedAt: __selectedTask.uniqueId })
-                                        }
-                                    });
-
-                                dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
-                            })
-                            .catch((err) => {
-                                console.log("err occurred: ", err);
-
-                                if (err.response) { // todo
-                                    if (err.response.status === 401) {
-                                        if (rootState.moduleUser.isTimerActive) commit('moduleUser/logoutStarted', true, { root: true });
-                                        dispatch('moduleUser/stopTrackers', {}, { root: true })
-                                            .then(() => {
-                                                // regardless any further errors a non-valid sessionId needs to lead to a logout // todo
-                                                dispatch('moduleUser/resetState', {}, { root: true })
-                                                    .then(() => reject(err))
-                                                    .catch(() => reject(err));
-                                            })
-                                            .catch(() => reject(err)) // todo
-                                    } else reject(err);
-                                } else reject(err);
-                            });
-                    } catch (err) {
-                        console.log("err occurred in requestSavingWorklogs: ", err);
-
-                        reject(err); // todo
-                    }
-                }
-            } else {
-                reject("no selected tasks"); // todo
-            }
-        })
-    },
-    // end of booking
-
     // selected tasks
     // this action was previously a mutation
     // refactored to action to allow access to getters
@@ -254,13 +131,6 @@ export const actions = {
             resolve();
         }
     )},
-    saveSelectedTasksToStorage: function ({ state }) {
-        return new Promise((resolve, reject) => {
-            this.$localForage.setItem('SELECTEDTASKS', state.selectedTasks)
-                .then(() => resolve())
-                .catch(() => reject())
-        })
-    },
     addToSelectedIssues: function ({ state, commit, dispatch }, payload) {
         return new Promise(async (resolve, reject) => {
             let __selection;
@@ -289,6 +159,13 @@ export const actions = {
             commit('addSelectedTask', __selection);
 
             dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
+        })
+    },
+    saveSelectedTasksToStorage: function ({ state }) {
+        return new Promise((resolve, reject) => {
+            this.$localForage.setItem('SELECTEDTASKS', state.selectedTasks)
+                .then(() => resolve())
+                .catch(() => reject())
         })
     },
     retrieveSelectedTasksFromStorage: function({ commit, dispatch }) { // todo
