@@ -83,7 +83,7 @@
         },
         computed: {
             ...mapState({
-                allExistingProjects: state => state.moduleUser.allExistingProjects,
+                allExistingProjects: state => state.modulePrefill.allExistingProjects,
                 relatedTickets: state => state.moduleSearch.relatedTickets,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket
@@ -95,7 +95,7 @@
                 setRelatedTickets: 'moduleSearch/setRelatedTickets',
             }),
             ...mapActions({
-                requestAllProjects: 'moduleUser/requestAllProjects',
+                requestAllProjects: 'modulePrefill/requestAllProjects',
                 requestRelatedTickets: 'moduleSearch/requestRelatedTickets',
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',
                 assignToTicket: 'moduleTask/assignToTicket' // previously a mutation

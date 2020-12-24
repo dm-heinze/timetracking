@@ -41,7 +41,7 @@
                 suggestionGroups: state => state.moduleOptional.suggestionGroups
             }),
             ...mapGetters({
-                smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'
+                smartPickedSuggestions: 'modulePrefill/getSmartPickedSuggestions'
             }),
             showBookmarksFirst () { // todo
                 return [...this.suggestionGroups].pop() !== 'Bookmarks';

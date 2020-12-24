@@ -42,7 +42,7 @@
         mixins: [searchAriaLabelMixin],
         computed: {
             ...mapState({
-                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
+                prefilledSearchSuggestions: state => state.modulePrefill.prefilledSearchSuggestions,
                 searchTerm: state => state.moduleSearch.searchTerm,
                 searchLoading: state => state.moduleSearch.searchLoading
             })

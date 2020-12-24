@@ -47,7 +47,7 @@
         },
         computed: {
             ...mapState({
-                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
+                prefilledSearchSuggestions: state => state.modulePrefill.prefilledSearchSuggestions,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 alreadyExists: state => state.moduleSearch.alreadyExists
             })

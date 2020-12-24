@@ -56,7 +56,7 @@
         },
         computed: {
             ...mapState({
-                allExistingProjects: state => state.moduleUser.allExistingProjects,
+                allExistingProjects: state => state.modulePrefill.allExistingProjects,
                 selectedTasks: state => state.moduleTask.selectedTasks,
                 relatedTickets: state => state.moduleSearch.relatedTickets
             })

@@ -97,7 +97,7 @@
         },
         methods: {
             ...mapActions({
-                requestAllProjects: 'moduleUser/requestAllProjects',
+                requestAllProjects: 'modulePrefill/requestAllProjects',
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
@@ -107,7 +107,7 @@
         },
         middleware ({ store, redirect }) {
             return new Promise((resolve, reject) => {
-                store.dispatch('moduleUser/requestPrefill')
+                store.dispatch('modulePrefill/requestPrefill')
                     .then(() => resolve())
                     .catch((err) => {
                         redirect('/customer/login'); // if page requested on reload/initial request: if sessionId invalid requestPrefill will result in this catch block

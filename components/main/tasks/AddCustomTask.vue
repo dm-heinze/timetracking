@@ -48,7 +48,7 @@
         },
         computed: {
             ...mapState({
-                allExistingProjects: state => state.moduleUser.allExistingProjects,
+                allExistingProjects: state => state.modulePrefill.allExistingProjects,
             })
         },
         methods: {
@@ -56,7 +56,7 @@
                 addSelectedTask: 'moduleTask/addSelectedTask',
             }),
             ...mapActions({
-                requestAllProjects: 'moduleUser/requestAllProjects',
+                requestAllProjects: 'modulePrefill/requestAllProjects',
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             startNewCustomTask: function () {

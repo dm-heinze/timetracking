@@ -69,9 +69,9 @@ export const actions = {
 
                         commit('setSearchResult', searchResults);
 
-                        searchResults.forEach((__searchResult) => commit('moduleUser/addToPrefilledSearchSuggestions', __searchResult, { root: true })) // todo
+                        searchResults.forEach((__searchResult) => commit('modulePrefill/addToPrefilledSearchSuggestions', __searchResult, { root: true })) // todo
 
-                        commit('moduleUser/updateOrderSearchSuggestions', {}, { root: true }); // todo
+                        commit('modulePrefill/updateOrderSearchSuggestions', {}, { root: true }); // todo
 
                         resolve(searchResults);
                     } else {

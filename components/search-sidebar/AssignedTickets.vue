@@ -51,13 +51,13 @@
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
 		    ...mapState({
-                assignedTickets: state => state.moduleUser.assignedTickets
+                assignedTickets: state => state.modulePrefill.assignedTickets
             })
         },
         methods: {
 		    ...mapActions({
                 addToSelectedIssues: 'moduleTask/addToSelectedIssues',
-                refreshAssignedTickets: 'moduleUser/refreshAssignedTickets'
+                refreshAssignedTickets: 'modulePrefill/refreshAssignedTickets'
             })
         },
         mounted() {
