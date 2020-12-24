@@ -69,7 +69,7 @@
             ...mapState({
                 settingsOpen: state => state.moduleUser.settingsOpen,
                 searchResults: state => state.moduleUser.searchResults,
-                doesNotHaveFieldDayAdded: state => state.moduleUser.doesNotHaveFieldDayAdded
+                doesNotHaveFieldDayAdded: state => state.moduleUpdate.doesNotHaveFieldDayAdded
             }),
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }

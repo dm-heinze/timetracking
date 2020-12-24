@@ -189,9 +189,9 @@ export const actions = {
 
                     const __doesNotHaveFieldDayAdded = __removedExpiredBookedTasks.filter((__task) => !__task.hasOwnProperty('dayAdded'));
                     if (__doesNotHaveFieldDayAdded.length) {
-                        commit('moduleUser/updateListDoesNotHaveFieldDayAdded', __doesNotHaveFieldDayAdded, { root: true });
+                        commit('moduleUpdate/updateListDoesNotHaveFieldDayAdded', __doesNotHaveFieldDayAdded, { root: true });
 
-                        commit('moduleUser/toggleUnbookedTasksLeftModal', {}, { root: true }); // this toggles on the visibility of the modal
+                        commit('moduleUpdate/toggleUnbookedTasksLeftModal', {}, { root: true }); // this toggles on the visibility of the modal
                     }
 
                     // set vuex store state

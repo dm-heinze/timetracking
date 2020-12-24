@@ -113,9 +113,9 @@
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
-                doesNotHaveFieldDayAdded: state => state.moduleUser.doesNotHaveFieldDayAdded,
-                showUnbookedTasksLeftModal: state => state.moduleUser.showUnbookedTasksLeftModal,
-                updateMessageShown: state => state.moduleUser.updateMessageShown
+                doesNotHaveFieldDayAdded: state => state.moduleUpdate.doesNotHaveFieldDayAdded,
+                showUnbookedTasksLeftModal: state => state.moduleUpdate.showUnbookedTasksLeftModal,
+                updateMessageShown: state => state.moduleUpdate.updateMessageShown
             }),
             hasCustomTasks () {
                 return this.doesNotHaveFieldDayAdded.filter((__task) => !__task.assignedToTicket);
@@ -123,14 +123,14 @@
         },
         methods: {
             ...mapActions({
-                requestSavingPreviousWorklogs: 'moduleUser/requestSavingPreviousWorklogs',
+                requestSavingPreviousWorklogs: 'moduleUpdate/requestSavingPreviousWorklogs',
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
-                removeFromDoesNotHaveFieldDayAdded: 'moduleUser/removeFromDoesNotHaveFieldDayAdded',
-                saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUser/saveTimeSpentOnDoesNotHaveFieldDayAddedTask',
+                removeFromDoesNotHaveFieldDayAdded: 'moduleUpdate/removeFromDoesNotHaveFieldDayAdded',
+                saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUpdate/saveTimeSpentOnDoesNotHaveFieldDayAddedTask',
                 saveTaskComment: 'moduleTask/saveTaskComment',
-                saveCommentOfDoesNotHaveFieldDayAddedTask: 'moduleUser/saveCommentOfDoesNotHaveFieldDayAddedTask'
+                saveCommentOfDoesNotHaveFieldDayAddedTask: 'moduleUpdate/saveCommentOfDoesNotHaveFieldDayAddedTask'
             }),
             saveCommentToStore: _.debounce(function (event) {
                 this.saveCommentOfDoesNotHaveFieldDayAddedTask({ uniqueId: event.target.name, comment: event.target.value }); // update vuex store
