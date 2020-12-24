@@ -124,12 +124,12 @@
         methods: {
             ...mapActions({
                 requestSavingPreviousWorklogs: 'moduleUser/requestSavingPreviousWorklogs',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
                 removeFromDoesNotHaveFieldDayAdded: 'moduleUser/removeFromDoesNotHaveFieldDayAdded',
                 saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUser/saveTimeSpentOnDoesNotHaveFieldDayAddedTask',
-                saveTaskComment: 'moduleUser/saveTaskComment',
+                saveTaskComment: 'moduleTask/saveTaskComment',
                 saveCommentOfDoesNotHaveFieldDayAddedTask: 'moduleUser/saveCommentOfDoesNotHaveFieldDayAddedTask'
             }),
             saveCommentToStore: _.debounce(function (event) {

@@ -59,12 +59,12 @@
         },
         computed: {
             ...mapState({
-                selectedTasks: state => state.moduleUser.selectedTasks,
-                showErrorMessages: state => state.moduleUser.showErrorMessages,
+                selectedTasks: state => state.moduleTask.selectedTasks,
+                showErrorMessages: state => state.moduleTask.showErrorMessages,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 onABreak: state => state.moduleBreak.onABreak,
                 accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
-                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay,
+                showUnbookedTasksNotOfTheDay: state => state.moduleTask.showUnbookedTasksNotOfTheDay,
                 currentDay: state => state.moduleUser.currentDay
             }),
             // todo
@@ -83,11 +83,11 @@
         },
         methods: {
 		    ...mapMutations({
-                toggleShowErrorMessages: 'moduleUser/toggleShowErrorMessages',
+                toggleShowErrorMessages: 'moduleTask/toggleShowErrorMessages',
                 updateTotalBreakTime: 'moduleBreak/updateTotalBreakTime'
             }),
             ...mapActions({
-                requestSavingWorklogs: 'moduleUser/requestSavingWorklogs',
+                requestSavingWorklogs: 'moduleTask/requestSavingWorklogs',
                 saveBreaksToStorage: 'moduleBreak/saveBreaksToStorage'
             }),
             resetStateAndCloseModal: function () {

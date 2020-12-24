@@ -93,12 +93,12 @@
 		    ...mapMutations({
                 setSelectedProject: 'moduleUser/setSelectedProject',
                 setRelatedTickets: 'moduleUser/setRelatedTickets',
-                assignToTicket: 'moduleUser/assignToTicket'
             }),
             ...mapActions({
                 requestAllProjects: 'moduleUser/requestAllProjects',
                 requestRelatedTickets: 'moduleUser/requestRelatedTickets',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',
+                assignToTicket: 'moduleTask/assignToTicket' // previously a mutation
             }),
             toggleTicketAssignment: function (cancelAssignment = false) {
                 this.showSelection = !this.showSelection;
@@ -121,12 +121,14 @@
                 // saving to vuex store/localStorage only needed if there was a change in the assigned ticket
                 // if cancelBtn was used: do not save
                 if (!this.showSelection && (cancelAssignment === false) && (this.lastSelectedTicket !== this.selectedTicket)) {
-                    // step 1: update vuex store
-                    this.assignToTicket({ uniqueId: this.uniqueId, assignedTicketKey: this.selectedTicket }); // todo
-                    this.resetProjectAndRelatedTicketsInStore();
+                    // step 1: update vuex store // previously a mutation
+                    this.assignToTicket({ uniqueId: this.uniqueId, assignedTicketKey: this.selectedTicket })
+                        .then(() => {
+                            this.resetProjectAndRelatedTicketsInStore();
 
-                    // step 2: update localStorage
-                    this.saveSelectedTasksToStorage();
+                            // step 2: update localStorage
+                            this.saveSelectedTasksToStorage();
+                        })
                 }
             },
             resetProjectAndRelatedTicketsInStore: function () {

@@ -107,18 +107,18 @@
         directives: { 'b-collapse': BCollapse },
         computed: {
             ...mapState({
-                selectedTasks: state => state.moduleUser.selectedTasks,
-                showErrorMessages: state => state.moduleUser.showErrorMessages,
+                selectedTasks: state => state.moduleTask.selectedTasks,
+                showErrorMessages: state => state.moduleTask.showErrorMessages,
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
                 onABreak: state => state.moduleBreak.onABreak,
                 currentDay: state => state.moduleUser.currentDay,
-                showAllSelectedTasksOfCurrentDay: state => state.moduleUser.showAllSelectedTasksOfCurrentDay,
-                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
+                showAllSelectedTasksOfCurrentDay: state => state.moduleTask.showAllSelectedTasksOfCurrentDay,
+                showUnbookedTasksNotOfTheDay: state => state.moduleTask.showUnbookedTasksNotOfTheDay
             }),
             ...mapGetters({
-                getSelectedTasksWithDayIndicator: 'moduleUser/getSelectedTasksWithDayIndicator',
-                getSelectedTasksWithoutDayIndicator: 'moduleUser/getSelectedTasksWithoutDayIndicator'
+                getSelectedTasksWithDayIndicator: 'moduleTask/getSelectedTasksWithDayIndicator',
+                getSelectedTasksWithoutDayIndicator: 'moduleTask/getSelectedTasksWithoutDayIndicator'
             }),
             tasksNotOfTheDay () {
                 return this.getSelectedTasksWithDayIndicator.filter((__task) => __task.dayAdded !== this.currentDay); // field 'dayAdded' may not exist
@@ -164,12 +164,12 @@
         },
         methods: {
             ...mapMutations({
-                setSelectedTasks: 'moduleUser/setSelectedTasks',
-                toggleShowAllSelectedTasksOfCurrentDay: 'moduleUser/toggleShowAllSelectedTasksOfCurrentDay',
-                toggleUnbookedTasksNotOfTheDay: 'moduleUser/toggleUnbookedTasksNotOfTheDay'
+                setSelectedTasks: 'moduleTask/setSelectedTasks',
+                toggleShowAllSelectedTasksOfCurrentDay: 'moduleTask/toggleShowAllSelectedTasksOfCurrentDay',
+                toggleUnbookedTasksNotOfTheDay: 'moduleTask/toggleUnbookedTasksNotOfTheDay'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             })
         },
         watch: {

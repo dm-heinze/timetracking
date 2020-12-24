@@ -132,8 +132,8 @@
             ...mapState({
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket,
-                editingCustomTask: state => state.moduleUser.editingCustomTask,
-                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
+                editingCustomTask: state => state.moduleTask.editingCustomTask,
+                showUnbookedTasksNotOfTheDay: state => state.moduleTask.showUnbookedTasksNotOfTheDay
             }),
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
@@ -141,11 +141,11 @@
         },
         methods: {
             ...mapMutations({
-                assignNameToCustomTask: 'moduleUser/assignNameToCustomTask',
-                updateEditingCustomTask: 'moduleUser/updateEditingCustomTask'
+                assignNameToCustomTask: 'moduleTask/assignNameToCustomTask',
+                updateEditingCustomTask: 'moduleTask/updateEditingCustomTask'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             toggleNameEditingClassic: function (cancelEdit = false) {
                 if (cancelEdit === false) this.updateEditingCustomTask({ activeTaskId: this.uniqueId });

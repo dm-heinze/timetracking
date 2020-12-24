@@ -43,15 +43,15 @@
         methods: {
             ...mapMutations({
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
-                saveTimeSpentOnTask: 'moduleUser/saveTimeSpentOnTask',
+                saveTimeSpentOnTask: 'moduleTask/saveTimeSpentOnTask',
                 setActiveTicket: 'moduleUser/setActiveTicket',
-                saveTaskStartTime: 'moduleUser/saveTaskStartTime',
-                saveTaskEndTime: 'moduleUser/saveTaskEndTime',
+                saveTaskStartTime: 'moduleTask/saveTaskStartTime',
+                saveTaskEndTime: 'moduleTask/saveTaskEndTime',
                 toggleBreakMutation: 'moduleBreak/toggleBreak',
                 setLastTicket: 'moduleUser/setLastTicket'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             currentTimeInSeconds: function () {
                 this.timeRightNow = new Date();

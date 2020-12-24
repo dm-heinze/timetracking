@@ -27,7 +27,7 @@ export default async (context) => {
 
         // retrieve data from localStorage
         await Promise.all([
-            await context.store.dispatch('moduleUser/retrieveSelectedTasksFromStorage', context), // this needs the current date for the UI
+            await context.store.dispatch('moduleTask/retrieveSelectedTasksFromStorage', context), // this needs the current date for the UI
             await context.store.dispatch('moduleBreak/retrieveBreaksFromStorage', context),
             await context.store.dispatch('moduleBookmark/retrieveBookmarksFromStorage', context),
             await context.store.dispatch('moduleOptional/retrieveSelectionForSuggestionsFromStorage', context), // todo: as cookie?

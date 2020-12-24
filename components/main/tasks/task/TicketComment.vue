@@ -45,15 +45,15 @@
         },
         computed: {
             ...mapState({
-                showErrorMessages: state => state.moduleUser.showErrorMessages
+                showErrorMessages: state => state.moduleTask.showErrorMessages
             })
 		},
         methods: {
             ...mapMutations({
-                saveTaskComment: 'moduleUser/saveTaskComment'
+                saveTaskComment: 'moduleTask/saveTaskComment'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             saveCommentToStore: function (event) {
                 this.updatedComment = event.target.value;

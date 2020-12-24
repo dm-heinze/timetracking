@@ -98,11 +98,11 @@
         methods: {
             ...mapActions({
                 requestAllProjects: 'moduleUser/requestAllProjects',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
                 setSearchResult: 'moduleUser/setSearchResult',
-                removeDoesNotHaveFieldDayAddedTasks: 'moduleUser/removeDoesNotHaveFieldDayAddedTasks'
+                removeDoesNotHaveFieldDayAddedTasks: 'moduleTask/removeDoesNotHaveFieldDayAddedTasks'
             })
         },
         middleware ({ store, redirect }) {

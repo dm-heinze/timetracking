@@ -67,7 +67,7 @@
         },
         methods: {
             ...mapActions({
-                requestSavingSingleWorklog: 'moduleUser/requestSavingSingleWorklog',
+                requestSavingSingleWorklog: 'moduleTask/requestSavingSingleWorklog',
                 resetState: 'moduleUser/resetState'
             }),
             bookSingleTaskOnly() {

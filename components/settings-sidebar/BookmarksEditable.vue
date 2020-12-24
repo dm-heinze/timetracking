@@ -43,7 +43,7 @@
         methods: {
             ...mapActions({
                 toggleBookmarked: 'moduleBookmark/toggleBookmarked',
-                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+                addToSelectedIssues: 'moduleTask/addToSelectedIssues'
             })
         }
 	}

@@ -39,7 +39,7 @@
         },
         methods: {
             ...mapActions({
-                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+                addToSelectedIssues: 'moduleTask/addToSelectedIssues'
             })
         }
 	}

@@ -57,7 +57,7 @@
         computed: {
             ...mapState({
                 allExistingProjects: state => state.moduleUser.allExistingProjects,
-                selectedTasks: state => state.moduleUser.selectedTasks,
+                selectedTasks: state => state.moduleTask.selectedTasks,
                 relatedTickets: state => state.moduleUser.relatedTickets
             })
         },
@@ -89,13 +89,13 @@
         methods: {
             ...mapMutations({
                 setSearchResult: 'moduleUser/setSearchResult',
-                addSelectedTask: 'moduleUser/addSelectedTask',
+                addSelectedTask: 'moduleTask/addSelectedTask',
                 setSelectedProject: 'moduleUser/setSelectedProject',
                 setRelatedTickets: 'moduleUser/setRelatedTickets'
             }),
             ...mapActions({
                 getIssue: 'moduleUser/getIssue',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',
                 requestRelatedTickets: 'moduleUser/requestRelatedTickets'
             }),
             addSelectionToSelectedTasks: function () {

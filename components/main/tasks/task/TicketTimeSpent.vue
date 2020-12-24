@@ -67,10 +67,10 @@
         },
         methods: {
             ...mapMutations({
-                saveTimeSpentOnTask: 'moduleUser/saveTimeSpentOnTask'
+                saveTimeSpentOnTask: 'moduleTask/saveTimeSpentOnTask'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             saveEditedWorklogTimeSpent: _.debounce(function (event) {
                 const editedTimeSpent = event.target.value; // received val may be string of shape hh:mm or hh:mm:ss

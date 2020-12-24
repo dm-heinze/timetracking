@@ -69,10 +69,10 @@
         },
         methods: {
             ...mapMutations({
-                removeSelectedTask: 'moduleUser/removeSelectedTask',
+                removeSelectedTask: 'moduleTask/removeSelectedTask',
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',
             }),
             removeTicketFromSelectedTickets: function (ticketToRemoveFromSelectedTickets) {
                 this.removeSelectedTask(ticketToRemoveFromSelectedTickets);

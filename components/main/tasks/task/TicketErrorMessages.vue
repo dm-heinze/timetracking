@@ -26,7 +26,7 @@
         },
         computed: {
             ...mapState({
-                showErrorMessages: state => state.moduleUser.showErrorMessages
+                showErrorMessages: state => state.moduleTask.showErrorMessages
             })
         }
 	}

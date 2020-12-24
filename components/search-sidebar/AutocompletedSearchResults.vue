@@ -64,11 +64,11 @@
         },
         methods: {
 		    ...mapMutations({
-                addSelectedTask: 'moduleUser/addSelectedTask',
+                addSelectedTask: 'moduleTask/addSelectedTask',
                 setAlreadyExists: 'moduleUser/setAlreadyExists'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',
             }),
             addTicketToSelectedTasks: function (selection) {
                 let __selection = _.cloneDeep(selection);

@@ -36,7 +36,7 @@
         computed: {
             ...mapState({
                 searchResults: state => state.moduleUser.searchResults,
-                selectedTasks: state => state.moduleUser.selectedTasks,
+                selectedTasks: state => state.moduleTask.selectedTasks,
                 showSuggestions: state => state.moduleOptional.showSuggestions,
                 suggestionGroups: state => state.moduleOptional.suggestionGroups
             }),

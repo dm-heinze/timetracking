@@ -53,11 +53,11 @@
         },
         methods: {
             ...mapMutations({
-                addSelectedTask: 'moduleUser/addSelectedTask',
+                addSelectedTask: 'moduleTask/addSelectedTask',
             }),
             ...mapActions({
                 requestAllProjects: 'moduleUser/requestAllProjects',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             startNewCustomTask: function () {
                 const newCustomTask = {

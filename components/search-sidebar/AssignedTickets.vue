@@ -56,7 +56,7 @@
         },
         methods: {
 		    ...mapActions({
-                addToSelectedIssues: 'moduleUser/addToSelectedIssues',
+                addToSelectedIssues: 'moduleTask/addToSelectedIssues',
                 refreshAssignedTickets: 'moduleUser/refreshAssignedTickets'
             })
         },
