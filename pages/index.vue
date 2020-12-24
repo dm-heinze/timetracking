@@ -68,7 +68,7 @@
         computed: {
             ...mapState({
                 settingsOpen: state => state.moduleUser.settingsOpen,
-                searchResults: state => state.moduleUser.searchResults,
+                searchResults: state => state.moduleSearch.searchResults,
                 doesNotHaveFieldDayAdded: state => state.moduleUpdate.doesNotHaveFieldDayAdded
             }),
             marginBottomTitle () {
@@ -101,7 +101,7 @@
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
-                setSearchResult: 'moduleUser/setSearchResult',
+                setSearchResult: 'moduleSearch/setSearchResult',
                 removeDoesNotHaveFieldDayAddedTasks: 'moduleTask/removeDoesNotHaveFieldDayAddedTasks'
             })
         },

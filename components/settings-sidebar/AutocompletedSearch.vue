@@ -43,21 +43,21 @@
         computed: {
             ...mapState({
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
-                searchTerm: state => state.moduleUser.searchTerm,
-                searchLoading: state => state.moduleUser.searchLoading
+                searchTerm: state => state.moduleSearch.searchTerm,
+                searchLoading: state => state.moduleSearch.searchLoading
             })
         },
         methods: {
 		    ...mapMutations({
-                setSearchTerm: 'moduleUser/setSearchTerm',
+                setSearchTerm: 'moduleSearch/setSearchTerm',
                 toggleSettings: 'moduleUser/toggleSettings',
-                setSearchResult: 'moduleUser/setSearchResult',
-                setSearchLoading: 'moduleUser/setSearchLoading',
+                setSearchResult: 'moduleSearch/setSearchResult',
+                setSearchLoading: 'moduleSearch/setSearchLoading',
                 updateErrorOccurred: 'moduleUser/updateErrorOccurred'
             }),
             ...mapActions({
-                getIssue: 'moduleUser/getIssue',
-                resetSearch: 'moduleUser/resetSearch',
+                getIssue: 'moduleSearch/getIssue',
+                resetSearch: 'moduleSearch/resetSearch',
                 resetState: 'moduleUser/resetState' // todo
             }),
             requestSearch: _.debounce(function (value) {

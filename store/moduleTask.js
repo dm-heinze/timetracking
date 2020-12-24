@@ -18,7 +18,7 @@ export const getters = {
         return state.selectedTasks.filter((__ticket) => __ticket.hasOwnProperty('dayAdded'))
     },
     getSelectedTicket: (state, getters, rootState) => (__assignedTicketKey) => {
-        return rootState.moduleUser.relatedTickets.filter((__relatedTicket) => __relatedTicket.key === __assignedTicketKey); // todo
+        return rootState.moduleSearch.relatedTickets.filter((__relatedTicket) => __relatedTicket.key === __assignedTicketKey); // todo
     },
     getSelectedTasksOfCurrentDay: (state, getters, rootState) => {
         return state.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === rootState.moduleUser.currentDay); // todo

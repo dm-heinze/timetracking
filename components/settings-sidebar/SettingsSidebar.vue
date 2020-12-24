@@ -31,7 +31,7 @@
         },
         methods: {
             ...mapActions({
-                resetSearch: 'moduleUser/resetSearch'
+                resetSearch: 'moduleSearch/resetSearch'
             })
         }
 	}

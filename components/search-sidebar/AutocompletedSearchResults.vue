@@ -36,8 +36,8 @@
         computed: {
             ...mapState({
                 prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
-                searchResults: state => state.moduleUser.searchResults,
-                alreadyExists: state => state.moduleUser.alreadyExists
+                searchResults: state => state.moduleSearch.searchResults,
+                alreadyExists: state => state.moduleSearch.alreadyExists
             }),
             searchResultList () {
                 if (!this.alreadyExists) {
@@ -65,7 +65,7 @@
         methods: {
 		    ...mapMutations({
                 addSelectedTask: 'moduleTask/addSelectedTask',
-                setAlreadyExists: 'moduleUser/setAlreadyExists'
+                setAlreadyExists: 'moduleSearch/setAlreadyExists'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',

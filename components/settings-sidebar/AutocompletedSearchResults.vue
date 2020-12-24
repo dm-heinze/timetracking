@@ -46,9 +46,9 @@
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
-                searchResults: state => state.moduleUser.searchResults,
+                searchResults: state => state.moduleSearch.searchResults,
                 bookmarked: state => state.moduleBookmark.bookmarked,
-                searchLoading: state => state.moduleUser.searchLoading,
+                searchLoading: state => state.moduleSearch.searchLoading,
                 errorOccurred: state => state.moduleUser.errorOccurred
             })
         },
