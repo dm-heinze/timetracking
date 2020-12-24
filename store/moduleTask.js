@@ -21,6 +21,9 @@ export const getters = {
     },
     getSelectedTicket: (state, getters, rootState) => (__assignedTicketKey) => {
         return rootState.moduleUser.relatedTickets.filter((__relatedTicket) => __relatedTicket.key === __assignedTicketKey); // todo
+    },
+    getSelectedTasksOfCurrentDay: (state, getters, rootState) => {
+        return state.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === rootState.moduleUser.currentDay); // todo
     }
 }
 
@@ -158,17 +161,14 @@ export const actions = {
                 });
         })
     },
-    requestSavingWorklogs: function ({ state, rootState, rootGetters, commit, dispatch }) {
+    requestSavingWorklogs: function ({ state, rootState, getters, rootGetters, commit, dispatch }) {
         return new Promise(async (resolve, reject) => {
             if (state.selectedTasks.length !== 0) { // todo!
-
-                let hasNonTrackedTasks = state.selectedTasks
-                    .filter((__selectedTask) => __selectedTask.dayAdded === rootState.moduleUser.currentDay)
+                let hasNonTrackedTasks = getters.getSelectedTasksOfCurrentDay
                     .filter((__selectedTask) => !(__selectedTask.timeSpent))
                     .length !== 0;
 
-                let hasUnassignedCustomTasks = state.selectedTasks
-                    .filter((__selectedTask) => __selectedTask.dayAdded === rootState.moduleUser.currentDay)
+                let hasUnassignedCustomTasks = getters.getSelectedTasksOfCurrentDay
                     .filter((__selectedTask) => !__selectedTask.assignedToTicket)
                     .length !== 0;
 
@@ -179,8 +179,7 @@ export const actions = {
                         // only book tasks from today
                         // - tasks from previous days should only be booked one by one via 'requestSavingSingleWorklog'
                         await Promise.all(
-                            state.selectedTasks
-                                .filter((__selectedTask) => __selectedTask.dayAdded === rootState.moduleUser.currentDay)
+                            getters.getSelectedTasksOfCurrentDay
                                 .map(async __selectedTask => {
                                     if (!__selectedTask.booked) {
                                         await axios({
@@ -202,11 +201,12 @@ export const actions = {
                                 // (previous as in previous implementation)
 
                                 // only mark those tasks as booked that are from current day as only those got booked above
-                                state.selectedTasks
-                                    .filter((__selectedTask) => __selectedTask.dayAdded === rootState.moduleUser.currentDay)
-                                    .forEach((__bookedTask) => {
-                                        commit('markTaskAsBooked', { taskToMarkAsBooked: __bookedTask.uniqueId })
-                                        commit('setBookedAt', { taskToSetBookedAt: __bookedTask.uniqueId })
+                                getters.getSelectedTasksOfCurrentDay
+                                    .forEach((__selectedTask) => {
+                                        if (!__selectedTask.booked) { // todo
+                                            commit('markTaskAsBooked', { taskToMarkAsBooked: __selectedTask.uniqueId })
+                                            commit('setBookedAt', { taskToSetBookedAt: __selectedTask.uniqueId })
+                                        }
                                     });
 
                                 dispatch('saveSelectedTasksToStorage').then(() => resolve()).catch(() => reject());
