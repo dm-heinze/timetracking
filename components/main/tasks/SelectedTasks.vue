@@ -5,42 +5,7 @@
                 <BreakTask v-if="(accumulatedBreakTime != '00:00:00') && !onABreak" />
             </b-collapse>
 
-            <div class="toggle-show-all pb-2 d-flex flex-row justify-content-end align-items-center mr-4"> <!-- todo -->
-                <button
-                    @click="toggleUnbookedTasksNotOfTheDay"
-                    class="mr-4 font-weight-bold"
-                    :class="{ 'inactive': !showUnbookedTasksNotOfTheDay }"
-                    :disabled="showUnbookedTasksNotOfTheDay"
-                    v-if="unbookedTasksNotOfTheDay.length"
-                >
-                    Previously
-                </button>
-                <button
-                    @click="toggleUnbookedTasksNotOfTheDay"
-                    class="mr-4 font-weight-bold"
-                    :class="{ 'inactive': showUnbookedTasksNotOfTheDay }"
-                    :disabled="!showUnbookedTasksNotOfTheDay"
-                >
-                    Today
-                </button>
-
-                <toggle-right-icon
-                    class="toggle-show-all--show"
-                    :class="{ 'disabled': showUnbookedTasksNotOfTheDay }"
-                    v-b-tooltip.hover
-                    title="Toggle Booked"
-                    @click="toggleShowAllSelectedTasksOfCurrentDay()"
-                    v-if="showAllSelectedTasksOfCurrentDay"
-                />
-                <toggle-left-icon
-                    class="toggle-show-all--hide"
-                    :class="{ 'disabled': showUnbookedTasksNotOfTheDay }"
-                    v-b-tooltip.hover
-                    title="Toggle Booked"
-                    @click="toggleShowAllSelectedTasksOfCurrentDay()"
-                    v-else
-                />
-            </div>
+            <control-shown-subsets :unbooked-tasks-not-of-the-day="unbookedTasksNotOfTheDay" />
 
             <div v-if="tasksOfTheDay.length !== 0 && !showUnbookedTasksNotOfTheDay">
                 <ul>
@@ -92,17 +57,17 @@
     import { mapMutations, mapState, mapGetters, mapActions } from 'vuex';
     import draggable from 'vuedraggable';
     import { BCollapse } from "bootstrap-vue";
-    import { ToggleLeftIcon, ToggleRightIcon } from "vue-feather-icons";
+    import ControlShownSubsets from "~/components/main/tasks/ControlShownSubsets";
 
     export default {
         name: "SelectedTasks",
         components: {
+            ControlShownSubsets,
             BCollapse,
             BreakTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/BreakTask'),
             // added prefetch directive for webpack for case: adding a custom task w/ no network connection & no selectedTasks
             SelectedTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/task/SelectedTask'),
             draggable,
-            ToggleLeftIcon, ToggleRightIcon
         },
         directives: { 'b-collapse': BCollapse },
         computed: {
@@ -165,7 +130,6 @@
         methods: {
             ...mapMutations({
                 setSelectedTasks: 'moduleTask/setSelectedTasks',
-                toggleShowAllSelectedTasksOfCurrentDay: 'moduleTask/toggleShowAllSelectedTasksOfCurrentDay',
                 toggleUnbookedTasksNotOfTheDay: 'moduleTask/toggleUnbookedTasksNotOfTheDay'
             }),
             ...mapActions({
@@ -173,7 +137,7 @@
             })
         },
         watch: {
-            unbookedTasksNotOfTheDay: function (updatedArrayUnbookedTasksNotOfTheDay) {
+            unbookedTasksNotOfTheDay: function (updatedArrayUnbookedTasksNotOfTheDay) { // todo
                 if (!updatedArrayUnbookedTasksNotOfTheDay.length) {
                     // when there are no more unbooked tasks left from previous days -> the state should default to 'today'
                     // -> also needed for conditional in 'push all' button
