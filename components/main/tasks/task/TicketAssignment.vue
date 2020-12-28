@@ -1,6 +1,18 @@
 <template>
 	<div>
-        <b-button :disabled="isTimerActive && (activeTicket === uniqueId)" pill variant="light-grey" type="button" class="login-content__sign-in-btn button--ticketAssignment pt-2 pb-2" :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId), 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg', 'mr-2': $mq === 'mdp' || $mq === 'plg' }" @click.prevent="toggleTicketAssignment()">
+        <b-button
+            pill
+            variant="light-grey"
+            type="button"
+            class="button--ticketAssignment pt-2 pb-2"
+            :class="{
+                'mb-2': $mq === 'sm',
+                'mr-3': $mq === 'md' || $mq === 'lg',
+                'mr-2': $mq === 'mdp' || $mq === 'plg'
+            }"
+            :disabled="isTimerActive && (activeTicket === uniqueId)"
+            @click.prevent="toggleTicketAssignment()"
+        >
             <plus-circle-icon />
             <span class="pl-1">Assign Ticket</span>
         </b-button>
@@ -37,7 +49,9 @@
                                 v-for="relatedTicket in relatedTickets"
                                 :value="relatedTicket.key"
                                 :key="relatedTicket.key"
-                            >{{ relatedTicket.key }}: {{ relatedTicket.summary }}</b-form-select-option>
+                            >
+                                {{ relatedTicket.key }}: {{ relatedTicket.summary }}
+                            </b-form-select-option>
                         </b-form-select>
                         <chevron-down-icon class="select__icon" />
                     </div>
@@ -47,8 +61,22 @@
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
                 <div class="d-flex justify-content-between w-100 modal__actions">
-                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="toggleTicketAssignment(true)">Cancel</b-button>
-                    <b-button pill variant="primary" class="font-weight-bold modal__save-btn" :disabled="selectedTicket === ''" @click.prevent="toggleTicketAssignment()">Save</b-button>
+                    <b-button
+                        pill
+                        class="font-weight-bold modal__cancel-btn"
+                        @click.prevent="toggleTicketAssignment(true)"
+                    >
+                        Cancel
+                    </b-button>
+                    <b-button
+                        pill
+                        variant="primary"
+                        class="font-weight-bold modal__save-btn"
+                        :disabled="selectedTicket === ''"
+                        @click.prevent="toggleTicketAssignment()"
+                    >
+                        Save
+                    </b-button>
                 </div>
             </template>
         </b-modal>
