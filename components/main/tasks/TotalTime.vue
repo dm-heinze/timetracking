@@ -15,12 +15,12 @@
 		name: "TotalTime",
         computed: {
             ...mapState({
-                selectedTasks: state => state.moduleUser.selectedTasks, // todo
-                showAllSelectedTasksOfCurrentDay: state => state.moduleUser.showAllSelectedTasksOfCurrentDay,
+                selectedTasks: state => state.moduleTask.selectedTasks, // todo
+                showAllSelectedTasksOfCurrentDay: state => state.moduleTask.showAllSelectedTasksOfCurrentDay,
                 currentDay: state => state.moduleUser.currentDay
             }),
             ...mapGetters({
-                getSelectedTasksWithDayIndicator: 'moduleUser/getSelectedTasksWithDayIndicator'
+                getSelectedTasksWithDayIndicator: 'moduleTask/getSelectedTasksWithDayIndicator'
             }),
             tasksOfTheDay () {
                 return this.getSelectedTasksWithDayIndicator.filter((__selectedTasksWithDayIndicator) => __selectedTasksWithDayIndicator.dayAdded === this.currentDay);

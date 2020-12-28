@@ -46,14 +46,14 @@
         name: "UpdateMessage",
         computed: {
             ...mapState({
-                doesNotHaveFieldDayAdded: state => state.moduleUser.doesNotHaveFieldDayAdded, // todo
-                showUnbookedTasksLeftModal: state => state.moduleUser.showUnbookedTasksLeftModal,
-                updateMessageShown: state => state.moduleUser.updateMessageShown
+                doesNotHaveFieldDayAdded: state => state.moduleUpdate.doesNotHaveFieldDayAdded, // todo
+                showUnbookedTasksLeftModal: state => state.moduleUpdate.showUnbookedTasksLeftModal,
+                updateMessageShown: state => state.moduleUpdate.updateMessageShown
             })
         },
         methods: {
             ...mapMutations({
-                updateUpdateMessageShown: 'moduleUser/updateUpdateMessageShown'
+                updateUpdateMessageShown: 'moduleUpdate/updateUpdateMessageShown'
             })
         }
     }

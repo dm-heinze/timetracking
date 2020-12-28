@@ -56,9 +56,9 @@
         },
         computed: {
             ...mapState({
-                allExistingProjects: state => state.moduleUser.allExistingProjects,
-                selectedTasks: state => state.moduleUser.selectedTasks,
-                relatedTickets: state => state.moduleUser.relatedTickets
+                allExistingProjects: state => state.modulePrefill.allExistingProjects,
+                selectedTasks: state => state.moduleTask.selectedTasks,
+                relatedTickets: state => state.moduleSearch.relatedTickets
             })
         },
         watch: {
@@ -88,15 +88,15 @@
         },
         methods: {
             ...mapMutations({
-                setSearchResult: 'moduleUser/setSearchResult',
-                addSelectedTask: 'moduleUser/addSelectedTask',
-                setSelectedProject: 'moduleUser/setSelectedProject',
-                setRelatedTickets: 'moduleUser/setRelatedTickets'
+                setSearchResult: 'moduleSearch/setSearchResult',
+                addSelectedTask: 'moduleTask/addSelectedTask',
+                setSelectedProject: 'moduleSearch/setSelectedProject',
+                setRelatedTickets: 'moduleSearch/setRelatedTickets'
             }),
             ...mapActions({
-                getIssue: 'moduleUser/getIssue',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
-                requestRelatedTickets: 'moduleUser/requestRelatedTickets'
+                getIssue: 'moduleSearch/getIssue',
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',
+                requestRelatedTickets: 'moduleSearch/requestRelatedTickets'
             }),
             addSelectionToSelectedTasks: function () {
                 const __selectedTaskObject = this.relatedTickets.find((__relatedTicket) => __relatedTicket.key === this.selectedTicket);

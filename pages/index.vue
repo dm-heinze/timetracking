@@ -68,8 +68,8 @@
         computed: {
             ...mapState({
                 settingsOpen: state => state.moduleUser.settingsOpen,
-                searchResults: state => state.moduleUser.searchResults,
-                doesNotHaveFieldDayAdded: state => state.moduleUser.doesNotHaveFieldDayAdded
+                searchResults: state => state.moduleSearch.searchResults,
+                doesNotHaveFieldDayAdded: state => state.moduleUpdate.doesNotHaveFieldDayAdded
             }),
             marginBottomTitle () {
                 if (this.$mq === 'sm') return { marginBottom: '80px' }
@@ -97,17 +97,17 @@
         },
         methods: {
             ...mapActions({
-                requestAllProjects: 'moduleUser/requestAllProjects',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                requestAllProjects: 'modulePrefill/requestAllProjects',
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
-                setSearchResult: 'moduleUser/setSearchResult',
-                removeDoesNotHaveFieldDayAddedTasks: 'moduleUser/removeDoesNotHaveFieldDayAddedTasks'
+                setSearchResult: 'moduleSearch/setSearchResult',
+                removeDoesNotHaveFieldDayAddedTasks: 'moduleTask/removeDoesNotHaveFieldDayAddedTasks'
             })
         },
         middleware ({ store, redirect }) {
             return new Promise((resolve, reject) => {
-                store.dispatch('moduleUser/requestPrefill')
+                store.dispatch('modulePrefill/requestPrefill')
                     .then(() => resolve())
                     .catch((err) => {
                         redirect('/customer/login'); // if page requested on reload/initial request: if sessionId invalid requestPrefill will result in this catch block

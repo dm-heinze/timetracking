@@ -67,8 +67,8 @@
         },
         computed: {
             ...mapState({
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
-                onABreak: state => state.moduleUser.onABreak
+                accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
+                onABreak: state => state.moduleBreak.onABreak
             }),
             flexDirection () { // todo
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
@@ -90,10 +90,10 @@
         },
         methods: {
             ...mapActions({
-                saveBreaksToStorage: 'moduleUser/saveBreaksToStorage'
+                saveBreaksToStorage: 'moduleBreak/saveBreaksToStorage'
             }),
             ...mapMutations({
-                updateTotalBreakTime: 'moduleUser/updateTotalBreakTime'
+                updateTotalBreakTime: 'moduleBreak/updateTotalBreakTime'
             }),
             resetBreakTracker: function () {
                 // update vuex store

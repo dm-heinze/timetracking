@@ -1,13 +1,32 @@
 <template>
-    <div class="selected-ticket__container" :class="{ 'currently-active': isTimerActive && (activeTicket === uniqueId), 'already-booked': booked, 'currentlyDraggable': !isTimerActive }">
-        <div class="selected-ticket__heading mb-2" :class="{ 'flex-column align-items-start': $mq === 'md', 'flex-column align-items-center': $mq === 'sm', 'align-items-center': ($mq === 'lg' && assignedToTicket) || ($mq === 'plg' && assignedToTicket), 'flex-column': $mq === 'mdp' || !assignedToTicket }">
+    <div
+        class="selected-ticket__container"
+        :class="{
+            'currently-active': isTimerActive && (activeTicket === uniqueId),
+            'already-booked': booked,
+            'currentlyDraggable': !isTimerActive
+        }"
+    >
+        <div
+            class="selected-ticket__heading mb-2"
+            :class="{
+                'flex-column align-items-start': $mq === 'md',
+                'flex-column align-items-center': $mq === 'sm',
+                'align-items-center': ($mq === 'lg' && assignedToTicket) || ($mq === 'plg' && assignedToTicket),
+                'flex-column': $mq === 'mdp' || !assignedToTicket
+            }"
+        >
             <a
                 v-if="!editingName"
                 :href="taskDirectLink ? taskDirectLink : '#'"
                 :target="taskDirectLink ? '_blank' : ''"
                 rel="noopener"
                 class="col-sm-12"
-                :class="{ 'col-12': $mq === 'mdp' || !assignedToTicket, 'col-lg-4': assignedToTicket, 'notALink': !assignedToTicket }"
+                :class="{
+                    'col-12': $mq === 'mdp' || !assignedToTicket,
+                    'col-lg-4': assignedToTicket,
+                    'notALink': !assignedToTicket
+                }"
             >
                 <div class="pb-2" :class="{ 'd-flex flex-column align-items-center justify-content-center': $mq === 'sm' }">
                     <div class="font-weight-bold">{{ taskKey }}</div>
@@ -25,7 +44,15 @@
                 >
             </div>
 
-            <div class="selected-ticket__heading__controls d-flex" :class="{ 'w-100 justify-content-between': $mq === 'md' || $mq === 'sm', 'flex-row': $mq === 'md' || 'lg', 'flex-column': $mq === 'sm', 'justify-content-between': $mq === 'mdp' || !assignedToTicket }">
+            <div
+                class="selected-ticket__heading__controls d-flex"
+                :class="{
+                    'w-100 justify-content-between': $mq === 'md' || $mq === 'sm',
+                    'flex-row': $mq === 'md' || 'lg',
+                    'flex-column': $mq === 'sm',
+                    'justify-content-between': $mq === 'mdp' || !assignedToTicket
+                }"
+            >
                 <div v-if="!booked" class="selected-ticket__heading__assignments d-flex" :class="[flexDirection]">
                     <b-button
                         v-if="!assignedToTicket"
@@ -35,7 +62,10 @@
                         type="button"
                         :disabled="isTimerActive && (activeTicket === uniqueId)"
                         class="login-content__sign-in-btn button--customTaskName pt-2 pb-2"
-                        :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId), 'mb-2': $mq === 'sm', 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }"
+                        :class="{
+                            'mb-2': $mq === 'sm',
+                            'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg'
+                        }"
                         @click.prevent="toggleNameEditingClassic()"
                         v-click-outside="toggleNameEditing"
                     >
@@ -59,7 +89,7 @@
             </div>
         </div>
 
-        <ticket-error-messages :unique-id="uniqueId" :task-key="taskKey" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" />
+        <ticket-error-messages :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" />
 
         <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
 
@@ -143,8 +173,8 @@
             ...mapState({
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket,
-                editingCustomTask: state => state.moduleUser.editingCustomTask,
-                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
+                editingCustomTask: state => state.moduleTask.editingCustomTask,
+                showUnbookedTasksNotOfTheDay: state => state.moduleTask.showUnbookedTasksNotOfTheDay
             }),
             flexDirection () {
                 return `flex-${this.$mq === 'sm' ? 'column' : 'row'}`
@@ -152,12 +182,12 @@
         },
         methods: {
             ...mapMutations({
-                assignNameToCustomTask: 'moduleUser/assignNameToCustomTask',
-                updateEditingCustomTask: 'moduleUser/updateEditingCustomTask',
-                saveToTasksStartAndEndTimeArray: 'moduleUser/saveToTasksStartAndEndTimeArray'
+                // saveToTasksStartAndEndTimeArray: 'moduleUser/saveToTasksStartAndEndTimeArray', // todo!
+                assignNameToCustomTask: 'moduleTask/assignNameToCustomTask',
+                updateEditingCustomTask: 'moduleTask/updateEditingCustomTask'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             toggleNameEditingClassic: function (cancelEdit = false) {
                 if (cancelEdit === false) this.updateEditingCustomTask({ activeTaskId: this.uniqueId });

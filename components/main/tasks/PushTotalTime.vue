@@ -1,11 +1,12 @@
 <template>
     <b-button
-        pill
         variant="success"
-        type="button"
         class="login-content__sign-in-btn py-2"
+        :class="{
+            'mr-1': $mq === 'md' || $mq === 'lg',
+            'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg'
+        }"
         v-b-modal="'confirm-push-time'"
-        :class="{ 'mr-1': $mq === 'md' || $mq === 'lg', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }"
         v-b-tooltip.hover title="Push all your tasks"
     >
         <send-icon />
@@ -36,8 +37,19 @@
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
                 <div class="d-flex justify-content-between w-100 modal__actions">
-                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="resetStateAndCloseModal">Cancel</b-button> <!-- todo -->
-                    <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="saveWorklogs()">Push Time</b-button>
+                    <b-button
+                        class="font-weight-bold modal__cancel-btn"
+                        @click.prevent="resetStateAndCloseModal"
+                    >
+                        Cancel
+                    </b-button> <!-- todo -->
+                    <b-button
+                        variant="primary"
+                        class="font-weight-bold modal__save-btn"
+                        @click.prevent="saveWorklogs()"
+                    >
+                        Push Time
+                    </b-button>
                 </div>
             </template>
         </b-modal>
@@ -45,7 +57,7 @@
 </template>
 
 <script>
-    import { mapState, mapActions, mapMutations } from 'vuex';
+    import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
     import { SendIcon, XIcon } from 'vue-feather-icons';
     import { BFormCheckbox } from 'bootstrap-vue'; // todo
 
@@ -59,34 +71,28 @@
         },
         computed: {
             ...mapState({
-                selectedTasks: state => state.moduleUser.selectedTasks,
-                showErrorMessages: state => state.moduleUser.showErrorMessages,
+                selectedTasks: state => state.moduleTask.selectedTasks,
+                showErrorMessages: state => state.moduleTask.showErrorMessages,
                 isTimerActive: state => state.moduleUser.isTimerActive,
-                onABreak: state => state.moduleUser.onABreak,
-                accumulatedBreakTime: state => state.moduleUser.accumulatedBreakTime,
-                showUnbookedTasksNotOfTheDay: state => state.moduleUser.showUnbookedTasksNotOfTheDay
+                onABreak: state => state.moduleBreak.onABreak,
+                accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
+                showUnbookedTasksNotOfTheDay: state => state.moduleTask.showUnbookedTasksNotOfTheDay
             }),
-            everythingBookedAlready () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.booked).length === 0; // todo
-            },
-            noMissingComments () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.comment).length === 0; // todo
-            },
-            noUnassignedCustomTasks () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.assignedToTicket).length === 0; // todo
-            },
-            noUntrackedTasks () {
-                return this.selectedTasks.filter((__selectedTask) => !__selectedTask.timeSpent).length === 0; // todo
-            }
+            ...mapGetters({
+                everythingBookedAlready: 'moduleTask/everythingBookedAlready',
+                noMissingComments: 'moduleTask/noMissingComments',
+                noUnassignedCustomTasks: 'moduleTask/noUnassignedCustomTasks',
+                noUntrackedTasks: 'moduleTask/noUntrackedTasks'
+            })
         },
         methods: {
 		    ...mapMutations({
-                toggleShowErrorMessages: 'moduleUser/toggleShowErrorMessages',
-                updateTotalBreakTime: 'moduleUser/updateTotalBreakTime',
+                toggleShowErrorMessages: 'moduleTask/toggleShowErrorMessages',
+                updateTotalBreakTime: 'moduleBreak/updateTotalBreakTime'
             }),
             ...mapActions({
-                requestSavingWorklogs: 'moduleUser/requestSavingWorklogs',
-                saveBreaksToStorage: 'moduleUser/saveBreaksToStorage'
+                requestSavingWorklogs: 'moduleBooking/requestSavingWorklogs',
+                saveBreaksToStorage: 'moduleBreak/saveBreaksToStorage'
             }),
             resetStateAndCloseModal: function () {
                 this.$bvModal.hide(`confirm-push-time`);
@@ -105,6 +111,8 @@
                         bodyClass: 'modal__main-container',
                         footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                     })
+
+                    if (this.resetTrackedBreakTime) this.resetTrackedBreakTime = false; // de-selects checkbox that resets break tracker
                 } else if (this.showUnbookedTasksNotOfTheDay) { // todo
                     this.$bvModal.msgBoxOk('Tasks from previous days can only be booked one by one.', {
                         centered: true,
@@ -113,8 +121,11 @@
                         bodyClass: 'modal__main-container',
                         footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                     })
+
+                    if (this.resetTrackedBreakTime) this.resetTrackedBreakTime = false; // de-selects checkbox that resets break tracker
                 } else {
                     // show error message if not all conditions (should exist: selectedTasks, every selectedTask should have a comment, tracked time & should not be a custom task) for booking are met
+                    // todo
                     if (this.selectedTasks.length===0 || this.everythingBookedAlready || !this.noMissingComments || !this.noUnassignedCustomTasks || !this.noUntrackedTasks) {
                         // toggle error messages below the fields that are affected
                         this.toggleShowErrorMessages({ show: true });
@@ -126,8 +137,11 @@
                             bodyClass: 'modal__main-container',
                             footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                         })
+
+                        if (this.resetTrackedBreakTime) this.resetTrackedBreakTime = false; // de-selects checkbox that resets break tracker
                     } else {
                         // toggle off visibility of error messages from any previous booking request that toggled on the visibility
+                        // todo
                         if (this.showErrorMessages && this.selectedTasks.length!==0 && !this.everythingBookedAlready && this.noMissingComments && this.noUnassignedCustomTasks && this.noUntrackedTasks) this.toggleShowErrorMessages({ show: false });
 
                         // make API request to book each task

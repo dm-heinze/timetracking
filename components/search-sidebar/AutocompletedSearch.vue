@@ -47,20 +47,20 @@
         },
         computed: {
             ...mapState({
-                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
+                prefilledSearchSuggestions: state => state.modulePrefill.prefilledSearchSuggestions,
                 isTimerActive: state => state.moduleUser.isTimerActive,
-                alreadyExists: state => state.moduleUser.alreadyExists
+                alreadyExists: state => state.moduleSearch.alreadyExists
             })
         },
         methods: {
             ...mapMutations({
-                setSearchResult: 'moduleUser/setSearchResult', // todo
+                setSearchResult: 'moduleSearch/setSearchResult', // todo
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
                 setActiveTicket: 'moduleUser/setActiveTicket',
-                setAlreadyExists: 'moduleUser/setAlreadyExists'
+                setAlreadyExists: 'moduleSearch/setAlreadyExists'
             }),
             ...mapActions({
-                getIssue: 'moduleUser/getIssue',
+                getIssue: 'moduleSearch/getIssue',
                 resetState: 'moduleUser/resetState'
             }),
             resetSearch: function () { // todo

@@ -35,7 +35,7 @@
             ...mapState({
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 activeTicket: state => state.moduleUser.activeTicket,
-                onABreak: state => state.moduleUser.onABreak,
+                onABreak: state => state.moduleBreak.onABreak,
                 lastTicket: state => state.moduleUser.lastTicket,
                 logoutInProgress: state => state.moduleUser.logoutInProgress
             })
@@ -43,15 +43,15 @@
         methods: {
             ...mapMutations({
                 setIsTimerActive: 'moduleUser/setIsTimerActive',
-                saveTimeSpentOnTask: 'moduleUser/saveTimeSpentOnTask',
+                saveTimeSpentOnTask: 'moduleTask/saveTimeSpentOnTask',
                 setActiveTicket: 'moduleUser/setActiveTicket',
-                saveTaskStartTime: 'moduleUser/saveTaskStartTime',
-                saveTaskEndTime: 'moduleUser/saveTaskEndTime',
-                toggleBreakMutation: 'moduleUser/toggleBreak',
+                saveTaskStartTime: 'moduleTask/saveTaskStartTime',
+                saveTaskEndTime: 'moduleTask/saveTaskEndTime',
+                toggleBreakMutation: 'moduleBreak/toggleBreak',
                 setLastTicket: 'moduleUser/setLastTicket'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             currentTimeInSeconds: function () {
                 this.timeRightNow = new Date();

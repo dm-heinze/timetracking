@@ -30,12 +30,12 @@
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapGetters({
-                smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'
+                smartPickedSuggestions: 'modulePrefill/getSmartPickedSuggestions'
             })
         },
         methods: {
             ...mapActions({
-                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+                addToSelectedIssues: 'moduleTask/addToSelectedIssues'
             })
         }
 	}

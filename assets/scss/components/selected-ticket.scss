@@ -234,14 +234,14 @@
                         outline: none;
                         color: $primary;
 
-                        &.disabled {
+                        &:disabled {
                             color: $light-grey;
                         }
 
                     &:hover {
                         color: $secondary;
 
-                            &.disabled {
+                            &:disabled {
                                 cursor: not-allowed;
                             }
                         }

@@ -63,7 +63,14 @@
                                     <check-icon v-else-if="editingTrackedTime && (currentEditedTasksUniqueId === task.uniqueId)" />
                                 </button>
                             </div>
-                            <textarea rows="2" class="mt-2" :value="task.comment" @input="saveCommentToStore" :disabled="task.booked || !task.assignedToTicket" :name="task.uniqueId"></textarea>
+                            <textarea
+                                rows="2"
+                                class="mt-2"
+                                :value="task.comment"
+                                @input="saveCommentToStore"
+                                :disabled="task.booked || !task.assignedToTicket"
+                                :name="task.uniqueId"
+                            ></textarea>
                         </div>
 
                         <div class="ticket__actions">
@@ -113,9 +120,9 @@
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
-                doesNotHaveFieldDayAdded: state => state.moduleUser.doesNotHaveFieldDayAdded,
-                showUnbookedTasksLeftModal: state => state.moduleUser.showUnbookedTasksLeftModal,
-                updateMessageShown: state => state.moduleUser.updateMessageShown
+                doesNotHaveFieldDayAdded: state => state.moduleUpdate.doesNotHaveFieldDayAdded,
+                showUnbookedTasksLeftModal: state => state.moduleUpdate.showUnbookedTasksLeftModal,
+                updateMessageShown: state => state.moduleUpdate.updateMessageShown
             }),
             hasCustomTasks () {
                 return this.doesNotHaveFieldDayAdded.filter((__task) => !__task.assignedToTicket);
@@ -123,14 +130,14 @@
         },
         methods: {
             ...mapActions({
-                requestSavingPreviousWorklogs: 'moduleUser/requestSavingPreviousWorklogs',
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                requestSavingPreviousWorklogs: 'moduleUpdate/requestSavingPreviousWorklogs',
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             ...mapMutations({
-                removeFromDoesNotHaveFieldDayAdded: 'moduleUser/removeFromDoesNotHaveFieldDayAdded',
-                saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUser/saveTimeSpentOnDoesNotHaveFieldDayAddedTask',
-                saveTaskComment: 'moduleUser/saveTaskComment',
-                saveCommentOfDoesNotHaveFieldDayAddedTask: 'moduleUser/saveCommentOfDoesNotHaveFieldDayAddedTask'
+                removeFromDoesNotHaveFieldDayAdded: 'moduleUpdate/removeFromDoesNotHaveFieldDayAdded',
+                saveTimeSpentOnDoesNotHaveFieldDayAddedTask: 'moduleUpdate/saveTimeSpentOnDoesNotHaveFieldDayAddedTask',
+                saveTaskComment: 'moduleTask/saveTaskComment',
+                saveCommentOfDoesNotHaveFieldDayAddedTask: 'moduleUpdate/saveCommentOfDoesNotHaveFieldDayAddedTask'
             }),
             saveCommentToStore: _.debounce(function (event) {
                 this.saveCommentOfDoesNotHaveFieldDayAddedTask({ uniqueId: event.target.name, comment: event.target.value }); // update vuex store

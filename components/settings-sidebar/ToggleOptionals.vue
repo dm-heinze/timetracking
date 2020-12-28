@@ -32,8 +32,8 @@
         directives: { 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
-                showSuggestions: state => state.moduleUser.showSuggestions,
-                suggestionGroups: state => state.moduleUser.suggestionGroups
+                showSuggestions: state => state.moduleOptional.showSuggestions,
+                suggestionGroups: state => state.moduleOptional.suggestionGroups
             }),
             groups: {
                 get () {
@@ -51,11 +51,11 @@
         },
         methods: {
             ...mapMutations({
-                setSuggestionGroups: 'moduleUser/setSuggestionGroups'
+                setSuggestionGroups: 'moduleOptional/setSuggestionGroups'
             }),
             ...mapActions({
-                updateSelectionForSuggestions: 'moduleUser/updateSelectionForSuggestions',
-                saveSuggestionGroupsToStorage: 'moduleUser/saveSuggestionGroupsToStorage'
+                updateSelectionForSuggestions: 'moduleOptional/updateSelectionForSuggestions',
+                saveSuggestionGroupsToStorage: 'moduleOptional/saveSuggestionGroupsToStorage'
             })
         }
     }

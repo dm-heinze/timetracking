@@ -1,9 +1,8 @@
 <template>
 	<div>
         <button
-            v-b-modal="`confirm-deletion-modal-${uniqueId}`"
             class="px-2 py-2"
-            :class="{ 'disabled': isTimerActive && (activeTicket === uniqueId) }"
+            v-b-modal="`confirm-deletion-modal-${uniqueId}`"
             :disabled="isTimerActive && (activeTicket === uniqueId)"
         >
             <trash2-icon />
@@ -27,8 +26,19 @@
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
                 <div class="d-flex justify-content-between w-100 modal__actions">
-                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
-                    <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="removeTicketFromSelectedTickets(uniqueId)">Delete</b-button>
+                    <b-button
+                        class="font-weight-bold modal__cancel-btn"
+                        @click.prevent="cancel()"
+                    >
+                        Cancel
+                    </b-button>
+                    <b-button
+                        variant="primary"
+                        class="font-weight-bold modal__save-btn"
+                        @click.prevent="removeTicketFromSelectedTickets(uniqueId)"
+                    >
+                        Delete
+                    </b-button>
                 </div>
             </template>
         </b-modal>
@@ -54,7 +64,7 @@
             },
             taskKey: {
                 required: true
-            },
+            }
         },
         components: { Trash2Icon, XIcon },
         computed: {
@@ -69,10 +79,10 @@
         },
         methods: {
             ...mapMutations({
-                removeSelectedTask: 'moduleUser/removeSelectedTask',
+                removeSelectedTask: 'moduleTask/removeSelectedTask',
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',
             }),
             removeTicketFromSelectedTickets: function (ticketToRemoveFromSelectedTickets) {
                 this.removeSelectedTask(ticketToRemoveFromSelectedTickets);

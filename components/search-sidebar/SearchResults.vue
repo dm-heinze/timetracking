@@ -35,13 +35,13 @@
         },
         computed: {
             ...mapState({
-                searchResults: state => state.moduleUser.searchResults,
-                selectedTasks: state => state.moduleUser.selectedTasks,
-                showSuggestions: state => state.moduleUser.showSuggestions,
-                suggestionGroups: state => state.moduleUser.suggestionGroups
+                searchResults: state => state.moduleSearch.searchResults,
+                selectedTasks: state => state.moduleTask.selectedTasks,
+                showSuggestions: state => state.moduleOptional.showSuggestions,
+                suggestionGroups: state => state.moduleOptional.suggestionGroups
             }),
             ...mapGetters({
-                smartPickedSuggestions: 'moduleUser/getSmartPickedSuggestions'
+                smartPickedSuggestions: 'modulePrefill/getSmartPickedSuggestions'
             }),
             showBookmarksFirst () { // todo
                 return [...this.suggestionGroups].pop() !== 'Bookmarks';

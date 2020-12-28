@@ -35,9 +35,9 @@
         },
         computed: {
             ...mapState({
-                prefilledSearchSuggestions: state => state.moduleUser.prefilledSearchSuggestions,
-                searchResults: state => state.moduleUser.searchResults,
-                alreadyExists: state => state.moduleUser.alreadyExists
+                prefilledSearchSuggestions: state => state.modulePrefill.prefilledSearchSuggestions,
+                searchResults: state => state.moduleSearch.searchResults,
+                alreadyExists: state => state.moduleSearch.alreadyExists
             }),
             searchResultList () {
                 if (!this.alreadyExists) {
@@ -64,11 +64,11 @@
         },
         methods: {
 		    ...mapMutations({
-                addSelectedTask: 'moduleUser/addSelectedTask',
-                setAlreadyExists: 'moduleUser/setAlreadyExists'
+                addSelectedTask: 'moduleTask/addSelectedTask',
+                setAlreadyExists: 'moduleSearch/setAlreadyExists'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage',
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage',
             }),
             addTicketToSelectedTasks: function (selection) {
                 let __selection = _.cloneDeep(selection);

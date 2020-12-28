@@ -1,8 +1,9 @@
 <template>
-    <button v-b-modal="`confirm-push-time-singleTaskOnly-${uniqueId}`"
-            :disabled="(isTimerActive && activeTicket === uniqueId) || !taskWorklogComment || !timeSpent || booked || !assignedToTicket"
-            class="px-2"
-            :class="{ 'disabled': (isTimerActive && activeTicket === uniqueId) || !taskWorklogComment || !timeSpent || booked || !assignedToTicket }">
+    <button
+        class="px-2"
+        v-b-modal="`confirm-push-time-singleTaskOnly-${uniqueId}`"
+        :disabled="(isTimerActive && activeTicket === uniqueId) || !taskWorklogComment || !timeSpent || booked || !assignedToTicket"
+    >
         <upload-cloud-icon />
 
         <b-modal :id="`confirm-push-time-singleTaskOnly-${uniqueId}`" centered>
@@ -23,8 +24,19 @@
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
                 <div class="d-flex justify-content-between w-100 modal__actions">
-                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="cancel()">Cancel</b-button>
-                    <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="bookSingleTaskOnly()">Push Time</b-button>
+                    <b-button
+                        class="font-weight-bold modal__cancel-btn"
+                        @click.prevent="cancel()"
+                    >
+                        Cancel
+                    </b-button>
+                    <b-button
+                        variant="primary"
+                        class="font-weight-bold modal__save-btn"
+                        @click.prevent="bookSingleTaskOnly()"
+                    >
+                        Push Time
+                    </b-button>
                 </div>
             </template>
         </b-modal>
@@ -67,7 +79,7 @@
         },
         methods: {
             ...mapActions({
-                requestSavingSingleWorklog: 'moduleUser/requestSavingSingleWorklog',
+                requestSavingSingleWorklog: 'moduleBooking/requestSavingSingleWorklog',
                 resetState: 'moduleUser/resetState'
             }),
             bookSingleTaskOnly() {

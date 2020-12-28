@@ -1,8 +1,13 @@
 <template>
 	<div>
         <b-collapse :id="`selected-task-${uniqueId}`" visible class="selected-ticket__content">
-            <textarea rows="4" :value="taskWorklogComment" @input="saveCommentToStore" :disabled="booked"></textarea>
-            <div v-if="showErrorMessages && !taskWorklogComment " class="message--error">No Comment</div>
+            <textarea
+                rows="4"
+                :value="taskWorklogComment"
+                @input="saveCommentToStore"
+                :disabled="booked"
+            ></textarea>
+            <div v-if="showErrorMessages && !taskWorklogComment" class="message--error">No Comment</div>
         </b-collapse>
         <div class="d-flex justify-content-center selected-ticket__toggle-btn">
             <button v-b-toggle="`selected-task-${uniqueId}`" @click="toggleChevronsIcon()">
@@ -39,33 +44,28 @@
         },
         data() {
             return {
-                chevronsUp: true,
-                updatedComment: ''
+                chevronsUp: true
             }
         },
         computed: {
             ...mapState({
-                showErrorMessages: state => state.moduleUser.showErrorMessages
+                showErrorMessages: state => state.moduleTask.showErrorMessages
             })
 		},
         methods: {
             ...mapMutations({
-                saveTaskComment: 'moduleUser/saveTaskComment'
+                saveTaskComment: 'moduleTask/saveTaskComment'
             }),
             ...mapActions({
-                saveSelectedTasksToStorage: 'moduleUser/saveSelectedTasksToStorage'
+                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             saveCommentToStore: function (event) {
-                this.updatedComment = event.target.value;
                 this.saveTaskComment({ uniqueId: this.uniqueId, comment: event.target.value }); // update vuex store
                 this.saveSelectedTasksToStorage(); // update localStorage
             },
             toggleChevronsIcon() {
                 this.chevronsUp = !this.chevronsUp;
             }
-        },
-        created () {
-            this.updatedComment = this.taskWorklogComment;
         }
 	}
 </script>

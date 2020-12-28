@@ -46,16 +46,16 @@
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
         computed: {
             ...mapState({
-                searchResults: state => state.moduleUser.searchResults,
-                bookmarked: state => state.moduleUser.bookmarked,
-                searchLoading: state => state.moduleUser.searchLoading,
+                searchResults: state => state.moduleSearch.searchResults,
+                bookmarked: state => state.moduleBookmark.bookmarked,
+                searchLoading: state => state.moduleSearch.searchLoading,
                 errorOccurred: state => state.moduleUser.errorOccurred
             })
         },
         methods: {
             ...mapActions({
-                toggleBookmarked: 'moduleUser/toggleBookmarked',
-                addToSelectedIssues: 'moduleUser/addToSelectedIssues'
+                toggleBookmarked: 'moduleBookmark/toggleBookmarked',
+                addToSelectedIssues: 'moduleTask/addToSelectedIssues'
             })
         }
 	}
