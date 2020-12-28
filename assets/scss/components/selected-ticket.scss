@@ -199,6 +199,11 @@
         li {
             list-style: none;
             cursor: pointer;
+
+            color: $primary;
+            font-size: 14px; //
+            line-height: 19px; //
+            padding-bottom: 8px;//
         }
 
         .selected-ticket__heading {
