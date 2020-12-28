@@ -89,8 +89,8 @@ export const mutations = {
     saveToTaskStartAndEndArray: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedIssue) => {
             if (__selectedIssue.uniqueId === value.uniqueId) {
-                // todo: previously added selectedTasks may not have the field 'startAndEndTimesArray'
-                //  -> case needs to be handled!
+                // previously added selectedTasks may not have the field 'startAndEndTimesArray'
+                //  -> case handled on page reload when data from localStorage is retrieved! // todo
                 __selectedIssue.startAndEndTimesArray.push(value.entryToAdd)
             }
             return __selectedIssue;
@@ -218,8 +218,16 @@ export const actions = {
                         commit('moduleUpdate/toggleUnbookedTasksLeftModal', {}, { root: true }); // this toggles on the visibility of the modal
                     }
 
+                    // needed bc previously added selectedTasks may not have the field 'startAndEndTimesArray'
+                    const __formattedRetrievedTasks = __removedExpiredBookedTasks.map((__retrievedTask) => {
+                        if (!__retrievedTask.hasOwnProperty('startAndEndTimesArray')) {
+                            __retrievedTask.startAndEndTimesArray = [];
+                        }
+                        return __retrievedTask;
+                    })
+
                     // set vuex store state
-                    commit('setSelectedTasks', __removedExpiredBookedTasks); // todo: dayAdded field - alternative implementation
+                    commit('setSelectedTasks', __formattedRetrievedTasks); // todo: dayAdded field - alternative implementation
 
                     // save vuex store state to localStorage
                     // anything (booked && expired) will now be completely removed from selectedTasks list:
