@@ -1,11 +1,12 @@
 <template>
     <b-button
-        pill
         variant="success"
-        type="button"
         class="login-content__sign-in-btn py-2"
+        :class="{
+            'mr-1': $mq === 'md' || $mq === 'lg',
+            'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg'
+        }"
         v-b-modal="'confirm-push-time'"
-        :class="{ 'mr-1': $mq === 'md' || $mq === 'lg', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }"
         v-b-tooltip.hover title="Push all your tasks"
     >
         <send-icon />
@@ -36,8 +37,19 @@
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
                 <div class="d-flex justify-content-between w-100 modal__actions">
-                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="resetStateAndCloseModal">Cancel</b-button> <!-- todo -->
-                    <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="saveWorklogs()">Push Time</b-button>
+                    <b-button
+                        class="font-weight-bold modal__cancel-btn"
+                        @click.prevent="resetStateAndCloseModal"
+                    >
+                        Cancel
+                    </b-button> <!-- todo -->
+                    <b-button
+                        variant="primary"
+                        class="font-weight-bold modal__save-btn"
+                        @click.prevent="saveWorklogs()"
+                    >
+                        Push Time
+                    </b-button>
                 </div>
             </template>
         </b-modal>
@@ -107,6 +119,8 @@
                         bodyClass: 'modal__main-container',
                         footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                     })
+
+                    if (this.resetTrackedBreakTime) this.resetTrackedBreakTime = false; // de-selects checkbox that resets break tracker
                 } else if (this.showUnbookedTasksNotOfTheDay) { // todo
                     this.$bvModal.msgBoxOk('Tasks from previous days can only be booked one by one.', {
                         centered: true,
@@ -115,6 +129,8 @@
                         bodyClass: 'modal__main-container',
                         footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                     })
+
+                    if (this.resetTrackedBreakTime) this.resetTrackedBreakTime = false; // de-selects checkbox that resets break tracker
                 } else {
                     // show error message if not all conditions (should exist: selectedTasks, every selectedTask should have a comment, tracked time & should not be a custom task) for booking are met
                     // todo
@@ -129,6 +145,8 @@
                             bodyClass: 'modal__main-container',
                             footerClass: 'modal__main-container modal__actions modal__feedback__footer'
                         })
+
+                        if (this.resetTrackedBreakTime) this.resetTrackedBreakTime = false; // de-selects checkbox that resets break tracker
                     } else {
                         // toggle off visibility of error messages from any previous booking request that toggled on the visibility
                         // todo
