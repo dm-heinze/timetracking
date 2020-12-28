@@ -1,6 +1,16 @@
 <template>
     <div class="d-flex" :class="flexDirection">
-        <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn py-2 mr-1" v-b-tooltip.hover title="Take a break" :class="{ 'mb-3': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
+        <b-button
+            class="login-content__sign-in-btn py-2 mr-1"
+            :class="{
+                'mb-3': $mq === 'sm',
+                'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg'
+            }"
+            v-b-toggle.breakTracker
+            v-b-tooltip.hover
+            title="Take a break"
+            @click.prevent="toggleBreak"
+        >
             <coffee-icon />
             <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Take a break</span>
         </b-button>
