@@ -29,25 +29,11 @@
                     </li>
                 </ul>
             </div>
-            <div v-else-if="!tasksOfTheDay.length && !showUnbookedTasksNotOfTheDay">There are no selected issues</div>
+            <div v-else-if="!tasksOfTheDay.length && !showUnbookedTasksNotOfTheDay">There are no selected issues</div> <!-- todo -->
             <div v-if="showErrorMessages && (tasksOfTheDay.length === 0)" class="message--error">No selected issues</div>
 
             <div v-if="unbookedTasksNotOfTheDay.length && showUnbookedTasksNotOfTheDay"> <!-- todo -->
-                <div class="previous-day-unbooked-warning font-weight-bold mb-4">Any of these unbooked tasks will be booked for the current day if you push. You need to correct the date manually afterwards.</div>
-                <SelectedTask
-                    v-for="selectedTask in unbookedTasksNotOfTheDay"
-                    :key="selectedTask.uniqueId"
-                    :taskKey="selectedTask.key"
-                    :taskDirectLink="selectedTask.assignedToTicket ? selectedTask.issueLink : ''"
-                    :taskSummary="selectedTask.assignedToTicket ? selectedTask.summary : ''"
-                    :taskWorklogComment="selectedTask.comment"
-                    :timeSpent="selectedTask.timeSpent"
-                    :startedAt="selectedTask.startTime"
-                    :endedAt="selectedTask.endTime"
-                    :assigned-to-ticket="selectedTask.assignedToTicket"
-                    :booked="selectedTask.booked"
-                    :uniqueId="selectedTask.uniqueId"
-                />
+                <previous-unbooked-tasks :unbooked-tasks-not-of-the-day="unbookedTasksNotOfTheDay" />
             </div>
         </client-only>
     </div>
@@ -65,8 +51,12 @@
             ControlShownSubsets,
             BCollapse,
             BreakTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/BreakTask'),
+
             // added prefetch directive for webpack for case: adding a custom task w/ no network connection & no selectedTasks
             SelectedTask: () => import(/* webpackPrefetch: true */ '~/components/main/tasks/task/SelectedTask'),
+            // currently there's no need to prefetch this comp
+            // -> bc if there are no unbooked tasks from previous days -> the condition to render this comp will never be met
+            PreviousUnbookedTasks: () => import('~/components/main/tasks/PreviousUnbookedTasks'),
             draggable,
         },
         directives: { 'b-collapse': BCollapse },
