@@ -1,35 +1,20 @@
 <template>
-	<div>
-        <b-collapse :id="`selected-task-${uniqueId}`" visible class="selected-ticket__content">
-            <textarea
-                rows="4"
-                :value="taskWorklogComment"
-                @input="saveCommentToStore"
-                :disabled="booked"
-            ></textarea>
-            <div v-if="showErrorMessages && !taskWorklogComment" class="message--error">No Comment</div>
-        </b-collapse>
-        <div class="d-flex justify-content-center selected-ticket__toggle-btn">
-            <button v-b-toggle="`selected-task-${uniqueId}`" @click="toggleChevronsIcon()">
-                <chevrons-down-icon v-if="!chevronsUp"/>
-                <chevrons-up-icon v-else />
-            </button>
-        </div>
+    <div>
+        <textarea
+            rows="4"
+            :value="taskWorklogComment"
+            @input="saveCommentToStore"
+            :disabled="booked"
+        ></textarea>
+        <div v-if="showErrorMessages && !taskWorklogComment" class="message--error">No Comment</div>
     </div>
 </template>
 
 <script>
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { ChevronsDownIcon, ChevronsUpIcon } from 'vue-feather-icons';
-    import { BCollapse } from 'bootstrap-vue';
 
 	export default {
 		name: "TicketComment",
-        components: {
-		    BCollapse,
-            ChevronsDownIcon, ChevronsUpIcon,
-        },
-        directives: { 'b-collapse': BCollapse },
         props: {
             taskWorklogComment: {
                 type: String,
@@ -40,11 +25,6 @@
             },
             booked: {
                 required: true
-            }
-        },
-        data() {
-            return {
-                chevronsUp: true
             }
         },
         computed: {
@@ -62,9 +42,6 @@
             saveCommentToStore: function (event) {
                 this.saveTaskComment({ uniqueId: this.uniqueId, comment: event.target.value }); // update vuex store
                 this.saveSelectedTasksToStorage(); // update localStorage
-            },
-            toggleChevronsIcon() {
-                this.chevronsUp = !this.chevronsUp;
             }
         }
 	}

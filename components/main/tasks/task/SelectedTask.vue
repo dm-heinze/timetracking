@@ -91,16 +91,25 @@
 
         <ticket-error-messages :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" />
 
-        <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
+        <b-collapse :id="`selected-task-${uniqueId}`" visible class="selected-ticket__content">
+            <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
 
-        <start-and-end-times v-if="startAndEndTimesArray.length" :unique-id="uniqueId" :start-and-end-times-array="startAndEndTimesArray" :time-spent="timeSpent" :booked="booked" />
+            <start-and-end-times v-if="startAndEndTimesArray.length" :unique-id="uniqueId" :start-and-end-times-array="startAndEndTimesArray" :time-spent="timeSpent" :booked="booked" />
+        </b-collapse>
+        <div class="d-flex justify-content-center selected-ticket__toggle-btn"> <!-- todo -->
+            <button v-b-toggle="`selected-task-${uniqueId}`" @click="toggleChevronsIcon()">
+                <chevrons-down-icon v-if="!chevronsUp"/>
+                <chevrons-up-icon v-else />
+            </button>
+        </div>
     </div>
 </template>
 
 <script>
     import _ from "lodash";
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { Edit2Icon, SaveIcon } from 'vue-feather-icons';
+    import { ChevronsDownIcon, ChevronsUpIcon, Edit2Icon, SaveIcon } from 'vue-feather-icons';
+    import { BCollapse } from "bootstrap-vue";
     import TicketAssignment from "~/components/main/tasks/task/TicketAssignment";
     import TicketDeletion from "~/components/main/tasks/task/TicketDeletion";
     import TicketComment from "~/components/main/tasks/task/TicketComment";
@@ -118,8 +127,10 @@
         name: "SelectedTask",
         components: {
             StartAndEndTimes, TicketPlayAndPause, TicketTimeSpent, TicketErrorMessages, TicketComment, TicketDeletion, TicketAssignment, PushSingleTask,
-            SaveIcon, Edit2Icon
+            SaveIcon, Edit2Icon, ChevronsDownIcon, ChevronsUpIcon,
+            BCollapse,
         },
+        directives: { 'b-collapse': BCollapse },
         props: {
             taskKey: {
                 required: true
@@ -164,7 +175,8 @@
                 editingName: false,
                 localEditedName: '',
                 initialTimeSpent: 0, // todo
-                startAndEndTimes: [] // todo
+                startAndEndTimes: [], // todo
+                chevronsUp: true
             };
         },
         computed: {
@@ -218,6 +230,9 @@
             },
             saveEditedCustomTaskName: function (event) {
                 if (!_.isEmpty(event.target.value) && (this.localEditedName !== this.uniqueId)) this.localEditedName = event.target.value;
+            },
+            toggleChevronsIcon() {
+                this.chevronsUp = !this.chevronsUp;
             }
         }
     }
