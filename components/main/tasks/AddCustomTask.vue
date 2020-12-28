@@ -1,5 +1,16 @@
 <template>
-    <b-button pill variant="primary" type="button" class="login-content__sign-in-btn py-2" v-b-modal="'add-custom-task'" v-b-tooltip.hover title="Add Custom task" :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'mb-2': $mq === 'sm', 'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg' }">
+    <b-button
+        variant="primary"
+        class="login-content__sign-in-btn py-2"
+        v-b-modal="'add-custom-task'"
+        v-b-tooltip.hover
+        title="Add Custom task"
+        :class="{
+            'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg',
+            'mb-2': $mq === 'sm',
+            'px-5': $mq === 'md' || $mq === 'mdp' || $mq === 'plg'
+        }"
+    >
         <plus-circle-icon />
         <span class="pl-1" v-if="$mq === 'lg' || $mq === 'sm'">Add Custom task</span>
 
@@ -14,14 +25,32 @@
             </template>
             <template v-slot:default>
                 <div class="modal__main-container">
-                    <div class="modal__main-container__main-text">Do you want to add a custom name? Otherwise a random name will be set. You can edit the name later regardless.</div>
-                    <b-form-input class="form-control rounded-pill pt-4 pl-4 pb-4" type="text" v-model="customNameCustomTask" placeholder="Add Custom Name"></b-form-input>
+                    <div class="modal__main-container__main-text">
+                        Do you want to add a custom name? Otherwise a random name will be set. You can edit the name later regardless.
+                    </div>
+                    <b-form-input
+                        class="form-control rounded-pill pt-4 pl-4 pb-4"
+                        type="text"
+                        v-model="customNameCustomTask"
+                        placeholder="Add Custom Name"
+                    ></b-form-input>
                 </div>
             </template>
             <template v-slot:modal-footer="{ ok, cancel }">
                 <div class="d-flex justify-content-between w-100 modal__actions">
-                    <b-button pill class="font-weight-bold modal__cancel-btn" @click.prevent="resetAndCloseModal()">Cancel</b-button>
-                    <b-button pill variant="primary" class="font-weight-bold modal__save-btn" @click.prevent="startNewCustomTask()">Save</b-button>
+                    <b-button
+                        class="font-weight-bold modal__cancel-btn"
+                        @click.prevent="resetAndCloseModal()"
+                    >
+                        Cancel
+                    </b-button>
+                    <b-button
+                        variant="primary"
+                        class="font-weight-bold modal__save-btn"
+                        @click.prevent="startNewCustomTask()"
+                    >
+                        Save
+                    </b-button>
                 </div>
             </template>
         </b-modal>
