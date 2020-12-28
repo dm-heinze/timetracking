@@ -146,7 +146,7 @@ export const actions = {
                 })
         })
     },
-    createApiObject: function({ commit, state, dispatch }, payload) {
+    requestLogin: function({ commit, state, rootState, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             axios({
                 method: 'post',
@@ -165,18 +165,26 @@ export const actions = {
                         // receiving a sessionId indicates the correctness of the entered credentials therefore the user entered name can be set as the currentUser val
                         commit('setCurrentUserName', { name: payload.data.name });
 
-                        await Promise.all([
-                            await dispatch('saveSessionIdToCookies'),
-                            await dispatch('moduleTask/retrieveSelectedTasksFromStorage', {}, { root: true }), // todo
-                            await dispatch('moduleBreak/retrieveBreaksFromStorage', {}, { root: true }), // todo
-                            await dispatch('moduleBookmark/retrieveBookmarksFromStorage', {}, { root: true }), // todo
-                        ])
-                            .then(() => resolve())
-                            .catch(() => {
-                                console.log("err occurred while saving/retrieving to/from localForage");
-                                reject(); // todo
-                            })
-
+                        if (rootState.moduleTask.selectedTasks.length) {
+                            // if the page was just opened/reloaded after the last logout:
+                            // then the data from localStorage was already loaded in during the plugin phase
+                            // (~/plugins/retrieveFromStorage.js)
+                            // if the sessionId would not be saved to cookies in this step, a page reload would lead to a logout
+                            dispatch('saveSessionIdToCookies').then(() => resolve()).catch(() =>reject());
+                        } else {
+                            // after a logout and re-login without a page reload the vuex store needs to be filled again
+                            await Promise.all([
+                                await dispatch('saveSessionIdToCookies'),
+                                await dispatch('moduleTask/retrieveSelectedTasksFromStorage', {}, { root: true }), // todo
+                                await dispatch('moduleBreak/retrieveBreaksFromStorage', {}, { root: true }), // todo
+                                await dispatch('moduleBookmark/retrieveBookmarksFromStorage', {}, { root: true }), // todo
+                            ])
+                                .then(() => resolve())
+                                .catch(() => {
+                                    console.log("err occurred while saving/retrieving to/from localForage");
+                                    reject(); // todo
+                                })
+                        }
                     } else {
                         resolve(); // todo
                     }

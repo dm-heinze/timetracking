@@ -36,12 +36,19 @@
                             <eye-off-icon v-else @click="togglePasswordHidden()" class="select__icon hide" />
                         </template>
                     </div>
-                    <div class="row login-content__problem d-flex mt-2" :class="{ 'justify-content-between': $mq === 'lg' || $mq === 'plg', 'flex-column align-items-center': $mq === 'sm' || $mq === 'md' || $mq === 'mdp' }">
+                    <div class="row login-content__problem d-flex mt-2" :class="{ 'justify-content-between': $mq === 'lg' || $mq === 'plg', 'flex-column text-center': $mq === 'sm' || $mq === 'md' || $mq === 'mdp' }">
                         <div class="login-content__error-message" :class="{ 'ml-4': $mq === 'lg' }">{{ errorMessage }}</div>
                         <div :class="{ 'mr-3': $mq === 'lg' }"><a :href="directLinkPasswordReset">Forgot password?</a></div>
                     </div>
                     <div class="row">
-                        <b-button pill variant="primary" @click.prevent="submitLoginForm()" type="button" class="mt-4 col-12 login-content__sign-in-btn pt-2 pb-2" :disabled="loading">
+                        <b-button
+                            pill
+                            variant="primary"
+                            type="button"
+                            class="mt-4 col-12 login-content__sign-in-btn pt-2 pb-2"
+                            :disabled="loading"
+                            @click.prevent="submitLoginForm()"
+                        >
                             <b-icon v-if="loading" icon="three-dots" animation="cylon" font-scale="1"></b-icon>
                             <span v-else>Sign In</span>
                         </b-button>
@@ -60,6 +67,7 @@
 </template>
 
 <script>
+    import _ from "lodash";
     import { mapActions } from 'vuex';
     import { BIcon, BIconThreeDots, BFormInput } from 'bootstrap-vue';
     import { EyeIcon, EyeOffIcon } from 'vue-feather-icons';
@@ -93,7 +101,7 @@
         },
         methods: {
             ...mapActions({
-                createApiObject: 'moduleUser/createApiObject',
+                requestLogin: 'moduleUser/requestLogin',
             }),
             submitLoginForm: function () {
                 if (_.isEmpty(this.userObj.name) || _.isEmpty(this.userObj.pass)) {
@@ -101,8 +109,7 @@
                 } else {
                     this.loading = true;
 
-                    // todo
-                    this.createApiObject({ data: this.userObj })
+                    this.requestLogin({ data: this.userObj })
                         .then(() => this.$router.push('/', () => this.loading = false))
                         .catch((__errorMessage) => {
                             this.loading = false;
