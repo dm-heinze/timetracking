@@ -93,10 +93,7 @@
 
         <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
 
-        <!--todo -->
-        <!-- <ul>
-            <li v-for="startAndEndTime in startAndEndTimesArray" :key="startAndEndTime.id"> {{ startAndEndTime.startTime }} - {{ startAndEndTime.endTime }} = {{ startAndEndTime.duration }}</li>
-        </ul> -->
+        <start-and-end-times v-if="startAndEndTimesArray.length" :unique-id="uniqueId" :start-and-end-times-array="startAndEndTimesArray" :time-spent="timeSpent" :booked="booked" />
     </div>
 </template>
 
@@ -111,6 +108,7 @@
     import PushSingleTask from "~/components/main/tasks/task/PushSingleTask";
     import TicketTimeSpent from "~/components/main/tasks/task/TicketTimeSpent";
     import TicketPlayAndPause from "~/components/main/tasks/task/TicketPlayAndPause";
+    import StartAndEndTimes from "~/components/main/tasks/task/StartAndEndTimes";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
     Vue.use(vClickOutside);
@@ -119,7 +117,7 @@
     export default {
         name: "SelectedTask",
         components: {
-            TicketPlayAndPause, TicketTimeSpent, TicketErrorMessages, TicketComment, TicketDeletion, TicketAssignment, PushSingleTask,
+            StartAndEndTimes, TicketPlayAndPause, TicketTimeSpent, TicketErrorMessages, TicketComment, TicketDeletion, TicketAssignment, PushSingleTask,
             SaveIcon, Edit2Icon
         },
         props: {
@@ -159,7 +157,7 @@
             startAndEndTimesArray: { // may not be set - todo
                 required: false,
                 default: () => []
-            },
+            }
         },
         data() {
             return {

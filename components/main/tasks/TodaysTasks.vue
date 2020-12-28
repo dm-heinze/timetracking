@@ -17,6 +17,7 @@
                             :assigned-to-ticket="selectedTask.assignedToTicket"
                             :booked="selectedTask.booked"
                             :uniqueId="selectedTask.uniqueId"
+                            :start-and-end-times-array="selectedTask.startAndEndTimesArray"
                         />
                     </draggable>
                 </li>

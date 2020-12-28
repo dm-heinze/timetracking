@@ -112,7 +112,8 @@ export const actions = {
                             endTime: '',
                             assignedToTicket: true,
                             booked: false,
-                            uniqueId: _.now() + index // todo
+                            uniqueId: _.now() + index, // todo
+                            startAndEndTimesArray: [] // todo
                         }
                     });
                     __parsedAssignedIssues.forEach((__issue) => commit('addToPrefilledSearchSuggestions', __issue)); // todo
@@ -186,7 +187,8 @@ export const actions = {
                             endTime: '',
                             assignedToTicket: true,
                             booked: false,
-                            uniqueId: _.now() + index // todo
+                            uniqueId: _.now() + index, // todo
+                            startAndEndTimesArray: [] // todo
                         }
                     });
 
@@ -210,7 +212,8 @@ export const actions = {
                         endTime: '',
                         assignedToTicket: true,
                         booked: false,
-                        uniqueId: _.now() + index // todo
+                        uniqueId: _.now() + index, // todo
+                        startAndEndTimesArray: [] // todo
                     }
                 })
 

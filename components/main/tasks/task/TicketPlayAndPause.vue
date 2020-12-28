@@ -6,6 +6,7 @@
 </template>
 
 <script>
+    import _ from "lodash";
     import { mapState, mapMutations, mapActions } from 'vuex';
     import { PlayCircleIcon, PauseCircleIcon } from 'vue-feather-icons';
 
@@ -48,7 +49,8 @@
                 saveTaskStartTime: 'moduleTask/saveTaskStartTime',
                 saveTaskEndTime: 'moduleTask/saveTaskEndTime',
                 toggleBreakMutation: 'moduleBreak/toggleBreak',
-                setLastTicket: 'moduleUser/setLastTicket'
+                setLastTicket: 'moduleUser/setLastTicket',
+                saveToTaskStartAndEndArray: 'moduleTask/saveToTaskStartAndEndArray'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
@@ -86,6 +88,19 @@
                 // this.setActiveTicket('');
 
                 this.saveTaskEndTime({ uniqueId: this.uniqueId, endTime: this.endTime.toTimeString() }); // update vuex store
+
+                const __dateRightNow = this.timeRightNow; // todo: before -> new Date
+                const __duration = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, this.endTime.getTime() - this.startTime.getTime());
+
+                this.saveToTaskStartAndEndArray({
+                    uniqueId: this.uniqueId,
+                    entryToAdd: {
+                        startTime: this.startTime.toTimeString().slice(0,8),
+                        endTime: this.endTime.toTimeString().slice(0, 8),
+                        duration: __duration.toTimeString().slice(0, 8),
+                        id: _.now()
+                    }
+                });
 
                 this.saveSelectedTasksToStorage(); // update localStorage
             },

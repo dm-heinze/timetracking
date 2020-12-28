@@ -86,6 +86,16 @@ export const mutations = {
 
         state.selectedTasks.push(value);
     },
+    saveToTaskStartAndEndArray: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedIssue) => {
+            if (__selectedIssue.uniqueId === value.uniqueId) {
+                // todo: previously added selectedTasks may not have the field 'startAndEndTimesArray'
+                //  -> case needs to be handled!
+                __selectedIssue.startAndEndTimesArray.push(value.entryToAdd)
+            }
+            return __selectedIssue;
+        })
+    },
     toggleShowErrorMessages: (state, payload) => {
         state.showErrorMessages = payload.show;
     },
@@ -151,6 +161,7 @@ export const actions = {
                 __selection = _.cloneDeep(payload.selectedTicket);
                 __selection.uniqueId = _.now();
                 __selection.dayAdded = new Date().toDateString();
+                // todo
             } else {
                 __selection = {
                     assignedToTicket: true,
@@ -164,7 +175,8 @@ export const actions = {
                     endTime: '',
                     booked: false,
                     assignee: '', // todo!
-                    dayAdded: new Date().toDateString()
+                    dayAdded: new Date().toDateString(),
+                    startAndEndTimesArray: [] // todo
                 };
             }
 
