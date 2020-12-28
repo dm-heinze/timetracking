@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <ticket-error-messages :unique-id="uniqueId" :task-key="taskKey" :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" />
+        <ticket-error-messages :time-spent="timeSpent" :assigned-to-ticket="assignedToTicket" />
 
         <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
     </div>
