@@ -4,7 +4,11 @@
             <coffee-icon class="mr-2" />
             You are currently on a break for
             <span class="font-weight-bold mr-3 ml-1" :style="{ width: '80px' }">{{ accumulatedBreakTime }}</span>
-            <b-button pill @click.prevent="toggleBreak" v-b-toggle.breakTracker type="button" class="login-content__sign-in-btn pt-2 pb-2 mr-1">
+            <b-button
+                class="login-content__sign-in-btn pt-2 pb-2 mr-1"
+                v-b-toggle.breakTracker
+                @click.prevent="toggleBreak"
+            >
                 <pause-circle-icon />
                 <span class="pl-1">Stop break</span>
             </b-button>
