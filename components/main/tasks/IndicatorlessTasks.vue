@@ -63,7 +63,14 @@
                                     <check-icon v-else-if="editingTrackedTime && (currentEditedTasksUniqueId === task.uniqueId)" />
                                 </button>
                             </div>
-                            <textarea rows="2" class="mt-2" :value="task.comment" @input="saveCommentToStore" :disabled="task.booked || !task.assignedToTicket" :name="task.uniqueId"></textarea>
+                            <textarea
+                                rows="2"
+                                class="mt-2"
+                                :value="task.comment"
+                                @input="saveCommentToStore"
+                                :disabled="task.booked || !task.assignedToTicket"
+                                :name="task.uniqueId"
+                            ></textarea>
                         </div>
 
                         <div class="ticket__actions">
