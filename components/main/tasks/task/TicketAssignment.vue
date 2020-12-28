@@ -1,9 +1,7 @@
 <template>
 	<div>
         <b-button
-            pill
             variant="light-grey"
-            type="button"
             class="button--ticketAssignment pt-2 pb-2"
             :class="{
                 'mb-2': $mq === 'sm',
@@ -62,14 +60,12 @@
             <template v-slot:modal-footer="{ ok, cancel }">
                 <div class="d-flex justify-content-between w-100 modal__actions">
                     <b-button
-                        pill
                         class="font-weight-bold modal__cancel-btn"
                         @click.prevent="toggleTicketAssignment(true)"
                     >
                         Cancel
                     </b-button>
                     <b-button
-                        pill
                         variant="primary"
                         class="font-weight-bold modal__save-btn"
                         :disabled="selectedTicket === ''"
