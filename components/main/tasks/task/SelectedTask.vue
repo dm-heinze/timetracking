@@ -96,19 +96,14 @@
 
             <start-and-end-times v-if="startAndEndTimesArray.length" :unique-id="uniqueId" :start-and-end-times-array="startAndEndTimesArray" :time-spent="timeSpent" :booked="booked" />
         </b-collapse>
-        <div class="d-flex justify-content-center selected-ticket__toggle-btn"> <!-- todo -->
-            <button v-b-toggle="`selected-task-${uniqueId}`" @click="toggleChevronsIcon()">
-                <chevrons-down-icon v-if="!chevronsUp"/>
-                <chevrons-up-icon v-else />
-            </button>
-        </div>
+        <ticket-height-toggler :unique-id="uniqueId" />
     </div>
 </template>
 
 <script>
     import _ from "lodash";
     import { mapState, mapMutations, mapActions } from 'vuex';
-    import { ChevronsDownIcon, ChevronsUpIcon, Edit2Icon, SaveIcon } from 'vue-feather-icons';
+    import { Edit2Icon, SaveIcon } from 'vue-feather-icons';
     import { BCollapse } from "bootstrap-vue";
     import TicketAssignment from "~/components/main/tasks/task/TicketAssignment";
     import TicketDeletion from "~/components/main/tasks/task/TicketDeletion";
@@ -118,6 +113,7 @@
     import TicketTimeSpent from "~/components/main/tasks/task/TicketTimeSpent";
     import TicketPlayAndPause from "~/components/main/tasks/task/TicketPlayAndPause";
     import StartAndEndTimes from "~/components/main/tasks/task/StartAndEndTimes";
+    import TicketHeightToggler from "~/components/main/tasks/task/TicketHeightToggler";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
     Vue.use(vClickOutside);
@@ -126,9 +122,22 @@
     export default {
         name: "SelectedTask",
         components: {
-            StartAndEndTimes, TicketPlayAndPause, TicketTimeSpent, TicketErrorMessages, TicketComment, TicketDeletion, TicketAssignment, PushSingleTask,
-            SaveIcon, Edit2Icon, ChevronsDownIcon, ChevronsUpIcon,
-            BCollapse,
+            // standard components
+            TicketHeightToggler,
+            StartAndEndTimes,
+            TicketPlayAndPause,
+            TicketTimeSpent,
+            TicketErrorMessages,
+            TicketComment,
+            TicketDeletion,
+            TicketAssignment,
+            PushSingleTask,
+
+            // vue feather icon components
+            SaveIcon, Edit2Icon,
+
+            // vue bootstrap components
+            BCollapse
         },
         directives: { 'b-collapse': BCollapse },
         props: {
@@ -175,8 +184,7 @@
                 editingName: false,
                 localEditedName: '',
                 initialTimeSpent: 0, // todo
-                startAndEndTimes: [], // todo
-                chevronsUp: true
+                startAndEndTimes: [] // todo
             };
         },
         computed: {
@@ -230,9 +238,6 @@
             },
             saveEditedCustomTaskName: function (event) {
                 if (!_.isEmpty(event.target.value) && (this.localEditedName !== this.uniqueId)) this.localEditedName = event.target.value;
-            },
-            toggleChevronsIcon() {
-                this.chevronsUp = !this.chevronsUp;
             }
         }
     }
