@@ -3,13 +3,20 @@
         <div class="font-weight-bold pr-1">Total:</div>
         <div v-if="!editingTrackedTime" class="selected-ticket__tracked-time__displayed">{{ parsedTimeSpent }}</div>
         <div v-else class="selected-ticket__tracked-time__editing pl-2">
-            <input type="time" step="1" :value="parsedTimeSpent" @input="saveEditedWorklogTimeSpent" @keyup.enter.prevent="activateEditModeForTrackedTime">
+            <input
+                type="time"
+                step="1"
+                :value="parsedTimeSpent"
+                @input="saveEditedWorklogTimeSpent"
+                @keyup.enter.prevent="activateEditModeForTrackedTime"
+            >
         </div>
-        <button v-if="!booked && !ofTypeBreak"
-                class="btn--edit"
-                :class="{ 'disabled': (isTimerActive && (activeTicket === uniqueId)) }"
-                :disabled="(isTimerActive && (activeTicket === uniqueId))"
-                @click.prevent="activateEditModeForTrackedTime">
+        <button
+            v-if="!booked && !ofTypeBreak"
+            class="btn--edit"
+            :disabled="(isTimerActive && (activeTicket === uniqueId))"
+            @click.prevent="activateEditModeForTrackedTime"
+        >
             <edit2-icon v-if="!editingTrackedTime" />
             <check-icon v-else />
         </button>
