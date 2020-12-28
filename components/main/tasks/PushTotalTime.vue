@@ -57,7 +57,7 @@
 </template>
 
 <script>
-    import { mapState, mapActions, mapMutations } from 'vuex';
+    import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
     import { SendIcon, XIcon } from 'vue-feather-icons';
     import { BFormCheckbox } from 'bootstrap-vue'; // todo
 
@@ -76,22 +76,14 @@
                 isTimerActive: state => state.moduleUser.isTimerActive,
                 onABreak: state => state.moduleBreak.onABreak,
                 accumulatedBreakTime: state => state.moduleBreak.accumulatedBreakTime,
-                showUnbookedTasksNotOfTheDay: state => state.moduleTask.showUnbookedTasksNotOfTheDay,
-                currentDay: state => state.moduleUser.currentDay
+                showUnbookedTasksNotOfTheDay: state => state.moduleTask.showUnbookedTasksNotOfTheDay
             }),
-            // todo
-            everythingBookedAlready () {
-                return this.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === this.currentDay).filter((__selectedTask) => !__selectedTask.booked).length === 0; // todo
-            },
-            noMissingComments () {
-                return this.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === this.currentDay).filter((__selectedTask) => !__selectedTask.comment).length === 0; // todo
-            },
-            noUnassignedCustomTasks () {
-                return this.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === this.currentDay).filter((__selectedTask) => !__selectedTask.assignedToTicket).length === 0; // todo
-            },
-            noUntrackedTasks () {
-                return this.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === this.currentDay).filter((__selectedTask) => !__selectedTask.timeSpent).length === 0; // todo
-            }
+            ...mapGetters({
+                everythingBookedAlready: 'moduleTask/everythingBookedAlready',
+                noMissingComments: 'moduleTask/noMissingComments',
+                noUnassignedCustomTasks: 'moduleTask/noUnassignedCustomTasks',
+                noUntrackedTasks: 'moduleTask/noUntrackedTasks'
+            })
         },
         methods: {
 		    ...mapMutations({

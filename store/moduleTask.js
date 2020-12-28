@@ -22,6 +22,18 @@ export const getters = {
     },
     getSelectedTasksOfCurrentDay: (state, getters, rootState) => {
         return state.selectedTasks.filter((__selectedTask) => __selectedTask.dayAdded === rootState.moduleUser.currentDay); // todo
+    },
+    everythingBookedAlready: (state, getters) => {
+        return getters.getSelectedTasksOfCurrentDay.filter((__selectedTask) => !__selectedTask.booked).length === 0;
+    },
+    noMissingComments: (state, getters) => {
+        return getters.getSelectedTasksOfCurrentDay.filter((__selectedTask) => !__selectedTask.comment).length === 0;
+    },
+    noUnassignedCustomTasks: (state, getters) => {
+        return getters.getSelectedTasksOfCurrentDay.filter((__selectedTask) => !__selectedTask.assignedToTicket).length === 0;
+    },
+    noUntrackedTasks: (state, getters) => {
+        return getters.getSelectedTasksOfCurrentDay.filter((__selectedTask) => !__selectedTask.timeSpent).length === 0;
     }
 }
 
