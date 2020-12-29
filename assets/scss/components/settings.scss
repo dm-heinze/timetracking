@@ -49,10 +49,10 @@
                 cursor: grab;
             }
 
-            .toggle-listing {
+            &.time-slot-list-item {
 
                 &:hover {
-                    cursor: pointer;
+                    cursor: default;
                 }
             }
         }

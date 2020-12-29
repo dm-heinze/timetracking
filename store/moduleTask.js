@@ -82,6 +82,21 @@ export const mutations = {
             return __selectedTask;
         })
     },
+    updateTimeSpentOnTask: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.uniqueId) {
+                let __updatedTimeSpentValue = 0;
+                for (let startAndEndTime of __selectedTask.startAndEndTimesArray) {
+                    __updatedTimeSpentValue += startAndEndTime.durationInMilliSeconds
+                }
+
+                // to prevent loosing any previously tracked time (that existed before enabling the time slots) through the following line
+                // the toggle behavior itself is disabled after unbooked selectedTasks get added to the list of tasks
+                __selectedTask.timeSpent = __updatedTimeSpentValue;
+            }
+            return __selectedTask;
+        })
+    },
     saveUpdatedStartTime: (state, value) => {
         state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
             if (__selectedTask.uniqueId === value.uniqueId) { // find which selectedTask's array has an update
@@ -108,6 +123,7 @@ export const mutations = {
                 // find the position & update it
                 const __timeSlotToUpdate = __selectedTask.startAndEndTimesArray.find((__timeSlot) => __timeSlot.id === value.id);
                 __timeSlotToUpdate.duration = value.updatedDuration;
+                __timeSlotToUpdate.durationInMilliSeconds = value.updatedDurationInMilliSeconds;
             }
             return __selectedTask;
         })

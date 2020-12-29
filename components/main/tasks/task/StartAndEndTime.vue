@@ -62,10 +62,12 @@
             endTime: {
                 required: true
             },
-            duration: {
+            duration: { // todo
+                required: true
+            },
+            durationInMilliSeconds: {
                 required: true
             }
-            // todo: 'durationInMilliseconds'
         },
         data() {
             return {
@@ -82,7 +84,8 @@
             ...mapMutations({
                 saveUpdatedStartTime: 'moduleTask/saveUpdatedStartTime',
                 saveUpdatedEndTime: 'moduleTask/saveUpdatedEndTime',
-                saveUpdatedDuration: 'moduleTask/saveUpdatedDuration'
+                saveUpdatedDuration: 'moduleTask/saveUpdatedDuration',
+                updateTimeSpentOnTask: 'moduleTask/updateTimeSpentOnTask'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
@@ -146,8 +149,11 @@
                 this.saveUpdatedDuration({
                     uniqueId: this.uniqueId,
                     id: this.id,
-                    updatedDuration: __resultingDurationAsDate.toTimeString().slice(0,8) // todo
+                    updatedDuration: __resultingDurationAsDate.toTimeString().slice(0,8),
+                    updatedDurationInMilliSeconds: __resultingDuration
                 })
+
+                this.updateTimeSpentOnTask({ uniqueId: this.uniqueId });
 
                 // update localStorage
                 this.saveSelectedTasksToStorage();
@@ -207,8 +213,11 @@
                 this.saveUpdatedDuration({
                     uniqueId: this.uniqueId,
                     id: this.id,
-                    updatedDuration: __resultingDurationAsDate.toTimeString().slice(0,8) // todo
+                    updatedDuration: __resultingDurationAsDate.toTimeString().slice(0,8),
+                    updatedDurationInMilliSeconds: __resultingDuration
                 })
+
+                this.updateTimeSpentOnTask({ uniqueId: this.uniqueId });
 
                 // update localStorage
                 this.saveSelectedTasksToStorage();
@@ -249,6 +258,17 @@
                 0
                 )
 
+                const __helper = new Date(
+                    __helperDate.getFullYear(),
+                    __helperDate.getMonth(),
+                    __helperDate.getDate(),
+                    0,
+                    0, // minutes
+                    0,
+                    0
+                )
+
+                const __durationInMilliSeconds = __updatedDurationAsDate.getTime() -  __helper.getTime(); // todo
 
                 // update vuex store
                 this.saveUpdatedEndTime({
@@ -260,8 +280,11 @@
                 this.saveUpdatedDuration({
                     uniqueId: this.uniqueId,
                     id: this.id,
-                    updatedDuration: __updatedDurationAsDate.toTimeString().slice(0,8) // todo
+                    updatedDuration: __updatedDurationAsDate.toTimeString().slice(0,8),
+                    updatedDurationInMilliSeconds: __durationInMilliSeconds
                 })
+
+                this.updateTimeSpentOnTask({ uniqueId: this.uniqueId });
 
                 // update localStorage
                 this.saveSelectedTasksToStorage();

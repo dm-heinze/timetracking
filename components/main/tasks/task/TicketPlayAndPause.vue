@@ -94,7 +94,7 @@
                 // -> by default time slots are disabled
                 if (this.showStartAndEndTimes) {
                     const __dateRightNow = this.timeRightNow; // todo: before -> new Date
-                    const __duration = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, this.endTime.getTime() - this.startTime.getTime());
+                    const __duration = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, this.endTime.getTime() - this.startTime.getTime()); // todo
 
                     this.saveToTaskStartAndEndArray({
                         uniqueId: this.uniqueId,
@@ -102,6 +102,7 @@
                             startTime: this.startTime.toTimeString().slice(0,8),
                             endTime: this.endTime.toTimeString().slice(0, 8),
                             duration: __duration.toTimeString().slice(0, 8),
+                            durationInMilliSeconds: this.endTime.getTime() - this.startTime.getTime(), // todo
                             id: _.now()
                         }
                     });

@@ -100,7 +100,8 @@
                     startTime: '',
                     endTime: '',
                     booked: false, // todo
-                    dayAdded: new Date().toDateString()
+                    dayAdded: new Date().toDateString(),
+                    startAndEndTimesArray: [] // todo
                 };
 
                 this.addSelectedTask(newCustomTask);

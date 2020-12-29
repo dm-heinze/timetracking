@@ -8,7 +8,8 @@
                 :end-time="startAndEndTime.endTime"
                 :duration="startAndEndTime.duration"
                 :booked="booked"
-            /> <!-- todo durationInMilliseconds -->
+                :duration-in-milli-seconds="startAndEndTime.durationInMilliSeconds"
+            />
         </li>
     </ul>
 </template>
