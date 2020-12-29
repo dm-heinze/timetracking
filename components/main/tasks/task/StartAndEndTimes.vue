@@ -1,14 +1,24 @@
 <template>
 	<ul>
         <li v-for="startAndEndTime in startAndEndTimesArray" :key="startAndEndTime.id">
-            {{ startAndEndTime.startTime }} - {{ startAndEndTime.endTime }} = {{ startAndEndTime.duration }}
+            <start-and-end-time
+                :unique-id="uniqueId"
+                :id="startAndEndTime.id"
+                :start-time="startAndEndTime.startTime"
+                :end-time="startAndEndTime.endTime"
+                :duration="startAndEndTime.duration"
+                :booked="booked"
+            /> <!-- todo durationInMilliseconds -->
         </li>
     </ul>
 </template>
 
 <script>
-	export default {
+    import StartAndEndTime from "~/components/main/tasks/task/StartAndEndTime";
+
+    export default {
 		name: "StartAndEndTimes",
+        components: { StartAndEndTime },
         props: {
             timeSpent: {
                 required: true

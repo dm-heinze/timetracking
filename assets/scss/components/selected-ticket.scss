@@ -121,6 +121,21 @@
 }
 
 /*===  SelectedTask.vue  ===*/
+.time-slot-item { // todo
+    & button {
+        color: $primary;
+        background: transparent;
+        outline: none;
+        border: none;
+        transition: all 0.25s ease-in-out;
+
+        &:hover {
+            cursor: pointer;
+            color: $secondary;
+        }
+    }
+}
+
 .selected-ticket__heading__assignments__project-selection {
     position: relative;
 }
@@ -292,7 +307,7 @@
             }
         }
         .selected-ticket__toggle-btn { //
-            padding-top: $default__font-size;
+            padding-top: $default__font-size / 2; //
 
             & button {
                 border: none;

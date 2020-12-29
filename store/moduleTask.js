@@ -82,6 +82,36 @@ export const mutations = {
             return __selectedTask;
         })
     },
+    saveUpdatedStartTime: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.uniqueId) { // find which selectedTask's array has an update
+                // find the position & update it
+                const __timeSlotToUpdate = __selectedTask.startAndEndTimesArray.find((__timeSlot) => __timeSlot.id === value.id);
+                __timeSlotToUpdate.startTime = value.updatedStartTime;
+            }
+            return __selectedTask;
+        })
+    },
+    saveUpdatedEndTime: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.uniqueId) { // find which selectedTask's array has an update
+                // find the position & update it
+                const __timeSlotToUpdate = __selectedTask.startAndEndTimesArray.find((__timeSlot) => __timeSlot.id === value.id);
+                __timeSlotToUpdate.endTime = value.updatedEndTime;
+            }
+            return __selectedTask;
+        })
+    },
+    saveUpdatedDuration: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.uniqueId) { // find which selectedTask's array has an update
+                // find the position & update it
+                const __timeSlotToUpdate = __selectedTask.startAndEndTimesArray.find((__timeSlot) => __timeSlot.id === value.id);
+                __timeSlotToUpdate.duration = value.updatedDuration;
+            }
+            return __selectedTask;
+        })
+    },
     addSelectedTask: (state, value) => {
         // hide any validation messages
         if (state.showErrorMessages) state.showErrorMessages = false; // todo
