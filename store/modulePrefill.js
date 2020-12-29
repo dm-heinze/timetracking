@@ -157,6 +157,7 @@ export const actions = {
             })
                 .then((__res) => resolve(__res.data))
                 .catch((err) => {
+                    // todo
                     if (err.response.status === 401) reject(err.response.status); // sessionId exists in cookies but has expired // todo
                     else reject(err);
                 })
