@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { __SHOW_START_AND_END_TIMES } from "~/utility/constants";
 
 export const state = () => ({
     selectedTasks: [],
@@ -6,6 +7,7 @@ export const state = () => ({
     showErrorMessages: false,
     showAllSelectedTasksOfCurrentDay: false, // show booked AND non-booked selectedTasks
     showUnbookedTasksNotOfTheDay: false,
+    showStartAndEndTimes: false // todo
 })
 
 export const getters = {
@@ -135,8 +137,10 @@ export const mutations = {
     },
     toggleUnbookedTasksNotOfTheDay: (state, value) => {
         state.showUnbookedTasksNotOfTheDay = !state.showUnbookedTasksNotOfTheDay;
+    },
+    setShowStartAndEndTimes: (state, payload) => {
+        state.showStartAndEndTimes = payload.value;
     }
-    // end of selected tasks
 }
 
 export const actions = {
@@ -237,6 +241,12 @@ export const actions = {
                 }
             })
         })
+    },
+    saveShowStartAndEndTimes: function ({ state }) {
+        return new Promise((resolve, reject) => { // todo
+            this.$cookies.set(__SHOW_START_AND_END_TIMES, state.showStartAndEndTimes);
+
+            resolve();
+        })
     }
-    // end of selected tasks
 }

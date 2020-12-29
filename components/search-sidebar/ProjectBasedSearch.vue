@@ -111,7 +111,8 @@
                     assignedToTicket: true,
                     booked: false,
                     uniqueId: _.now(),
-                    dayAdded: new Date().toDateString()
+                    dayAdded: new Date().toDateString(),
+                    startAndEndTimesArray: [] // todo
                 }
 
                 // reset search via project selection

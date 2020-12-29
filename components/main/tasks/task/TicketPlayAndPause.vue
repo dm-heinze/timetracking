@@ -38,7 +38,8 @@
                 activeTicket: state => state.moduleUser.activeTicket,
                 onABreak: state => state.moduleBreak.onABreak,
                 lastTicket: state => state.moduleUser.lastTicket,
-                logoutInProgress: state => state.moduleUser.logoutInProgress
+                logoutInProgress: state => state.moduleUser.logoutInProgress,
+                showStartAndEndTimes: state => state.moduleTask.showStartAndEndTimes
             })
         },
         methods: {
@@ -89,18 +90,22 @@
 
                 this.saveTaskEndTime({ uniqueId: this.uniqueId, endTime: this.endTime.toTimeString() }); // update vuex store
 
-                const __dateRightNow = this.timeRightNow; // todo: before -> new Date
-                const __duration = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, this.endTime.getTime() - this.startTime.getTime());
+                // only save values to the 'startAndEndTimes' array if time slots got enabled via the settingsSidebar
+                // -> by default time slots are disabled
+                if (this.showStartAndEndTimes) {
+                    const __dateRightNow = this.timeRightNow; // todo: before -> new Date
+                    const __duration = new Date(__dateRightNow.getFullYear(), __dateRightNow.getMonth(), __dateRightNow.getDate(), 0, 0, 0, this.endTime.getTime() - this.startTime.getTime());
 
-                this.saveToTaskStartAndEndArray({
-                    uniqueId: this.uniqueId,
-                    entryToAdd: {
-                        startTime: this.startTime.toTimeString().slice(0,8),
-                        endTime: this.endTime.toTimeString().slice(0, 8),
-                        duration: __duration.toTimeString().slice(0, 8),
-                        id: _.now()
-                    }
-                });
+                    this.saveToTaskStartAndEndArray({
+                        uniqueId: this.uniqueId,
+                        entryToAdd: {
+                            startTime: this.startTime.toTimeString().slice(0,8),
+                            endTime: this.endTime.toTimeString().slice(0, 8),
+                            duration: __duration.toTimeString().slice(0, 8),
+                            id: _.now()
+                        }
+                    });
+                }
 
                 this.saveSelectedTasksToStorage(); // update localStorage
             },
