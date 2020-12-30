@@ -37,7 +37,7 @@
                             id="resetTrackedBreakTime"
                             v-if="!onABreak && (accumulatedBreakTime != '00:00:00')"
                         >
-                            <rotate-ccw-icon />
+                            <rotate-cw-icon />
                         </button>
 
                         <b-modal :id="`confirm-reset-break-modal`" centered>
@@ -82,7 +82,7 @@
 <script>
     import { mapActions, mapMutations, mapState } from 'vuex';
     import TicketTimeSpent from "~/components/main/tasks/task/TicketTimeSpent";
-    import { RotateCcwIcon, XIcon } from 'vue-feather-icons';
+    import { RotateCwIcon, XIcon } from 'vue-feather-icons';
     import _ from "lodash";
 
 
@@ -90,7 +90,7 @@
         name: "BreakTask",
         components: {
             TicketTimeSpent,
-            RotateCcwIcon, XIcon
+            RotateCwIcon, XIcon
         },
         computed: {
             ...mapState({
