@@ -159,6 +159,37 @@
                     this.updateTimeSpentOnTask({ uniqueId: this.uniqueId }); // todo
                 }
 
+                if (this.endTime === '00:00:00') {
+                    // todo: following calculation is only possible if there's a duration
+
+                    const __durationAsArray = this.duration.split(":");
+
+                    // bc the last position needed may not exist if zero
+                    __durationAsArray[2] = __durationAsArray[2] ? Number(__durationAsArray[2]) : 0; // todo: casting
+                    __updatedStartTimeAsArray[2] = __updatedStartTimeAsArray[2] ? Number(__updatedStartTimeAsArray[2]) : 0; // todo: casting
+
+                    // calculate resulting endTime via [ end = duration + start ]
+                    const __resultingEndTimeAsArray = _.zipWith(__durationAsArray, __updatedStartTimeAsArray, (duration, start) => Number(duration) + Number(start));
+
+                    // format to save
+                    const __resultingEndTimeAsDate = new Date(
+                        __helperDate.getFullYear(),
+                        __helperDate.getMonth(),
+                        __helperDate.getDate(),
+                        __resultingEndTimeAsArray[0], // hours
+                        __resultingEndTimeAsArray[1], // minutes
+                        __resultingEndTimeAsArray[2], // seconds
+                        0
+                    )
+
+                    // update vuex store
+                    this.saveUpdatedEndTime({
+                        uniqueId: this.uniqueId,
+                        id: this.id,
+                        updatedEndTime: __resultingEndTimeAsDate.toTimeString().slice(0,8) // todo
+                    })
+                }
+
                 // update localStorage
                 this.saveSelectedTasksToStorage();
             }, 1100),
@@ -271,8 +302,8 @@
                 const __startTimeAsArray = this.startTime.split(":");
 
                 // todo
-                __updatedTimeSpentAsArray[2] = __updatedTimeSpentAsArray[2] ? Number(__updatedTimeSpentAsArray[2]) : 0;
-                __startTimeAsArray[2] = __startTimeAsArray[2] ? Number(__startTimeAsArray[2]) : 0;
+                __updatedTimeSpentAsArray[2] = __updatedTimeSpentAsArray[2] ? Number(__updatedTimeSpentAsArray[2]) : 0; // todo: casting
+                __startTimeAsArray[2] = __startTimeAsArray[2] ? Number(__startTimeAsArray[2]) : 0; // todo: casting
 
 
                 const __resultingEndTimeAsArray = _.zipWith(__updatedTimeSpentAsArray, __startTimeAsArray, (duration, start) => Number(duration) + Number(start));
@@ -284,9 +315,9 @@
                     __helperDate.getFullYear(),
                     __helperDate.getMonth(),
                     __helperDate.getDate(),
-                    Number(__updatedTimeSpentAsArray[0]), // hours
-                    Number(__updatedTimeSpentAsArray[1]), // minutes
-                    __updatedTimeSpentAsArray[2], // seconds position only available if seconds has non-zero val
+                    Number(__updatedTimeSpentAsArray[0]), // hours // todo: casting
+                    Number(__updatedTimeSpentAsArray[1]), // minutes // todo: casting
+                    __updatedTimeSpentAsArray[2], // seconds position only available if seconds has non-zero val // todo: casting
                     0
                 )
 
