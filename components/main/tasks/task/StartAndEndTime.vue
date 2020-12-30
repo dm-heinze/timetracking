@@ -146,14 +146,18 @@
                     updatedStartTime: __updatedStartTimeAsDate.toTimeString().slice(0,8)
                 })
 
-                this.saveUpdatedDuration({
-                    uniqueId: this.uniqueId,
-                    id: this.id,
-                    updatedDuration: __resultingDurationAsDate.toTimeString().slice(0,8),
-                    updatedDurationInMilliSeconds: __resultingDuration
-                })
+                // todo
+                // duration should not be updated if there was no endTime
+                if (this.endTime !== '00:00:00') {
+                    this.saveUpdatedDuration({
+                        uniqueId: this.uniqueId,
+                        id: this.id,
+                        updatedDuration: __resultingDurationAsDate.toTimeString().slice(0,8),
+                        updatedDurationInMilliSeconds: __resultingDuration
+                    })
 
-                this.updateTimeSpentOnTask({ uniqueId: this.uniqueId });
+                    this.updateTimeSpentOnTask({ uniqueId: this.uniqueId }); // todo
+                }
 
                 // update localStorage
                 this.saveSelectedTasksToStorage();
@@ -210,14 +214,17 @@
                     updatedEndTime: __updatedEndTimeAsDate.toTimeString().slice(0,8)
                 })
 
-                this.saveUpdatedDuration({
-                    uniqueId: this.uniqueId,
-                    id: this.id,
-                    updatedDuration: __resultingDurationAsDate.toTimeString().slice(0,8),
-                    updatedDurationInMilliSeconds: __resultingDuration
-                })
+                // todo: if the startTime does not exist the duration should not be updated but the startTime should be calculated & updated
+                if (this.startTime !== '00:00:00') {
+                    this.saveUpdatedDuration({
+                        uniqueId: this.uniqueId,
+                        id: this.id,
+                        updatedDuration: __resultingDurationAsDate.toTimeString().slice(0,8),
+                        updatedDurationInMilliSeconds: __resultingDuration
+                    })
 
-                this.updateTimeSpentOnTask({ uniqueId: this.uniqueId });
+                    this.updateTimeSpentOnTask({ uniqueId: this.uniqueId }); // todo
+                }
 
                 // update localStorage
                 this.saveSelectedTasksToStorage();
@@ -271,11 +278,15 @@
                 const __durationInMilliSeconds = __updatedDurationAsDate.getTime() -  __helper.getTime(); // todo
 
                 // update vuex store
-                this.saveUpdatedEndTime({
-                    uniqueId: this.uniqueId,
-                    id: this.id,
-                    updatedEndTime: __resultingEndTimeAsDate.toTimeString().slice(0,8)
-                })
+                // todo
+                // endTime should not be updated when there was no startTime
+                if (this.startTime !== '00:00:00') {
+                    this.saveUpdatedEndTime({
+                        uniqueId: this.uniqueId,
+                        id: this.id,
+                        updatedEndTime: __resultingEndTimeAsDate.toTimeString().slice(0,8)
+                    })
+                }
 
                 this.saveUpdatedDuration({
                     uniqueId: this.uniqueId,
