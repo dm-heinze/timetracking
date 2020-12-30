@@ -65,16 +65,14 @@
                 showStartAndEndTimes: state => state.moduleTask.showStartAndEndTimes
             }),
             parsedTimeSpent () {
-                const helperDate = new Date();
+                const __date = new Date();
 
                 // timeSpent is saved in milliseconds to the localStorage
                 // Date object used to automatically get the correct calculation for the hh:mm:ss representation of milliseconds value
-                const dateFromTimeSpentValue = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), 0, 0,0, this.timeSpent);
-
-                const dateFromTimeSpentValueTimeTimeString =  dateFromTimeSpentValue.toTimeString();
+                const __timeSpentAsDate = new Date(__date.getFullYear(), __date.getMonth(), __date.getDate(), 0, 0,0, this.timeSpent);
 
                 // remove the date portion
-                return dateFromTimeSpentValueTimeTimeString.slice(0, 8);
+                return __timeSpentAsDate.toTimeString().slice(0, 8);
             }
         },
         methods: {
@@ -86,18 +84,27 @@
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
             }),
             saveEditedWorklogTimeSpent: _.debounce(function (event) {
-                const editedTimeSpent = event.target.value; // received val may be string of shape hh:mm or hh:mm:ss
+                const __editedTimeSpent = event.target.value; // received val may be string of shape hh:mm or hh:mm:ss
 
-                let editedTimeSpentTimeStringArray = editedTimeSpent.split(":");
+                let __editedTimeSpentAsArray = __editedTimeSpent.split(":");
 
-                const helperDate = new Date();
+                const __date = new Date();
 
-                // if milliseconds === 00, then the received event.target.value is of shape hh:mm only
-                editedTimeSpentTimeStringArray[2] = Number(editedTimeSpentTimeStringArray[2]) ? Number(editedTimeSpentTimeStringArray[2]) : 0;
+                // if seconds === 00, then the received event.target.value is of shape hh:mm only
+                __editedTimeSpentAsArray[2] = Number(__editedTimeSpentAsArray[2]) ? Number(__editedTimeSpentAsArray[2]) : 0; // todo: casting
 
-                const dateFromParsedStartTime = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), 0, 0, 0, 0); // todo: rename dateFromParsedStartTime
+                // needed to calculate milliseconds value for the entered timeSpent value '__editedTimeSpent'
+                const __helperDateZero = new Date(__date.getFullYear(), __date.getMonth(), __date.getDate(), 0, 0, 0, 0);
 
-                const dateFromEditedTimeSpentTimeStringArray = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), editedTimeSpentTimeStringArray[0], editedTimeSpentTimeStringArray[1], editedTimeSpentTimeStringArray[2], 0);
+                const __editedTimeSpentAsDate = new Date(
+                    __date.getFullYear(),
+                    __date.getMonth(),
+                    __date.getDate(),
+                    __editedTimeSpentAsArray[0], // hours
+                    __editedTimeSpentAsArray[1], // minutes
+                    __editedTimeSpentAsArray[2], // seconds
+                    0
+                );
 
 
                 if (this.showStartAndEndTimes) {
@@ -108,8 +115,8 @@
                             entryToAdd: {
                                 startTime: "00:00:00",
                                 endTime: "00:00:00",
-                                duration: dateFromEditedTimeSpentTimeStringArray.toTimeString().slice(0, 8),
-                                durationInMilliSeconds: dateFromEditedTimeSpentTimeStringArray.getTime() - dateFromParsedStartTime.getTime(), // todo
+                                duration: __editedTimeSpentAsDate.toTimeString().slice(0, 8),
+                                durationInMilliSeconds: __editedTimeSpentAsDate.getTime() - __helperDateZero.getTime(), // todo
                                 id: _.now()
                             }
                         });
@@ -117,7 +124,11 @@
                 }
 
                 // update state & vuex store & localStorage
-                this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: dateFromEditedTimeSpentTimeStringArray.getTime() - dateFromParsedStartTime.getTime() }); // todo: rename dateFromParsedStartTime
+                this.saveTimeSpentOnTask({
+                    uniqueId: this.uniqueId,
+                    timeSpent: __editedTimeSpentAsDate.getTime() - __helperDateZero.getTime()
+                });
+
                 this.saveSelectedTasksToStorage();
             }, 1000),
             activateEditModeForTrackedTime: function () {
