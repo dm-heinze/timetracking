@@ -4,7 +4,7 @@
         v-b-modal="`confirm-push-time-singleTaskOnly-${uniqueId}`"
         :disabled="(isTimerActive && activeTicket === uniqueId) || !taskWorklogComment || !timeSpent || booked || !assignedToTicket"
     >
-        <upload-cloud-icon />
+        <send-icon />
 
         <b-modal :id="`confirm-push-time-singleTaskOnly-${uniqueId}`" centered>
             <template v-slot:modal-header="{ close }">
@@ -45,11 +45,11 @@
 
 <script>
     import { mapState, mapActions } from 'vuex';
-    import { XIcon, UploadCloudIcon } from 'vue-feather-icons';
+    import { XIcon, SendIcon } from 'vue-feather-icons';
 
 	export default {
 		name: "PushSingleTask",
-        components: { XIcon, UploadCloudIcon },
+        components: { XIcon, SendIcon },
         props: {
             taskKey: {
                 required: true
