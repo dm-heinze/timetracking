@@ -161,7 +161,7 @@
 
                 // update localStorage
                 this.saveSelectedTasksToStorage();
-            }, 900),
+            }, 1100),
             saveEditedEndTime: _.debounce(function (event) {
                 const __updatedEndTime = event.target.value;
                 const __updatedEndTimeAsArray = __updatedEndTime.split(":");
@@ -214,7 +214,7 @@
                     updatedEndTime: __updatedEndTimeAsDate.toTimeString().slice(0,8)
                 })
 
-                // todo: if the startTime does not exist the duration should not be updated but the startTime should be calculated & updated
+                // if the startTime does not exist the duration should not be updated but the startTime should be calculated & updated
                 if (this.startTime !== '00:00:00') {
                     this.saveUpdatedDuration({
                         uniqueId: this.uniqueId,
@@ -226,9 +226,44 @@
                     this.updateTimeSpentOnTask({ uniqueId: this.uniqueId }); // todo
                 }
 
+                if (this.startTime === '00:00:00') {
+                    // todo the startTime should be calculated & updated (if there's a duration)
+
+                    const __durationAsArray = this.duration.split(":");
+
+                    // [ updatedEnd - duration = start ]  17:40:00 - 00:40:00 = 17:00:00 -> [ start - end = duration ]  17:00:00 - 17:40:00 = 00:40:00
+                    const __durationAsDate = new Date(
+                        __helperDate.getFullYear(),
+                        __helperDate.getMonth(),
+                        __helperDate.getDate(),
+                        Number(__durationAsArray[0]), // hours
+                        Number(__durationAsArray[1]), // minutes
+                        __durationAsArray[2] ? Number(__durationAsArray[2]) : 0, // position only available if seconds has non-zero val
+                        0
+                    )
+
+                    const __resultingStartTimeInMilliseconds = __updatedEndTimeAsDate.getTime() - __durationAsDate.getTime();
+
+                    const __resultingStartTimeAsDate = new Date(
+                        __helperDate.getFullYear(),
+                        __helperDate.getMonth(),
+                        __helperDate.getDate(),
+                        0,
+                        0,
+                        0,
+                        __resultingStartTimeInMilliseconds // milliseconds
+                    )
+
+                    this.saveUpdatedStartTime({
+                        uniqueId: this.uniqueId,
+                        id: this.id,
+                        updatedStartTime: __resultingStartTimeAsDate.toTimeString().slice(0,8)
+                    })
+                }
+
                 // update localStorage
                 this.saveSelectedTasksToStorage();
-            }, 900),
+            }, 1100),
             saveEditedDuration: _.debounce(function (event) {
                 const __updatedTimeSpent = event.target.value;
                 const __updatedTimeSpentAsArray = __updatedTimeSpent.split(":");
@@ -299,7 +334,7 @@
 
                 // update localStorage
                 this.saveSelectedTasksToStorage();
-            }, 900)
+            }, 1100)
         }
 	}
 </script>
