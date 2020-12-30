@@ -1,10 +1,12 @@
 <template>
     <span
-        v-if="totalTime"
-        :class="{ 'mr-3': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg', 'align-self-center': $mq === 'sm' }"
+        :class="{
+            'mr-3': $mq !== 'sm',
+            'align-self-center': $mq === 'sm'
+        }"
     >
         worked so far: <span class="font-weight-bold">{{ totalTime }}</span>
-    </span> <!-- todo: condition -->
+    </span>
 </template>
 
 <script>
@@ -22,7 +24,7 @@
             ...mapGetters({
                 getSelectedTasksWithDayIndicator: 'moduleTask/getSelectedTasksWithDayIndicator'
             }),
-            tasksOfTheDay () {
+            tasksOfTheDay () { // todo: getter 'getSelectedTasksOfCurrentDay'
                 return this.getSelectedTasksWithDayIndicator.filter((__selectedTasksWithDayIndicator) => __selectedTasksWithDayIndicator.dayAdded === this.currentDay);
             },
             totalTime() { // todo
@@ -32,10 +34,15 @@
 
                     let selectedTasksTimes;
                     if (!this.showAllSelectedTasksOfCurrentDay) {
-                        selectedTasksTimes = __selectedTasks.filter((__selected) => !__selected.booked).filter((__nonBooked) => __nonBooked.timeSpent !== '0' && __nonBooked.timeSpent !== '').map((__selectedTask) => Number.parseInt(__selectedTask.timeSpent))
+                        selectedTasksTimes = __selectedTasks
+                            .filter((__selected) => !__selected.booked)
+                            .filter((__nonBooked) => __nonBooked.timeSpent !== '0' && __nonBooked.timeSpent !== '')
+                            .map((__selectedTask) => Number.parseInt(__selectedTask.timeSpent))
                     } else {
                         // todo
-                        selectedTasksTimes = __selectedTasks.filter((__nonBooked) => __nonBooked.timeSpent !== '0' && __nonBooked.timeSpent !== '').map((__selectedTask) => Number.parseInt(__selectedTask.timeSpent))
+                        selectedTasksTimes = __selectedTasks
+                            .filter((__nonBooked) => __nonBooked.timeSpent !== '0' && __nonBooked.timeSpent !== '')
+                            .map((__selectedTask) => Number.parseInt(__selectedTask.timeSpent))
                     }
 
                     for (let timeSpentOnIndividualSelectedTask of selectedTasksTimes) {
