@@ -85,7 +85,12 @@
             bookSingleTaskOnly() {
                 this.$bvModal.hide(`confirm-push-time-singleTaskOnly-${this.uniqueId}`); // any cancel event needed?
 
-                this.requestSavingSingleWorklog({ comment: this.taskWorklogComment, timeSpentSeconds: this.timeSpent, ticketId: this.taskKey, uniqueId: this.uniqueId })
+                this.requestSavingSingleWorklog({
+                    comment: this.taskWorklogComment,
+                    timeSpentSeconds: this.timeSpent,
+                    ticketId: this.taskKey,
+                    uniqueId: this.uniqueId
+                })
                     .then(() => {
                         this.$bvModal.msgBoxOk('Worklog was successfully booked', {
                             centered: true,
