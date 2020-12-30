@@ -11,7 +11,7 @@
 
         <toggle-optionals />
 
-        <!-- <toggle-time-slots /> -->
+        <toggle-time-slots />
 
         <logout />
     </div>

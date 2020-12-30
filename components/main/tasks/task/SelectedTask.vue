@@ -84,7 +84,7 @@
 
                     <ticket-deletion v-if="!booked" :unique-id="uniqueId" :task-summary="taskSummary" :task-key="taskKey" :assigned-to-ticket="assignedToTicket" />
 
-                    <ticket-time-spent :time-spent="timeSpent" :unique-id="uniqueId" :booked="booked" />
+                    <ticket-time-spent :time-spent="timeSpent" :unique-id="uniqueId" :booked="booked" :start-and-end-times-array="startAndEndTimesArray" />
                 </div>
             </div>
         </div>

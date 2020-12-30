@@ -14,7 +14,7 @@
         <button
             v-if="!booked && !ofTypeBreak"
             class="btn--edit"
-            :disabled="(isTimerActive && (activeTicket === uniqueId))"
+            :disabled="(isTimerActive && (activeTicket === uniqueId)) || (showStartAndEndTimes && (startAndEndTimesArray.length !== 0))"
             @click.prevent="activateEditModeForTrackedTime"
         >
             <edit2-icon v-if="!editingTrackedTime" />
@@ -47,6 +47,10 @@
                 type: Boolean,
                 required: false,
                 default: false
+            },
+            startAndEndTimesArray: {
+                required: false,
+                default: () => []
             }
         },
         data() {
@@ -57,7 +61,8 @@
         computed: {
             ...mapState({
                 isTimerActive: state => state.moduleUser.isTimerActive,
-                activeTicket: state => state.moduleUser.activeTicket
+                activeTicket: state => state.moduleUser.activeTicket,
+                showStartAndEndTimes: state => state.moduleTask.showStartAndEndTimes
             }),
             parsedTimeSpent () {
                 const helperDate = new Date();
@@ -74,7 +79,8 @@
         },
         methods: {
             ...mapMutations({
-                saveTimeSpentOnTask: 'moduleTask/saveTimeSpentOnTask'
+                saveTimeSpentOnTask: 'moduleTask/saveTimeSpentOnTask',
+                saveToTaskStartAndEndArray: 'moduleTask/saveToTaskStartAndEndArray'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
@@ -92,6 +98,23 @@
                 const dateFromParsedStartTime = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), 0, 0, 0, 0); // todo: rename dateFromParsedStartTime
 
                 const dateFromEditedTimeSpentTimeStringArray = new Date(helperDate.getFullYear(), helperDate.getMonth(), helperDate.getDate(), editedTimeSpentTimeStringArray[0], editedTimeSpentTimeStringArray[1], editedTimeSpentTimeStringArray[2], 0);
+
+
+                if (this.showStartAndEndTimes) {
+                    // if timeSpent === 0 add it to the startAndEndTimesArray as the first element so after any time slot edits, the val can be retained
+                    if (!this.timeSpent) {
+                        this.saveToTaskStartAndEndArray({
+                            uniqueId: this.uniqueId,
+                            entryToAdd: {
+                                startTime: "00:00:00",
+                                endTime: "00:00:00",
+                                duration: dateFromEditedTimeSpentTimeStringArray.toTimeString().slice(0, 8),
+                                durationInMilliSeconds: dateFromEditedTimeSpentTimeStringArray.getTime() - dateFromParsedStartTime.getTime(), // todo
+                                id: _.now()
+                            }
+                        });
+                    }
+                }
 
                 // update state & vuex store & localStorage
                 this.saveTimeSpentOnTask({ uniqueId: this.uniqueId, timeSpent: dateFromEditedTimeSpentTimeStringArray.getTime() - dateFromParsedStartTime.getTime() }); // todo: rename dateFromParsedStartTime
