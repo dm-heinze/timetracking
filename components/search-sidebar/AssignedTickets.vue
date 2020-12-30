@@ -10,7 +10,7 @@
                 aria-label="refresh assigned tickets"
                 v-b-tooltip.hover.top title="Get Latest"
             > <!-- todo -->
-                <download-cloud-icon />
+                <refresh-cw-icon />
             </button>
         </div>
         <div v-if="assignedTickets.length"> <!-- todo -->
@@ -39,13 +39,13 @@
 
 <script>
     import { mapState, mapActions } from 'vuex';
-	import { PlusCircleIcon, DownloadCloudIcon } from "vue-feather-icons";
+	import { PlusCircleIcon, RefreshCwIcon } from "vue-feather-icons";
     import { BListGroup, BListGroupItem } from "bootstrap-vue";
 
     export default {
 		name: "AssignedTickets",
         components: {
-		    PlusCircleIcon, DownloadCloudIcon,
+		    PlusCircleIcon, RefreshCwIcon,
             BListGroupItem, BListGroup
         },
         directives: { 'b-list-group': BListGroup, 'b-list-group-item': BListGroupItem },
