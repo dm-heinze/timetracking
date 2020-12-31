@@ -50,6 +50,7 @@
     import _ from "lodash";
     import { Edit2Icon, CheckIcon, Trash2Icon } from "vue-feather-icons";
 	import { mapState, mapMutations, mapActions } from "vuex";
+    import { formatAsDate, formatMilliSecondsAsDate, formatAsArray, formatArrayAsDate } from "~/utility/constants";
 
     export default {
 		name: "StartAndEndTime",
@@ -102,50 +103,16 @@
             activateEditModeForTimeSlots: function () {
                 this.editingTimeSlot = !this.editingTimeSlot;
             },
-            saveEditedStartTime: _.debounce(function (event) {
+            saveEditedStartTime: _.debounce(function (event) { // todo!
                 // step 1: transform entered value for startTime & existing endTime value each into an array
                 // -> goal: to use them for the calculation of the resulting duration
-                const __updatedStartTime = event.target.value;
-                const __updatedStartTimeAsArray = __updatedStartTime.split(":");
+                const __updatedStartTimeAsArray = formatAsArray(event.target.value);
 
-                const __endTimeAsArray = this.endTime.split(":");
-
-
-                // use Date object to create a helper that automatically calculates valid time values
-                const __helperDate = new Date();
-
-                const __endTimeAsDate = new Date(
-                    __helperDate.getFullYear(),
-                    __helperDate.getMonth(),
-                    __helperDate.getDate(),
-                    Number(__endTimeAsArray[0]), // hours
-                    Number(__endTimeAsArray[1]), // minutes
-                    __endTimeAsArray[2] ? Number(__endTimeAsArray[2]) : 0, // position only available if seconds has non-zero val
-                0
-                )
-
-                const __updatedStartTimeAsDate = new Date(
-                    __helperDate.getFullYear(),
-                    __helperDate.getMonth(),
-                    __helperDate.getDate(),
-                    Number(__updatedStartTimeAsArray[0]), // hours
-                    Number(__updatedStartTimeAsArray[1]), // minutes
-                    __updatedStartTimeAsArray[2] ? Number(__updatedStartTimeAsArray[2]) : 0, // position only available if seconds has non-zero val
-                0
-                )
-
+                const __updatedStartTimeAsDate = formatAsDate(event.target.value);
+                const __endTimeAsDate = formatAsDate(this.endTime);
 
                 const __resultingDuration = __endTimeAsDate.getTime() - __updatedStartTimeAsDate.getTime();
-
-                const __resultingDurationAsDate = new Date(
-                    __helperDate.getFullYear(),
-                    __helperDate.getMonth(),
-                    __helperDate.getDate(),
-                    0,
-                    0,
-                    0,
-                    __resultingDuration // milliseconds
-                )
+                const __resultingDurationAsDate = formatMilliSecondsAsDate(__resultingDuration);
 
 
                 // update vuex store
@@ -171,25 +138,13 @@
                 if (this.endTime === '00:00:00') {
                     // todo: following calculation is only possible if there's a duration
 
-                    const __durationAsArray = this.duration.split(":");
-
-                    // bc the last position needed may not exist if zero
-                    __durationAsArray[2] = __durationAsArray[2] ? Number(__durationAsArray[2]) : 0; // todo: casting
-                    __updatedStartTimeAsArray[2] = __updatedStartTimeAsArray[2] ? Number(__updatedStartTimeAsArray[2]) : 0; // todo: casting
+                    const __durationAsArray = formatAsArray(this.duration);
 
                     // calculate resulting endTime via [ end = duration + start ]
                     const __resultingEndTimeAsArray = _.zipWith(__durationAsArray, __updatedStartTimeAsArray, (duration, start) => Number(duration) + Number(start));
 
                     // format to save
-                    const __resultingEndTimeAsDate = new Date(
-                        __helperDate.getFullYear(),
-                        __helperDate.getMonth(),
-                        __helperDate.getDate(),
-                        __resultingEndTimeAsArray[0], // hours
-                        __resultingEndTimeAsArray[1], // minutes
-                        __resultingEndTimeAsArray[2], // seconds
-                        0
-                    )
+                    const __resultingEndTimeAsDate = formatArrayAsDate(__resultingEndTimeAsArray);
 
                     // update vuex store
                     this.saveUpdatedEndTime({
