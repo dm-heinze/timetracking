@@ -128,6 +128,15 @@ export const mutations = {
             return __selectedTask;
         })
     },
+    removeFromStartAndEndTimesArray: (state, value) => {
+        state.selectedTasks = state.selectedTasks.map((__selectedTask) => {
+            if (__selectedTask.uniqueId === value.uniqueId) { // find which selectedTask's array has an update
+                // filter out the passed time slot entry from the array of that task
+                __selectedTask.startAndEndTimesArray = __selectedTask.startAndEndTimesArray.filter((__startAndEndTime) => __startAndEndTime.id !== value.id)
+            }
+            return __selectedTask;
+        })
+    },
     addSelectedTask: (state, value) => {
         // hide any validation messages
         if (state.showErrorMessages) state.showErrorMessages = false; // todo

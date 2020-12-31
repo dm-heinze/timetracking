@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex time-slot-item">
-        <div v-if="!editingTimeSlot">{{ startTime }} - {{ endTime }} = {{ duration }}</div>
+        <div class="pt-1" v-if="!editingTimeSlot">{{ startTime }} - {{ endTime }} = {{ duration }}</div>
         <div v-else class="selected-ticket__tracked-time__editing pl-2">
             <input
                 type="time"
@@ -28,24 +28,32 @@
         </div>
         <button
             v-if="!booked"
-            class="btn--edit"
+            class="btn--edit pl-3"
             :disabled="(isTimerActive && (activeTicket === uniqueId))"
             @click.prevent="activateEditModeForTimeSlots"
         >
             <edit2-icon v-if="!editingTimeSlot" />
             <check-icon v-else />
         </button>
+        <button
+            v-if="!booked"
+            class="btn--edit"
+            :disabled="(isTimerActive && (activeTicket === uniqueId))"
+            @click.prevent="removeTimeSlot"
+        >
+            <trash2-icon />
+        </button>
     </div>
 </template>
 
 <script>
     import _ from "lodash";
-    import { Edit2Icon, CheckIcon } from "vue-feather-icons";
+    import { Edit2Icon, CheckIcon, Trash2Icon } from "vue-feather-icons";
 	import { mapState, mapMutations, mapActions } from "vuex";
 
     export default {
 		name: "StartAndEndTime",
-        components: { CheckIcon, Edit2Icon },
+        components: { CheckIcon, Edit2Icon, Trash2Icon },
         props: {
             booked: {
                 required: true
@@ -85,7 +93,8 @@
                 saveUpdatedStartTime: 'moduleTask/saveUpdatedStartTime',
                 saveUpdatedEndTime: 'moduleTask/saveUpdatedEndTime',
                 saveUpdatedDuration: 'moduleTask/saveUpdatedDuration',
-                updateTimeSpentOnTask: 'moduleTask/updateTimeSpentOnTask'
+                updateTimeSpentOnTask: 'moduleTask/updateTimeSpentOnTask',
+                removeFromStartAndEndTimesArray: 'moduleTask/removeFromStartAndEndTimesArray'
             }),
             ...mapActions({
                 saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
@@ -365,7 +374,17 @@
 
                 // update localStorage
                 this.saveSelectedTasksToStorage();
-            }, 1100)
+            }, 1100),
+            removeTimeSlot: function () {
+                // remove time slot for the task (updates vuex store)
+                this.removeFromStartAndEndTimesArray({ uniqueId: this.uniqueId, id: this.id });
+
+                // recalculate the sum of the total time for the task as now an item has been removed (updates vuex store)
+                this.updateTimeSpentOnTask({ uniqueId: this.uniqueId });
+
+                // update localStorage w/ state from vuex store
+                this.saveSelectedTasksToStorage();
+            }
         }
 	}
 </script>
