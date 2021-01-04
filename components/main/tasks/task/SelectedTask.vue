@@ -93,8 +93,6 @@
 
         <b-collapse :id="`selected-task-${uniqueId}`" visible class="selected-ticket__content">
             <ticket-comment :unique-id="uniqueId" :task-worklog-comment="taskWorklogComment" :booked="booked" />
-
-            <start-and-end-times v-if="startAndEndTimesArray.length" :unique-id="uniqueId" :start-and-end-times-array="startAndEndTimesArray" :time-spent="timeSpent" :booked="booked" />
         </b-collapse>
         <ticket-height-toggler :unique-id="uniqueId" />
     </div>
@@ -112,7 +110,6 @@
     import PushSingleTask from "~/components/main/tasks/task/PushSingleTask";
     import TicketTimeSpent from "~/components/main/tasks/task/TicketTimeSpent";
     import TicketPlayAndPause from "~/components/main/tasks/task/TicketPlayAndPause";
-    import StartAndEndTimes from "~/components/main/tasks/task/StartAndEndTimes";
     import TicketHeightToggler from "~/components/main/tasks/task/TicketHeightToggler";
     import Vue from 'vue';
     import vClickOutside from 'v-click-outside';
@@ -124,7 +121,6 @@
         components: {
             // standard components
             TicketHeightToggler,
-            StartAndEndTimes,
             TicketPlayAndPause,
             TicketTimeSpent,
             TicketErrorMessages,
