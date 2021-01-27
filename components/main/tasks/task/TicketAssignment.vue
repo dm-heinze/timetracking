@@ -8,7 +8,6 @@
                 'mr-3': $mq === 'md' || $mq === 'lg',
                 'mr-2': $mq === 'mdp' || $mq === 'plg'
             }"
-            :disabled="isTimerActive && (activeTicket === uniqueId)"
             @click.prevent="toggleTicketAssignment()"
         >
             <plus-circle-icon />

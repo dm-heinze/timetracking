@@ -4,7 +4,7 @@
         :class="{
             'currently-active': isTimerActive && (activeTicket === uniqueId),
             'already-booked': booked,
-            'currentlyDraggable': !isTimerActive
+            'currentlyDraggable': !isTimerActive | isTimerActive
         }"
     >
         <div
@@ -60,7 +60,6 @@
                         size="sm"
                         :variant="editingName ? 'success' : 'light-grey'"
                         type="button"
-                        :disabled="isTimerActive && (activeTicket === uniqueId)"
                         class="login-content__sign-in-btn button--customTaskName pt-2 pb-2"
                         :class="{
                             'mb-2': $mq === 'sm',

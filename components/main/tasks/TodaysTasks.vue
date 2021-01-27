@@ -3,7 +3,7 @@
         <div v-if="tasksOfTheDay.length !== 0 && !showUnbookedTasksNotOfTheDay"> <!-- todo -->
             <ul>
                 <li>
-                    <draggable v-model="tasksOfTheDay" :disabled="isTimerActive">
+                    <draggable v-model="tasksOfTheDay">
                         <SelectedTask
                             v-for="selectedTask in tasksOfTheDay"
                             :key="selectedTask.uniqueId"
