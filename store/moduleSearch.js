@@ -119,7 +119,9 @@ export const actions = {
                 }
             })
                 .then((__res) => {
-                    const __relatedTickets = __res.data.issues.map((__ticket) =>  {
+                    const __relatedTickets = __res.data.issues
+                        .sort((a, b) => parseInt(a.id) < parseInt(b.id) && 1 || -1)
+                        .map((__ticket) =>  {
                         return {
                             id: __ticket.id,
                             key: __ticket.key,

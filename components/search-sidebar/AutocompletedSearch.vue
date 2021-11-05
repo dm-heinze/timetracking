@@ -68,8 +68,14 @@
                 if (this.alreadyExists) this.setAlreadyExists(false);
                 this.setSearchResult([]);
             },
+            formatSearchTerm: function () {
+                this.searchTerm = this.searchTerm
+                    .replace(process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE, '');
+                this.searchTerm = this.searchTerm.substring(0, this.searchTerm.indexOf('?'));
+            },
             requestSearch: _.debounce(function () { // todo
                 if (!_.isEmpty(this.searchTerm)) {
+                    this.formatSearchTerm();
                     let isAlreadyInSuggestions = 0;
                     if(this.searchTerm.match(regexForTicketKeys)) isAlreadyInSuggestions = this.prefilledSearchSuggestions.filter((__searchSuggestion) => __searchSuggestion.key === this.searchTerm.toUpperCase()).length;
                     if (isAlreadyInSuggestions === 0) { // only make request if its a ticketId that does not exist in prefill already or if not a ticketId
