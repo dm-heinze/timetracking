@@ -69,8 +69,17 @@
                 this.setSearchResult([]);
             },
             formatSearchTerm: function () {
+                if(!this.searchTerm.includes('https')) {
+                    return;
+                }
+
                 this.searchTerm = this.searchTerm
                     .replace(process.env.BASE_DOMAIN + process.env.ENDPOINT_BROWSE, '');
+
+                if(!this.searchTerm.includes('?')) {
+                    return;
+                }
+
                 this.searchTerm = this.searchTerm.substring(0, this.searchTerm.indexOf('?'));
             },
             requestSearch: _.debounce(function () { // todo
