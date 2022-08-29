@@ -103,6 +103,17 @@ export const actions = {
                                                     .catch(() => reject(err));
                                             })
                                             .catch(() => reject(err)) // todo
+                                    } else if (err.response.status === 504) { // resolve on jira -> vercel timeout (DEV-65)
+                                        rootGetters['moduleTask/getSelectedTasksOfCurrentDay']
+                                            .forEach((__selectedTask) => {
+                                                if (!__selectedTask.booked) { // todo
+                                                    commit('moduleTask/updateBookedStatus', { taskToMarkAsBooked: __selectedTask.uniqueId }, { root: true })
+                                                }
+                                            });
+
+                                        dispatch('moduleTask/saveSelectedTasksToStorage', {}, { root: true })
+                                            .then(() => resolve())
+                                            .catch(() => reject());
                                     } else reject(err);
                                 } else reject(err);
                             });
