@@ -96,14 +96,6 @@ export default {
         tailwindcss: {},
         autoprefixer: {},
       },
-    },
-    loaders: {
-      sass: {
-        implementation: require('sass'),
-      },
-      scss: {
-        implementation: require('sass'),
-      },
-    },
+    }
   }
 }
