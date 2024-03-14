@@ -1,114 +1,109 @@
-import pkg from './package'
-
 export default {
-    ssr: true,
-
-    // Env. Variables
-    env: {
-        BASE_DOMAIN: process.env.BASE_DOMAIN || 'https://<YOUR-JIRA-DOMAIN>/',
-        ENDPOINT_BROWSE: process.env.ENDPOINT_BROWSE || 'browse/',
-        ENDPOINT_REST: process.env.ENDPOINT_REST || 'rest/api/2/',
-        ENDPOINT_AUTH: process.env.ENDPOINT_AUTH || 'rest/auth/1/session',
-        VERCEL_URL: process.env.VERCEL_URL,
-        VERCEL_ENV: process.env.VERCEL_ENV,
-        baseUrl: (process.env.VERCEL_ENV && process.env.VERCEL_URL) ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000/'
+  // Global page headers: https://go.nuxtjs.dev/config-head
+  head: {
+    title: 'Jira Timetracking Tool',
+    htmlAttrs: {
+      ['data-theme']: 'dmf'
     },
-    /*
-     ** Headers of the page
-     */
-    head: {
-        title: 'Jira Timetracking Tool',
-        htmlAttrs: {
-            lang: 'en'
+    meta: [
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: '' },
+      { name: 'format-detection', content: 'telephone=no' }
+    ],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }]
+  },
+
+  // Global CSS: https://go.nuxtjs.dev/config-css
+  css: [
+    '~/assets/scss/main.scss'
+  ],
+
+  // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
+  plugins: [
+  ],
+
+  // Auto import components: https://go.nuxtjs.dev/config-components
+  components: true,
+
+  // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
+  buildModules: [
+    '@nuxt/postcss8'
+  ],
+
+  // Modules: https://go.nuxtjs.dev/config-modules
+  modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
+    ['nuxt-vuex-localstorage', {
+      localStorage: ['issues', 'break', 'bookmarks']  //  If not entered, “localStorage” is the default value
+    }]
+  ],
+
+  auth: {
+    plugins: [ '~/plugins/auth.js' ],
+    strategies: {
+      jira: {
+        scheme: 'oauth2',
+        endpoints: {
+          authorization: 'https://auth.atlassian.com/authorize',
+          token: '/server-middleware/auth'
         },
-        meta: [
-            { charset: 'utf-8' },
-            { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-            { hid: 'description', name: 'description', content: pkg.description }
+        audience: 'api.atlassian.com',
+        token: {
+          property: 'access_token',
+          type: 'Bearer',
+          required: true,
+          maxAge: 3600
+        },
+        responseType: 'code',
+        grantType: 'authorization_code',
+        clientId: process.env.JIRA_CLIENT_ID,
+        scope: [
+          'read:me',
+          'read:jira-work',
+          'read:jira-user',
+          'write:jira-work',
+          'offline_access'
         ],
-        link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }]
-    },
-
-    /*
-     ** Customize the progress-bar color
-     */
-    loading: { color: 'blue' },
-
-    /*
-     ** Global CSS
-     */
-    css: [
-        '~/assets/scss/all.scss'
-    ],
-
-    router: {
-        middleware: ['auth']
-    },
-
-    serverMiddleware: ['~/api/login', '~/api/getCurrentUser', '~/api/logout', '~/api/getTickets', '~/api/addWorklog', '~/api/getProjects', '~/api/getProjectRelatedTickets', '~/api/getAssignedTickets', '~/api/getSmartPickedIssues'],
-
-    /*
-     ** Plugins to load before mounting the App
-     */
-    plugins: [
-        '~/plugins/global.js',
-        '~/plugins/retrieveFromStorage.js',
-    ],
-
-    /*
-     ** Nuxt.js modules
-     */
-    modules: [
-        // Doc: https://axios.nuxtjs.org/usage
-        '@nuxtjs/axios',
-        // Doc: https://bootstrap-vue.js.org/docs/
-        'localforage-nuxt',
-        'nuxt-mq',
-        'cookie-universal-nuxt'
-    ],
-    buildModules: [
-        ['@nuxtjs/dotenv', {
-            only: ['BASE_DOMAIN', 'ENDPOINT_BROWSE', 'ENDPOINT_REST', 'ENDPOINT_AUTH', 'VERCEL_ENV', 'VERCEL_URL', 'baseUrl']
-        }]
-    ],
-    /*
-     ** Axios module configuration
-     */
-    axios: {
-        // See https://github.com/nuxt-community/axios-module#options
-        baseURL: process.env.baseUrl
-    },
-    'mq': {
-        defaultBreakpoint: 'plg',
-        breakpoints: {
-            sm: 768,
-            md: 1024,
-            mdp: 1300, // todo
-            plg: 1800, // todo
-            lg: Infinity
-        }
-    },
-    /*
-     ** Build configuration
-     */
-    build: {
-        /*
-         ** You can extend webpack config here
-         */
-        extend(config, ctx) {
-            // Run ESLint on save
-            //if (ctx.isDev && ctx.isClient) {
-            //  config.module.rules.push({
-            //    enforce: 'pre',
-            //    test: /\.(js|vue)$/,
-            //    loader: 'eslint-loader',
-            //    exclude: /(node_modules)/
-            //  })
-            //}
-
-            config.node = {
-                fs: 'empty'
-            }
-        }
+        codeChallengeMethod: 'S256',
+        responseMode: '',
+        acrValues: '',
+      }
     }
+  },
+
+  env: {
+    jiraResourceName: process.env.JIRA_RESOURCE_NAME || ''
+  },
+
+  dotenv: {
+    only: [
+      'JIRA_CLIENT_ID',
+      'JIRA_RESOURCE_NAME'
+    ],
+    path: '~/..'
+  },
+
+  serverMiddleware: [
+    { path: "/server-middleware/auth", handler: "~/server-middleware/auth.js" },
+  ],
+
+  // Build Configuration: https://go.nuxtjs.dev/config-build
+  build: {
+    postcss: {
+      plugins: {
+        tailwindcss: {},
+        autoprefixer: {},
+      },
+    },
+    loaders: {
+      sass: {
+        implementation: require('sass'),
+      },
+      scss: {
+        implementation: require('sass'),
+      },
+    },
+  }
 }

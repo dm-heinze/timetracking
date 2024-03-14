@@ -1,128 +1,74 @@
 <template>
-    <div class="overview" :class="{ 'container': $mq === 'sm' }">
-        <div class="w-100">
-            <active-break />
-
-            <b-row align-v="stretch" class="no-gutters">
-                <b-col cols="12" lg="4" class="container--left vh-100">
-                    <div class="login-content__titles">
-                        <transition name="toggle">
-                            <search-sidebar v-if="!settingsOpen" />
-                        </transition>
-                        <transition name="toggle">
-                            <settings-sidebar v-if="settingsOpen" />
-                        </transition>
-                    </div>
-                </b-col>
-                <b-col cols="12" lg="8" class="container--right vh-100">
-                    <div class="col-xl-11 col-xxl-10">
-                        <div class="d-flex justify-content-between container--right__main-actions" :class="{ 'flex-column': $mq === 'sm' }">
-                            <div class="d-flex" :class="[flexDirection, { 'pr-3': $mq === 'md' ||  $mq === 'lg' }]">
-                                <add-custom-task />
-
-                                <break />
-                            </div>
-                            <div class="d-flex" :class="[flexDirection, { 'align-items-center': $mq === 'md' || $mq === 'lg' || $mq === 'mdp' || $mq === 'plg' }]">
-                                <total-time />
-
-                                <push-total-time />
-                            </div>
-                        </div>
-                        <selected-tasks />
-                    </div>
-                </b-col>
-                <update-message /> <!-- todo -->
-                <indicatorless-tasks v-if="doesNotHaveFieldDayAdded.length" />
-            </b-row>
+  <div class="grid grid-cols-12">
+    <TheBreak />
+    <div class="col-span-12 lg:col-span-4 lg:h-screen overflow-auto"
+         style="-ms-overflow-style: none; scrollbar-width: none;">
+      <div class="flex flex-col gap-8 p-4 lg:p-12">
+        <div class="flex flex-col gap-5">
+          <h2 class="text-2xl font-bold text-primary">Ticket Search</h2>
+          <Search class="w-full" @select-issue="select"/>
         </div>
+
+        <div class="flex flex-col gap-5">
+          <h2 class="flex justify-between items-center text-2xl font-bold text-primary">Bookmarks</h2>
+          <IssuePicker :issues="bookmarkedIssues" bookmarkable class="space-y-3 pt-2" @select-issue="select" />
+        </div>
+
+        <div class="flex flex-col gap-5">
+          <h2 class="flex justify-between items-center text-2xl font-bold text-primary">
+            Assigned Tickets
+
+            <button @click="refreshAssignedTickets++" class="btn btn-ghost">
+              <RefreshCwIcon />
+            </button>
+          </h2>
+          <IssuesAssignedToMe :key="refreshAssignedTickets" @select-issue="select" />
+        </div>
+
+        <div class="flex flex-col gap-5">
+          <h2 class="flex justify-between items-center text-2xl font-bold text-primary">Settings</h2>
+          <ThemeSwitch />
+        </div>
+      </div>
     </div>
+    <div class="col-span-12 lg:col-span-8 lg:h-screen bg-base-200 overflow-auto">
+      <div class="flex flex-col gap-10 p-4 max-w-5xl lg:p-12">
+        <client-only>
+          <TheTopBar />
+          <TheIssueList />
+        </client-only>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-    import { mapState, mapActions, mapMutations } from 'vuex';
-    import SelectedTasks from "~/components/main/tasks/SelectedTasks";
-    import AddCustomTask from "~/components/main/tasks/AddCustomTask";
-    import PushTotalTime from "~/components/main/tasks/PushTotalTime";
-    import TotalTime from "~/components/main/tasks/TotalTime";
-    import SearchSidebar from "~/components/search-sidebar/SearchSidebar";
-    import ActiveBreak from "~/components/main/ActiveBreak";
-    import Break from "~/components/main/Break";
-    import { mainButtonsFlexDirectionMixin } from "~/utility/mixins";
-    import UpdateMessage from "../components/main/tasks/UpdateMessage"; // todo
+import Search from '../components/Search.vue'
+import TheIssueList from '../components/TheIssueList.vue'
+import TheTopBar from '../components/TheTopBar.vue'
+import IssuesAssignedToMe from "../components/IssuesAssignedToMe.vue";
+import IssuePicker from "../components/IssuePicker.vue";
+import ThemeSwitch from "../components/ThemeSwitch.vue";
+import { RefreshCwIcon } from 'vue-feather-icons';
 
-    export default {
-        name: 'Index',
-        components: {
-            UpdateMessage, // todo
-            TotalTime,
-            ActiveBreak,
-            Break,
-            SearchSidebar,
-            PushTotalTime,
-            AddCustomTask,
-            SelectedTasks,
-            SettingsSidebar: () => import('~/components/settings-sidebar/SettingsSidebar'),
-            IndicatorlessTasks: () => import('~/components/main/tasks/IndicatorlessTasks')
-        },
-        mixins: [mainButtonsFlexDirectionMixin],
-        computed: {
-            ...mapState({
-                settingsOpen: state => state.moduleUser.settingsOpen,
-                searchResults: state => state.moduleSearch.searchResults,
-                doesNotHaveFieldDayAdded: state => state.moduleUpdate.doesNotHaveFieldDayAdded
-            }),
-            marginBottomTitle () {
-                if (this.$mq === 'sm') return { marginBottom: '80px' }
-                if (this.$mq === 'lg') return { marginBottom: '180px' }
-                else return { marginBottom: '90px' }
-            },
-        },
-        watch: {
-            settingsOpen: function(newValue) {
-                if (newValue && this.searchResults.length !== 0) this.setSearchResult([]);
-            },
-            $mq: function (newValue) {
-                if (newValue === 'lg' || newValue === 'sm') this.$root.$emit('bv::disable::tooltip');
-                else this.$root.$emit('bv::enable::tooltip');
-            },
-            doesNotHaveFieldDayAdded: function (updatedArrayDoesNotHaveFieldDayAdded) {
-                if (updatedArrayDoesNotHaveFieldDayAdded.length === 0) {
-                    // remove every task from selectedTasks that does not include field dayAdded
-                    this.removeDoesNotHaveFieldDayAddedTasks();
-
-                    // save updated list of selectedTasks to storage
-                    this.saveSelectedTasksToStorage();
-                }
-            }
-        },
-        methods: {
-            ...mapActions({
-                requestAllProjects: 'modulePrefill/requestAllProjects',
-                saveSelectedTasksToStorage: 'moduleTask/saveSelectedTasksToStorage'
-            }),
-            ...mapMutations({
-                setSearchResult: 'moduleSearch/setSearchResult',
-                removeDoesNotHaveFieldDayAddedTasks: 'moduleTask/removeDoesNotHaveFieldDayAddedTasks'
-            })
-        },
-        middleware ({ store, redirect }) {
-            return new Promise((resolve, reject) => {
-                store.dispatch('modulePrefill/requestPrefill')
-                    .then(() => resolve())
-                    .catch((err) => {
-                        redirect('/customer/login'); // if page requested on reload/initial request: if sessionId invalid requestPrefill will result in this catch block
-                        reject();
-                    })
-            })
-        },
-        mounted() {
-            this.requestAllProjects(); // moved here (from originally vuex store) to client-side to allow page rendering as requested project data will be behind select forms & not immediately apparent if not available
-
-            // wait for rendering
-            this.$nextTick(function () {
-                // do not show any tooltip for these screens as text visible & not icon-only
-                if (this.$mq === 'lg' || this.$mq === 'sm') this.$root.$emit('bv::disable::tooltip');
-            })
-        }
+export default {
+  name: 'IndexPage',
+  components: { IssuesAssignedToMe, TheTopBar, Search, TheIssueList, RefreshCwIcon, IssuePicker, ThemeSwitch },
+  middleware: 'auth',
+  data() {
+    return {
+      refreshAssignedTickets: 0
     }
+  },
+  computed: {
+    bookmarkedIssues: function () {
+      return this.$store.state.bookmarks.list
+    }
+  },
+  methods: {
+    select: function (issue) {
+      this.$store.commit('issues/add', issue);
+    }
+  }
+}
 </script>
