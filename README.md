@@ -1,4 +1,4 @@
-# Jira Timetracking-Tool for Jira Cloud by DMF
+# Jira Timetracking-Tool for Jira Cloud by DMF 
 
 Web App to manage your daily worklogs against the jira cloud.
 
