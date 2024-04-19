@@ -1,7 +1,5 @@
 <template>
-    <div class="row no-gutters">
-        <div class="col-12">
-            <nuxt />
-        </div>
-    </div>
+  <div>
+    <nuxt/>
+  </div>
 </template>
