@@ -41,7 +41,10 @@ export default {
   ],
 
   auth: {
-    plugins: [ '~/plugins/auth.js' ],
+    plugins: [
+      '~/plugins/init-hack-timer.client.js',
+      '~/plugins/auth.js'
+    ],
     strategies: {
       jira: {
         scheme: 'oauth2',
