@@ -81,5 +81,11 @@ export default async function ({ $auth, $axios }, inject) {
     })
   } catch (e) {
     console.log('Catched Auth Plugin Error')
+    console.error(e)
+
+    if (process.client) {
+      await $auth.logout()
+      window.location.href = '/login'
+    }
   }
 }
