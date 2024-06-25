@@ -9,11 +9,13 @@
 
 <script>
 import { CoffeeIcon, PauseCircleIcon } from 'vue-feather-icons'
+import { clearInterval, setInterval } from 'worker-timers'
 export default {
   name: 'TheBreak',
   components: { CoffeeIcon, PauseCircleIcon },
   data() {
     return {
+      startDate: '',
       seconds: 0,
       minutes: 0,
       hours: 0
@@ -60,6 +62,13 @@ export default {
           clearInterval(this.$store.state.break.interval)
         }
 
+        // Set start date from now minus time that is already set
+        const d = new Date()
+        d.setHours(d.getHours() - this.hours)
+        d.setMinutes(d.getMinutes() - this.minutes)
+        d.setSeconds(d.getSeconds() - this.seconds)
+        this.startDate = d
+
         this.$store.commit('break/setState', { stateName: 'interval', value: setInterval(this.processTimer, 1000) })
       }
 
@@ -84,17 +93,13 @@ export default {
       this.$store.commit('break/setState', { stateName: 'active', value: false })
     },
     processTimer: function() {
-      this.seconds++
+      const now = new Date()
+      const elapsed = new Date(now - this.startDate)
 
-      if(this.seconds === 60) {
-        this.seconds = 0
-        this.minutes++
-
-        if(this.minutes === 60) {
-          this.minutes = 0
-          this.hours++
-        }
-      }
+      this.seconds = elapsed.getSeconds()
+      this.minutes = elapsed.getMinutes()
+      // empty datetime Object starts at 01:00:00
+      this.hours = elapsed.getHours() - 1
     },
     stopActiveTimers: function () {
       const activeIssues = this.$store.state.issues.list.filter(issue => issue.interval !== null)

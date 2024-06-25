@@ -32,6 +32,7 @@
 <script>
 import ConfirmationModal from './ConfirmationModal.vue'
 import { PlayCircleIcon, PauseCircleIcon, SendIcon, Trash2Icon, Edit2Icon, PlusCircleIcon, SaveIcon } from 'vue-feather-icons'
+import { clearInterval, setInterval } from 'worker-timers'
 export default {
   name: 'Issue',
   components: { ConfirmationModal, PlayCircleIcon, PauseCircleIcon, SendIcon, Trash2Icon, Edit2Icon, PlusCircleIcon, SaveIcon },
@@ -43,6 +44,7 @@ export default {
   },
   data() {
     return {
+      startDate: '',
       seconds: 0,
       minutes: 0,
       hours: 0,
@@ -102,6 +104,13 @@ export default {
         clearInterval(this.issueData.interval)
       }
 
+      // Set start date from now minus time that is already set
+      const d = new Date()
+      d.setHours(d.getHours() - this.hours)
+      d.setMinutes(d.getMinutes() - this.minutes)
+      d.setSeconds(d.getSeconds() - this.seconds)
+      this.startDate = d
+
       this.$store.commit('issues/update', { id: this.issueData.storeId, property: 'interval', value: setInterval(this.processTimer, 1000) })
     },
     pauseTimer: function() {
@@ -116,17 +125,13 @@ export default {
       })
     },
     processTimer: function() {
-      this.seconds++
+      const now = new Date()
+      const elapsed = new Date(now - this.startDate)
 
-      if(this.seconds === 60) {
-        this.seconds = 0
-        this.minutes++
-
-        if(this.minutes === 60) {
-          this.minutes = 0
-          this.hours++
-        }
-      }
+      this.seconds = elapsed.getSeconds()
+      this.minutes = elapsed.getMinutes()
+      // empty datetime Object starts at 01:00:00
+      this.hours = elapsed.getHours() - 1
     },
     parseJiraTimeFormat: function(time) {
       let [h, m, s] = time.split(':')
