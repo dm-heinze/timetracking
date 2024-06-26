@@ -42,7 +42,6 @@ export default {
 
   auth: {
     plugins: [
-      '~/plugins/init-hack-timer.client.js',
       '~/plugins/auth.js'
     ],
     strategies: {
