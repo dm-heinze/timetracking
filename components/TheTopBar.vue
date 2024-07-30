@@ -31,6 +31,7 @@
 
 <script>
 import { SendIcon, PlusCircleIcon, CoffeeIcon, RotateCwIcon } from 'vue-feather-icons'
+import _ from 'lodash';
 
 export default {
   name: 'TheTopBar',
@@ -113,7 +114,7 @@ export default {
         this.modalType = ''
       }, 500)
     },
-    addWorklogs: async function() {
+    addWorklogs: _.debounce(async function() {
       try {
         await Promise.all(
           this.$store.state.issues.list.map(async (issue) => {
@@ -132,7 +133,7 @@ export default {
       } catch (e) {
         console.log(e)
       }
-    },
+    }, 1000),
     parseJiraTimeFormat: function(time) {
       let [h, m, s] = time.split(':')
 
