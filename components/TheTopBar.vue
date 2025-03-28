@@ -25,7 +25,7 @@
       <span class="ml-2 md:hidden xl:block">Push all your tasks</span>
     </button>
 
-    <ConfirmationModal @close="showModal = false" @confirm="confirm" :show-modal="showModal" :type="modalType" />
+    <ConfirmationModal @close="showModal = false" @confirm="confirm" :show-modal="showModal" :type="modalType" :loading="loading" />
   </div>
 </template>
 
@@ -38,7 +38,8 @@ export default {
   data() {
     return {
       showModal: false,
-      modalType: ''
+      modalType: '',
+      loading: false,
     }
   },
   computed: {
@@ -114,6 +115,7 @@ export default {
       }, 500)
     },
     addWorklogs: async function() {
+      this.loading = true
       try {
         await Promise.all(
           this.$store.state.issues.list.map(async (issue) => {
@@ -126,11 +128,12 @@ export default {
             this.$store.commit('issues/remove', { id: issue.storeId })
           })
         )
-
+        this.loading = false
         this.onResetBreak()
         this.resetModal()
       } catch (e) {
         console.log(e)
+        this.loading = false
       }
     },
     parseJiraTimeFormat: function(time) {

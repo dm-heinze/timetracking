@@ -51,7 +51,8 @@ export default {
       comment: '',
       showModal: false,
       modalType: '',
-      editName: false
+      editName: false,
+      loading: false,
     }
   },
   computed: {
@@ -174,6 +175,7 @@ export default {
       this.resetModal()
     },
     addWorklog: async function() {
+      this.loading = true
       try {
         await this.$jira.issueWorklogs.addWorklog({
           issueIdOrKey: this.issueData.key,
@@ -181,9 +183,11 @@ export default {
           timeSpent: this.parseJiraTimeFormat(this.issueData.timeSpent)
         })
 
+        this.loading = false
         this.removeIssue()
       } catch (e) {
         console.log(e)
+        this.loading = false
       }
     },
     assignIssue: async function(payload) {
