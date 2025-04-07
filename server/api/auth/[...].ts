@@ -106,7 +106,11 @@ export default defineEventHandler(async (event) => {
                 code_verifier: codeVerifier
             })
 
-            const { access_token, refresh_token, expires_in } = tokenResponse.data
+            const {
+                access_token,
+                refresh_token,
+                expires_in // in seconds
+            } = tokenResponse.data
 
             // Benutzerinfo abrufen
             const userResponse = await axios.get(oauthConfig.userInfoUrl, {
@@ -150,7 +154,7 @@ export default defineEventHandler(async (event) => {
             }
 
             const cookieOptions = {
-                maxAge: expires_in,
+                maxAge: (60 * 60 * 24 * 30),
                 path: '/',
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
@@ -218,7 +222,11 @@ export default defineEventHandler(async (event) => {
                 refresh_token: refreshToken
             })
 
-            const { access_token, refresh_token, expires_in } = tokenResponse.data
+            const {
+                access_token,
+                refresh_token,
+                expires_in
+            } = tokenResponse.data
 
             const expiresAt = Date.now() + (expires_in * 1000)
 
@@ -227,7 +235,7 @@ export default defineEventHandler(async (event) => {
                 at: access_token,
                 exp: expiresAt
             }), {
-                maxAge: expires_in,
+                maxAge: (60 * 60 * 24 * 30),
                 path: '/',
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
@@ -290,8 +298,13 @@ export default defineEventHandler(async (event) => {
             const jiraResource = JSON.parse(resourceCookie)
 
             if (session.exp < Date.now()) {
-                // Token abgelaufen - hier könnte automatisch ein Refresh erfolgen
-                return { authenticated: false, reason: 'expired' }
+                // Token ist abgelaufen - wir signalisieren dem Client, dass ein Refresh nötig ist
+                // Da wir serverseitig keinen Zugriff auf localStorage haben, muss der Client den Refresh durchführen
+                return {
+                    authenticated: false,
+                    reason: 'expired',
+                    needsRefresh: true
+                }
             }
 
             return {
