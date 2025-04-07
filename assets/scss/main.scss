@@ -1,0 +1,16 @@
+@use 'configurations/__fonts.scss';
+
+@tailwind base;
+@tailwind components;
+// Insert component overrides here
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@layer components {
+  .btn {
+    @apply uppercase;
+  }
+}
+@tailwind utilities;
