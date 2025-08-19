@@ -21,7 +21,7 @@ async function getIssuesAssignedToMe() {
         const jiraClient = useJiraClient()
         if (!jiraClient) return
 
-        const { issues: jiraIssues } = await jiraClient.issueSearch.searchForIssuesUsingJqlPost({
+        const { issues: jiraIssues } = await jiraClient.issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
             jql: 'assignee = currentUser() AND resolution = Unresolved order by updated DESC',
             fields: ['summary']
         })

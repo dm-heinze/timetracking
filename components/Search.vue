@@ -78,7 +78,7 @@ const debouncedSearch = useDebounceFn(async () => {
             ? `key = '${escapeJql(searchKey)}' ORDER BY created DESC`
             : `summary ~ '${escapeJql(term)}' ORDER BY created DESC`
 
-        const { issues: jiraIssues } = await jiraClient.issueSearch.searchForIssuesUsingJqlPost({
+        const { issues: jiraIssues } = await jiraClient.issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
             jql: jqlSearchString,
             fields: ['summary']
         })
