@@ -26,6 +26,17 @@
                 </div>
 
                 <div class="flex flex-col gap-5">
+                    <h2 class="flex justify-between items-center text-2xl font-bold text-primary">
+                        Planned Today
+
+                        <button @click="refreshPlannedTickets++" class="btn btn-ghost btn-circle">
+                            <Icon name="lucide:refresh-cw" class="w-6 h-6" />
+                        </button>
+                    </h2>
+                    <IssuesPlannedToday :key="refreshPlannedTickets" @select-issue="select" @assign-project="selectProject" />
+                </div>
+
+                <div class="flex flex-col gap-5">
                     <h2 class="flex justify-between items-center text-2xl font-bold text-primary">Settings</h2>
                     <ThemeSwitch />
                 </div>
@@ -50,6 +61,7 @@ import Search from '~/components/Search.vue'
 import TheIssueList from '~/components/TheIssueList.vue'
 import TheTopBar from '~/components/TheTopBar.vue'
 import IssuesAssignedToMe from '~/components/IssuesAssignedToMe.vue'
+import IssuesPlannedToday from '~/components/IssuesPlannedToday.vue'
 import IssuePicker from '~/components/IssuePicker.vue'
 import ThemeSwitch from '~/components/ThemeSwitch.vue'
 
@@ -64,6 +76,7 @@ const issuesStore = useIssuesStore()
 
 // Reaktive Daten
 const refreshAssignedTickets = ref(0)
+const refreshPlannedTickets = ref(0)
 
 // Computed Properties
 const bookmarkedIssues = computed(() => bookmarksStore.list)
@@ -71,5 +84,13 @@ const bookmarkedIssues = computed(() => bookmarksStore.list)
 // Methoden
 function select(issue) {
     issuesStore.add(issue)
+}
+
+function selectProject(projectKey) {
+    issuesStore.add({
+        key: 'CUSTOM',
+        name: new Date().getTime(),
+        pendingAssignProjectKey: projectKey
+    })
 }
 </script>

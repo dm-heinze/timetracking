@@ -4,7 +4,8 @@ const dynamicIssueDataMock = {
     storeId: null,
     comment: '',
     timeSpent: '00:00:00',
-    interval: null
+    interval: null,
+    pendingAssignProjectKey: null
 }
 
 function uuidv4() {
@@ -21,8 +22,8 @@ export const useIssuesStore = defineStore('issues', {
     actions: {
         add(issue) {
             const obj = {
-                ...issue,
-                ...dynamicIssueDataMock
+                ...dynamicIssueDataMock,
+                ...issue
             }
 
             obj.storeId = uuidv4()

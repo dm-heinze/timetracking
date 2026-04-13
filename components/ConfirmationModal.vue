@@ -84,7 +84,7 @@
                         </div>
                     </div>
                     <div class="py-5 px-7 border-b text-primary text-sm">
-                        <Search @select-issue="confirm" />
+                        <Search :prefill-project="prefillProject" @select-issue="confirm" />
                     </div>
                 </template>
                 <template v-else>
@@ -128,6 +128,11 @@ const props = defineProps({
         required: false,
         type: Boolean,
         default: false
+    },
+    prefillProject: {
+        required: false,
+        type: String,
+        default: null
     }
 })
 

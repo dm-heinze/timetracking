@@ -34,11 +34,42 @@ import { ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import IssuePicker from "./IssuePicker.vue"
 
+const props = defineProps({
+    prefillProject: {
+        type: String,
+        default: null
+    }
+})
+
 const emit = defineEmits(['select-issue'])
 
 const searchTerm = ref('')
 const searchLoading = ref(false)
 const issues = ref([])
+
+watch(() => props.prefillProject, (projectKey) => {
+    if (!projectKey) return
+    searchTerm.value = projectKey
+    doProjectSearch(projectKey)
+}, { immediate: true })
+
+async function doProjectSearch(projectKey) {
+    try {
+        searchLoading.value = true
+        const jiraClient = useJiraClient()
+        if (!jiraClient) return
+
+        const { issues: jiraIssues } = await jiraClient.issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
+            jql: `project = '${projectKey}' AND resolution = Unresolved ORDER BY updated DESC`,
+            fields: ['summary']
+        })
+        issues.value = jiraIssues
+    } catch (e) {
+        console.error(e)
+    } finally {
+        searchLoading.value = false
+    }
+}
 
 const debouncedSearch = useDebounceFn(async () => {
     if (!searchTerm.value?.trim()) return

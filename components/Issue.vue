@@ -39,12 +39,12 @@
         </div>
         <textarea v-model="comment" class="w-full textarea textarea-bordered rounded p-2 resize-y overflow-hidden h-16" :class="{ 'bg-error/25': comment === '' }" rows="4" />
 
-        <ConfirmationModal @close="showModal = false" @confirm="confirm" :show-modal="showModal" :type="modalType" :issue="issueData" />
+        <ConfirmationModal @close="showModal = false" @confirm="confirm" :show-modal="showModal" :type="modalType" :issue="issueData" :prefill-project="issueData.pendingAssignProjectKey" />
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useIssuesStore } from '~/stores/issues'
 import { useBreakStore } from '~/stores/break'
 import ConfirmationModal from './ConfirmationModal.vue'
@@ -106,9 +106,14 @@ const customTaskName = computed({
     }
 })
 
-onMounted(() => {
+onMounted(async () => {
     timeWorked.value = props.issueData.timeSpent
     comment.value = props.issueData.comment
+
+    if (props.issueData.pendingAssignProjectKey) {
+        modalType.value = 'assignIssue'
+        showModal.value = true
+    }
 })
 
 onBeforeUnmount(() => {
