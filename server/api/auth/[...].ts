@@ -128,6 +128,7 @@ export default defineEventHandler(async (event) => {
 
             // Passende Ressource finden
             const matchingResource = resourcesResponse.data.find(
+                // @ts-expect-error api response poorly typed 
                 resource => resource.name === config.jira.resourceName
             )
 
@@ -158,7 +159,7 @@ export default defineEventHandler(async (event) => {
                 path: '/',
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
-                sameSite: 'lax'
+                sameSite: 'lax' as const
             }
 
             // 1. Token-Cookie (httpOnly für Sicherheit)
@@ -185,7 +186,7 @@ export default defineEventHandler(async (event) => {
             // Spezielle Cookie-Option für JS-lesbares Cookie (nicht httpOnly!)
             setCookie(event, 'auth_refresh_token_temp', refresh_token, {
                 ...cookieOptions,
-                httpOnly: false // Wichtig: Dieses Cookie muss vom JS lesbar sein
+                httpOnly: false // Wichtig: Dieses Cookie muss vom JS lesbar sein,
             })
 
             // Direkte Weiterleitung zur Hauptseite mit einem speziellen Query-Parameter
@@ -316,6 +317,113 @@ export default defineEventHandler(async (event) => {
             }
         } catch (error) {
             return { authenticated: false }
+        }
+    }
+
+    // Tempo OAuth2 Flow
+    if (path === '/api/auth/tempo/login') {
+        const tempoConfig = useRuntimeConfig().tempo
+        const resourceCookie = getCookie(event, 'auth_resource')
+        if (!resourceCookie) {
+            throw createError({ statusCode: 401, message: 'Not authenticated with Jira' })
+        }
+        const jiraResource = JSON.parse(resourceCookie)
+        const redirectUri = process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3000/api/auth/tempo/callback'
+            : `${config.jira.authOrigin || 'https://your-production-domain.com'}/api/auth/tempo/callback`
+
+        const authUrl = new URL('https://api.tempo.io/oauth/authorize/redirect')
+        authUrl.searchParams.set('client_id', tempoConfig.clientId)
+        authUrl.searchParams.set('redirect_uri', redirectUri)
+        authUrl.searchParams.set('jira_url', jiraResource.url)
+
+        return sendRedirect(event, authUrl.toString())
+    }
+
+    if (path === '/api/auth/tempo/callback') {
+        const tempoConfig = useRuntimeConfig().tempo
+        const query = getQuery(event)
+        const { code } = query
+
+        if (!code) {
+            throw createError({ statusCode: 400, message: 'Missing authorization code' })
+        }
+
+        const redirectUri = process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3000/api/auth/tempo/callback'
+            : `${config.jira.authOrigin || 'https://your-production-domain.com'}/api/auth/tempo/callback`
+
+        try {
+            const params = new URLSearchParams({
+                grant_type: 'authorization_code',
+                client_id: tempoConfig.clientId,
+                client_secret: tempoConfig.clientSecret,
+                redirect_uri: redirectUri,
+                code: code as string
+            })
+
+            const tokenResponse = await axios.post('https://api.tempo.io/oauth/token/', params.toString(), {
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+
+            const { access_token, expires_in, refresh_token } = tokenResponse.data
+
+            const cookieOptions = {
+                maxAge: expires_in,
+                path: '/',
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'lax' as const
+            }
+
+            setCookie(event, 'tempo_session', access_token, cookieOptions)
+
+            setCookie(event, 'tempo_refresh_token_temp', refresh_token, {
+                ...cookieOptions,
+                httpOnly: false
+            })
+
+            return sendRedirect(event, '/?store_tempo_refresh_token=true')
+        } catch (error) {
+            throw createError({ statusCode: 500, message: 'Error during Tempo authentication' })
+        }
+    }
+
+    if (path === '/api/auth/tempo/refresh') {
+        const tempoConfig = useRuntimeConfig().tempo
+        const body = await readBody(event)
+        const { refreshToken } = body
+
+        if (!refreshToken) {
+            return { authenticated: false, error: 'No refresh token provided' }
+        }
+
+        try {
+            const params = new URLSearchParams({
+                grant_type: 'refresh_token',
+                client_id: tempoConfig.clientId,
+                client_secret: tempoConfig.clientSecret,
+                refresh_token: refreshToken
+            })
+
+            const tokenResponse = await axios.post('https://api.tempo.io/oauth/token/', params.toString(), {
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+
+            const { access_token, expires_in, refresh_token: newRefreshToken } = tokenResponse.data
+
+            setCookie(event, 'tempo_session', access_token, {
+                maxAge: expires_in,
+                path: '/',
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'lax'
+            })
+
+            return { authenticated: true, refreshToken: newRefreshToken }
+        } catch (error) {
+            setCookie(event, 'tempo_session', '', { maxAge: 0 })
+            return { authenticated: false, error: 'Failed to refresh Tempo token' }
         }
     }
 

@@ -25,6 +25,20 @@ onMounted(() => {
             window.history.replaceState({}, document.title, '/')
         }
     }
+
+    if (route.query.store_tempo_refresh_token === 'true') {
+        // Tempo Refresh-Token aus temporärem Cookie in localStorage übertragen
+        const cookies = document.cookie.split(';')
+        const tempoRefreshTokenCookie = cookies.find(c => c.trim().startsWith('tempo_refresh_token_temp='))
+
+        if (tempoRefreshTokenCookie) {
+            const refreshToken = tempoRefreshTokenCookie.split('=')[1]
+            localStorage.setItem('tempo_refresh_token', refreshToken)
+
+            document.cookie = 'tempo_refresh_token_temp=; max-age=0; path=/;'
+            window.history.replaceState({}, document.title, '/')
+        }
+    }
 })
 
 useHead({

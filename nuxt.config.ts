@@ -34,6 +34,10 @@ export default defineNuxtConfig({
       resourceName: process.env.JIRA_RESOURCE_NAME || '',
       authOrigin: process.env.AUTH_ORIGIN
     },
+    tempo: {
+      clientId: process.env.TEMPO_CLIENT_ID,
+      clientSecret: process.env.TEMPO_CLIENT_SECRET,
+    },
     public: {}
   },
 
