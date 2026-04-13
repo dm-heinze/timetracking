@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="tempoAuthRequired" class="flex flex-col gap-3">
-            <p class="text-sm text-neutral-content">Verbinde deinen Tempo-Account, um geplante Tickets zu sehen.</p>
+            <p class="text-sm text-neutral-content">Connect your Tempo account to see scheduled tickets.</p>
             <button @click="tempoLogin()" class="btn btn-primary btn-sm w-fit">
                 <Icon name="lucide:calendar-check" class="w-4 h-4" />
                 Connect Tempo
