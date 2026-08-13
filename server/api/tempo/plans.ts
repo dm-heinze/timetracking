@@ -20,15 +20,22 @@ export default defineEventHandler(async (event) => {
             query: { from: today, to: today }
         })
 
-        const issueIds = response.results
-            .filter(plan => plan.planItem?.type === 'ISSUE')
-            .map(plan => plan.planItem.id)
+        const issuePlans = response.results.filter(plan => plan.planItem?.type === 'ISSUE')
+
+        const issueIds = issuePlans.map(plan => plan.planItem.id)
 
         const projectIds = response.results
             .filter(plan => plan.planItem?.type === 'PROJECT')
             .map(plan => plan.planItem.id)
 
-        return { issueIds, projectIds }
+        const issueNotes: Record<string, string> = {}
+        for (const plan of issuePlans) {
+            if (plan.description) {
+                issueNotes[plan.planItem.id] = plan.description
+            }
+        }
+
+        return { issueIds, projectIds, issueNotes }
     } catch (error: any) {
         if (error?.response?.status === 401) {
             setCookie(event, 'tempo_session', '', { maxAge: 0 })

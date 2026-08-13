@@ -20,6 +20,7 @@ const emit = defineEmits(['select-issue', 'assign-project'])
 
 const issues = ref([])
 const projects = ref([])
+const issueNotes = ref({})
 const tempoAuthRequired = ref(false)
 const { isAuthenticated } = useAuth()
 const { tempoLogin, tempoRefreshToken } = useTempoAuth()
@@ -56,7 +57,9 @@ async function getPlannedTickets() {
     }
 }
 
-async function loadData({ issueIds, projectIds }) {
+async function loadData({ issueIds, projectIds, issueNotes: notes }) {
+    issueNotes.value = notes || {}
+
     const jiraClient = useJiraClient()
     if (!jiraClient) return
 
@@ -76,7 +79,10 @@ async function loadIssues(jiraClient, issueIds) {
         jql: `id IN (${issueIds.join(',')}) order by created DESC`,
         fields: ['summary']
     })
-    issues.value = jiraIssues
+    issues.value = jiraIssues.map(issue => ({
+        ...issue,
+        plannedNote: issueNotes.value[issue.id] || null
+    }))
 }
 
 async function loadProjects(jiraClient, projectIds) {
