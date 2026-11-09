@@ -70,7 +70,22 @@ async function loadData({ plans = [] }) {
 function toPlanEntries(plans, item) {
     return plans
         .filter(plan => plan.itemId === String(item.id))
-        .map(plan => ({ ...item, planId: plan.id, plannedNote: plan.note }))
+        .map(plan => ({
+            ...item,
+            planId: plan.id,
+            plannedNote: plan.note,
+            plannedTime: formatDuration(plan.plannedSeconds)
+        }))
+}
+
+// 5400 → "1h 30m", 1800 → "30m", 0 → null
+function formatDuration(seconds) {
+    if (!seconds) return null
+
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.round((seconds % 3600) / 60)
+
+    return [hours && `${hours}h`, minutes && `${minutes}m`].filter(Boolean).join(' ')
 }
 
 async function loadIssues(jiraClient, issuePlans) {

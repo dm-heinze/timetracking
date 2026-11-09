@@ -22,7 +22,12 @@
                 <div class="col-span-5 flex flex-col max-w-[280px]">
                     <div class="text-primary font-bold">{{ issue.key }}</div>
                     <div v-if="issue.fields?.summary != null" class="text-truncate text-sm text-neutral-content">{{ issue.fields.summary }}</div>
-                    <div v-if="issue.plannedNote" class="text-truncate text-xs text-neutral-content italic">Note: {{ issue.plannedNote }}</div>
+                    <div v-if="issue.plannedTime" class="flex items-center gap-1 text-xs text-neutral-content">
+                        <Icon name="lucide:clock" class="w-3 h-3" aria-hidden="true" />
+                        <span class="sr-only">Planned time:</span>
+                        {{ issue.plannedTime }}
+                    </div>
+                    <div v-if="issue.plannedNote"class="text-truncate text-xs text-neutral-content italic">Note: {{ issue.plannedNote }}</div>
                 </div>
                 <div class="col-span-1 text-primary justify-self-end">
                     <Icon name="lucide:plus-circle" class="w-6 h-6 stroke-primary group-hover:text-accent" />

@@ -26,7 +26,8 @@ export default defineEventHandler(async (event) => {
                 id: plan.id,
                 type: plan.planItem.type,
                 itemId: String(plan.planItem.id),
-                note: plan.description || null
+                note: plan.description || null,
+                plannedSeconds: plan.totalPlannedSecondsInScope || 0
             }))
 
         return { plans }
