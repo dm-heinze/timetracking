@@ -22,7 +22,7 @@
         <IssuePicker
             :issues="issues"
             bookmarkable
-            class="space-y-3 pt-2 overflow-y-scroll lg:h-[320px]"
+            :class="['space-y-3 pt-2 overflow-y-scroll', { 'lg:h-[320px]': issues.length > 0 || searchLoading }]"
             style="-ms-overflow-style: none; scrollbar-width: none;"
             @select-issue="addIssue"
         />
