@@ -27,7 +27,7 @@
                         <span class="sr-only">Planned time:</span>
                         {{ issue.plannedTime }}
                     </div>
-                    <div v-if="issue.plannedNote"class="text-truncate text-xs text-neutral-content italic">Note: {{ issue.plannedNote }}</div>
+                    <div v-if="issue.plannedNote" class="text-truncate text-xs text-neutral-content italic">Note: {{ issue.plannedNote }}</div>
                 </div>
                 <div class="col-span-1 text-primary justify-self-end">
                     <Icon name="lucide:plus-circle" class="w-6 h-6 stroke-primary group-hover:text-accent" />
