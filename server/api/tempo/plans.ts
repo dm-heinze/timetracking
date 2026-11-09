@@ -20,22 +20,16 @@ export default defineEventHandler(async (event) => {
             query: { from: today, to: today }
         })
 
-        const issuePlans = response.results.filter(plan => plan.planItem?.type === 'ISSUE')
+        const plans = response.results
+            .filter(plan => ['ISSUE', 'PROJECT'].includes(plan.planItem?.type))
+            .map(plan => ({
+                id: plan.id,
+                type: plan.planItem.type,
+                itemId: String(plan.planItem.id),
+                note: plan.description || null
+            }))
 
-        const issueIds = issuePlans.map(plan => plan.planItem.id)
-
-        const projectIds = response.results
-            .filter(plan => plan.planItem?.type === 'PROJECT')
-            .map(plan => plan.planItem.id)
-
-        const issueNotes: Record<string, string> = {}
-        for (const plan of issuePlans) {
-            if (plan.description) {
-                issueNotes[plan.planItem.id] = plan.description
-            }
-        }
-
-        return { issueIds, projectIds, issueNotes }
+        return { plans }
     } catch (error: any) {
         if (error?.response?.status === 401) {
             setCookie(event, 'tempo_session', '', { maxAge: 0 })

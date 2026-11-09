@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="relative" v-for="issue in issues" :key="issue.key">
+        <div class="relative" v-for="issue in issues" :key="issue.planId ?? issue.key">
             <div v-if="bookmarkable" class="absolute z-10 -top-1 right-5 tooltip tooltip-left tooltip-primary" :data-tip="checkIsBookmarked(issue) ? 'Remove from Bookmarks' : 'Bookmark this ticket'">
                 <Icon
                     v-if="!checkIsBookmarked(issue)"
