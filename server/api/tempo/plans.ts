@@ -20,14 +20,17 @@ export default defineEventHandler(async (event) => {
             query: { from: today, to: today }
         })
 
+        // Tempo returns every plan whose recurrence range overlaps today, including
+        // recurring plans that don't occur today; those have no planned time in scope.
         const plans = response.results
+            .filter(plan => plan.totalPlannedSecondsInScope > 0)
             .filter(plan => ['ISSUE', 'PROJECT'].includes(plan.planItem?.type))
             .map(plan => ({
                 id: plan.id,
                 type: plan.planItem.type,
                 itemId: String(plan.planItem.id),
                 note: plan.description || null,
-                plannedSeconds: plan.totalPlannedSecondsInScope || 0
+                plannedSeconds: plan.totalPlannedSecondsInScope
             }))
 
         return { plans }
