@@ -2,13 +2,19 @@
     <div>
         <div
             v-for="project in projects"
-            :key="project.id"
+            :key="project.planId ?? project.id"
             class="relative group w-full grid grid-cols-6 justify-between items-center gap-4 border rounded py-4 px-5 hover:shadow-md cursor-pointer transition"
             @click="selectProject(project)"
         >
             <div class="col-span-5 flex flex-col max-w-[280px]">
                 <div class="text-primary font-bold">{{ project.key }}</div>
                 <div class="text-truncate text-sm text-neutral-content">{{ project.name }}</div>
+                <div v-if="project.plannedTime" class="flex items-center gap-1 text-xs text-neutral-content">
+                    <Icon name="lucide:clock" class="w-3 h-3" aria-hidden="true" />
+                    <span class="sr-only">Planned time:</span>
+                    {{ project.plannedTime }}
+                </div>
+                <div v-if="project.plannedNote" class="text-truncate text-xs text-neutral-content italic">Note: {{ project.plannedNote }}</div>
             </div>
             <div class="col-span-1 text-primary justify-self-end">
                 <Icon name="lucide:search" class="w-6 h-6 stroke-primary group-hover:text-accent" />
